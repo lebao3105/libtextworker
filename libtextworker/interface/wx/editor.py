@@ -1,6 +1,5 @@
-import re
 import wx.stc
-from ..manager import LanguageHighlight
+from ..manager import LanguageHighlight, ColorManager
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
 
@@ -8,12 +7,17 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
         super().__init__(**kw)
 
+        clrmgr = ColorManager()
+
         self.EnableLineCount(line_number)
-        self.AddText("import wx\nprint('hello')")
+        # self.AddText("import wx\nprint('hello')")
 
         # Base editor color
-        # self.StyleSetSpec(0, "fore:{},back:{}".format())
-        # self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}")
+        bg, fg = clrmgr._get_color()
+        bg = "#" + "%02x%02x%02x" % bg
+        fg = "#" + "%02x%02x%02x" % fg
+        self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
+        self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}")
 
         # Setup a margin to hold fold markers
         self.SetMarginType(2, wx.stc.STC_MARGIN_SYMBOL)
@@ -30,10 +34,19 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDER, wx.stc.STC_MARK_BOXPLUS,  "white", "black")
         self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPEN, wx.stc.STC_MARK_BOXMINUS, "white", "black")
 
-        hlt = LanguageHighlight()
-        hlt.LanguageInit(self.Value)
-        hlt.InitializeUIType()
-        hlt.ConfigureWxWidget(self)
+        # hlt = LanguageHighlight()
+        # hlt.LanguageInit(self.Value)
+        # hlt.InitializeUIType()
+        # hlt.ConfigureWxWidget(self)
+
+        # TODO: Fix dark mode
+        clrmgr.setcolorfunc(
+            "textw", self.StyleSetBackground, wx.stc.STC_STYLE_DEFAULT
+        )
+        clrmgr.setfontcfunc(
+            "textw", self.StyleSetForeground, wx.stc.STC_STYLE_DEFAULT
+        )
+        clrmgr.configure(self)
 
         self.Bind(wx.stc.EVT_STC_MODIFIED, self.StartStyling)
     

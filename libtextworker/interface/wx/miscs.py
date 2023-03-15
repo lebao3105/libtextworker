@@ -1,4 +1,5 @@
 import io
+import re
 import wx
 
 class MenuBar(wx.MenuBar):
