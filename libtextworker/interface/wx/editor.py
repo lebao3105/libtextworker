@@ -3,9 +3,9 @@ from ..manager import LanguageHighlight, ColorManager
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
 
-    def __init__(self, line_number:bool = False, **kw):
+    def __init__(self, id=wx.ID_ANY, line_number:bool = False, **kw):
         kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
-        super().__init__(**kw)
+        super().__init__(id, **kw)
 
         clrmgr = ColorManager()
 
