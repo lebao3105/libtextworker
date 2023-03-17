@@ -1,6 +1,7 @@
 import io
 import re
 import wx
+import wx.xrc
 
 class MenuBar(wx.MenuBar):
     def SetParent(self, parent):

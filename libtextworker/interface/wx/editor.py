@@ -1,11 +1,11 @@
 import wx.stc
-from ..manager import LanguageHighlight, ColorManager
+from ..manager import ColorManager
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def __init__(self, id=wx.ID_ANY, line_number:bool = False, **kw):
         kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
-        super().__init__(id, **kw)
+        super().__init__(id=id, **kw)
 
         clrmgr = ColorManager()
 
@@ -17,7 +17,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         bg = "#" + "%02x%02x%02x" % bg
         fg = "#" + "%02x%02x%02x" % fg
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
-        self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}")
+        self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
         # Setup a margin to hold fold markers
         self.SetMarginType(2, wx.stc.STC_MARGIN_SYMBOL)
@@ -26,13 +26,13 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.SetMarginWidth(2, 12)
 
         # and now set up the fold markers
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEREND, wx.stc.STC_MARK_BOXPLUSCONNECTED,  "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPENMID, wx.stc.STC_MARK_BOXMINUSCONNECTED, "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERMIDTAIL, wx.stc.STC_MARK_TCORNER,  "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERTAIL, wx.stc.STC_MARK_LCORNER,  "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERSUB, wx.stc.STC_MARK_VLINE,    "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDER, wx.stc.STC_MARK_BOXPLUS,  "white", "black")
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPEN, wx.stc.STC_MARK_BOXMINUS, "white", "black")
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEREND, wx.stc.STC_MARK_BOXPLUSCONNECTED, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPENMID, wx.stc.STC_MARK_BOXMINUSCONNECTED, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERMIDTAIL, wx.stc.STC_MARK_TCORNER, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERTAIL, wx.stc.STC_MARK_LCORNER, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERSUB, wx.stc.STC_MARK_VLINE, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDER, wx.stc.STC_MARK_BOXPLUS, fg, bg)
+        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPEN, wx.stc.STC_MARK_BOXMINUS, fg, bg)
 
         # hlt = LanguageHighlight()
         # hlt.LanguageInit(self.Value)
@@ -48,17 +48,17 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         )
         clrmgr.configure(self)
 
-        self.Bind(wx.stc.EVT_STC_MODIFIED, self.StartStyling)
+        self.Bind(wx.stc.EVT_STC_MODIFIED, self.OnSTCModify)
     
-    def StartStyling(self, event):
+    def OnSTCModify(self, event):
         if event:
             pos = event.GetPosition()
             length = event.GetLength()
         else:
             pos = 0
-            length = self.Parent.GetLength()
-        self.Parent.StartStyling(pos)
-        self.Parent.SetStyling(length, 0)
+            length = self.GetLength()
+        self.StartStyling(pos)
+        self.SetStyling(length, 0)
         event.Skip()
     
     def EnableLineCount(self, set:bool):
