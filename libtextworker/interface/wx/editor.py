@@ -1,52 +1,104 @@
+import wx
 import wx.stc
-from ..manager import ColorManager
+
+from .miscs import CreateMenu
+from libtextworker import EDITOR_DIR
+from libtextworker.get_config import GetConfig, ConfigurationError
+from .. import clrmgr
+
+default_configs = {
+    "indentation": {
+        "size": 4,
+        "type": "tabs",
+        "show_guide": "yes"
+    },
+    "menu": {
+        "enabled": "yes"
+    },
+    "editor": {
+        "line_count": "yes",
+        "dnd_enabled": "yes"
+    }
+}
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
 
-    def __init__(self, id=wx.ID_ANY, line_number:bool = False, **kw):
+    def __init__(self, id=wx.ID_ANY, **kw):
         kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
         super().__init__(id=id, **kw)
 
-        clrmgr = ColorManager()
-
-        self.EnableLineCount(line_number)
-        # self.AddText("import wx\nprint('hello')")
+        self.clrmgr = clrmgr
+        self.cfg = GetConfig(default_configs, EDITOR_DIR + "editor.ini")
 
         # Base editor color
-        bg, fg = clrmgr._get_color()
+        self.SetupEditorColor()
+
+        # Setup line numbers
+        self.LineNumbers()
+
+        # Drag-and-drop support
+        self.DNDSupport()
+
+        # Indentation
+        self.IndentationSet()
+
+        # Right click menu
+        if self.cfg.getkey("menu", "enabled") in [True, "yes"]:
+            self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
+    
+    def DNDSupport(self) -> bool:
+        if self.cfg.getkey("editor", "dnd_enabled", True, True, getbool=True) != True or "yes":
+            return False
+        
+        dt = DragNDropTarget(self)
+        self.SetDropTarget(dt)
+
+        return True
+
+    def IndentationSet(self) -> bool:
+        size = int(self.cfg.getkey("indentation", "size", True, True, getbool=False))
+        tp = self.cfg.getkey("indentation", "type", True, True)
+        show_guide = self.cfg.getkey("indentation", "show_guide", True, True, getbool=True)
+
+        if not 8 >= size > 0:
+            raise ConfigurationError("indentation", "size", "Must be in range from 1 to 8")
+
+        if not tp in ["tabs", "spaces"]:
+            raise ConfigurationError("indentation", "type", "Must be either 'tabs' or 'spaces'")
+
+        self.SetIndent(size)
+
+        if show_guide == True or "yes":
+            self.SetIndentationGuides(True)
+        else:
+            self.SetIndentationGuides(False)
+
+    def LineNumbers(self) -> bool:
+        if self.cfg.getkey("editor", "line_count", True, True, getbool=True) not in [True, "yes"]:
+            self.SetMarginWidth(1, 0)
+            return False
+        
+        self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER)
+        self.SetMarginMask(1, 0)
+        self.SetMarginWidth(1, 40)
+
+        return True
+        
+    def SetupEditorColor(self):
+        bg, fg = self.clrmgr._get_color()
         bg = "#" + "%02x%02x%02x" % bg
         fg = "#" + "%02x%02x%02x" % fg
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
-        # Setup a margin to hold fold markers
-        self.SetMarginType(2, wx.stc.STC_MARGIN_SYMBOL)
-        self.SetMarginMask(2, wx.stc.STC_MASK_FOLDERS)
-        self.SetMarginSensitive(2, True)
-        self.SetMarginWidth(2, 12)
-
-        # and now set up the fold markers
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEREND, wx.stc.STC_MARK_BOXPLUSCONNECTED, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPENMID, wx.stc.STC_MARK_BOXMINUSCONNECTED, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERMIDTAIL, wx.stc.STC_MARK_TCORNER, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERTAIL, wx.stc.STC_MARK_LCORNER, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDERSUB, wx.stc.STC_MARK_VLINE, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDER, wx.stc.STC_MARK_BOXPLUS, fg, bg)
-        self.MarkerDefine(wx.stc.STC_MARKNUM_FOLDEROPEN, wx.stc.STC_MARK_BOXMINUS, fg, bg)
-
-        # hlt = LanguageHighlight()
-        # hlt.LanguageInit(self.Value)
-        # hlt.InitializeUIType()
-        # hlt.ConfigureWxWidget(self)
-
         # TODO: Fix dark mode
-        clrmgr.setcolorfunc(
+        self.clrmgr.setcolorfunc(
             "textw", self.StyleSetBackground, wx.stc.STC_STYLE_DEFAULT
         )
-        clrmgr.setfontcfunc(
+        self.clrmgr.setfontcfunc(
             "textw", self.StyleSetForeground, wx.stc.STC_STYLE_DEFAULT
         )
-        clrmgr.configure(self)
+        self.clrmgr.configure(self)
 
         self.Bind(wx.stc.EVT_STC_MODIFIED, self.OnSTCModify)
     
@@ -61,12 +113,38 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.SetStyling(length, 0)
         event.Skip()
     
-    def EnableLineCount(self, set:bool):
-        if set == True:
-            self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER)
-            self.SetMarginMask(1, 0)
-            self.SetMarginWidth(1, 40)
-        else:
-            self.SetMarginWidth(1, 0)
-        
+    def MenuPopup(self, evt):
+        pt = evt.GetPosition()
+        menu = CreateMenu(
+            self,
+            [
+             (wx.ID_CUT, None, None, lambda evt: self.Cut(), None),
+             (wx.ID_COPY, None, None, lambda evt: self.Copy(), None),
+             (wx.ID_PASTE, None, None, lambda evt: self.Paste(), None),
+             (None, None, None, None, None),
+             (wx.ID_UNDO, None, None, lambda evt: self.Undo(), None),
+             (wx.ID_REDO, None, None, lambda evt: self.Redo(), None),
+             (wx.ID_DELETE, None, None, lambda evt: self.DeleteBack(), None),
+             (wx.ID_SELECTALL, None, None, lambda evt: self.SelectAll(), None)
+            ]
+        )
+        self.PopupMenu(menu, pt)
+        menu.Destroy()
 
+class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
+
+    def __init__(self, textctrl):
+        super().__init__()
+        self.Target = textctrl
+        
+    def OnDropText(self, x, y, data):
+        self.Target.WriteText(data)
+        return True
+    
+    def OnDragOver(self, x, y, defResult):
+        return wx.DragCopy
+    
+    def OnDropFiles(self, x, y, filenames):
+        if len(filenames) > 0:
+            self.Target.LoadFile(filenames)
+        return True
