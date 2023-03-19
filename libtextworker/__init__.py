@@ -2,6 +2,9 @@ import gettext
 import os.path
 import warnings
 
+from .general import WalkCreation
+
+# Setup translations
 LOCALEDIR = "@LOCALEDIR@"
 MESONTOUCHED = "@TOUCHED@"
 APPDOMAIN = "libtextworker"
@@ -25,3 +28,11 @@ else:
     Importable["interface.wx"] = True
 finally:
     del wx
+
+# Something else;-;
+__version__ = "0.1.0"
+THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")
+EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")
+
+WalkCreation(THEMES_DIR)
+WalkCreation(EDITOR_DIR)

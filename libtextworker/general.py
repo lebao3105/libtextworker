@@ -3,12 +3,19 @@ import os
 import os.path
 import pathlib
 import platform
+import shutil
+import sys
+
+if platform.system() == "Windows":
+    separator = "\\"
+else:
+    separator = "/"
 
 # Setup logging
 DEBUG: bool = False
 LOG_PATH = os.path.expanduser("~/libtew.log")
 
-logger = logging.getLogger("libtextworker")
+logger = logging.getLogger("textworker")
 
 console_hdlr = logging.StreamHandler()
 file_hdlr = logging.FileHandler(LOG_PATH)
@@ -29,13 +36,7 @@ class libTewException(Exception):
         logger.error(msg, exc_info=1)
         super().__init__(msg)
 
-
 # Functions
-if platform.system() == "Windows":
-    separator = "\\"
-else:
-    separator = "/"
-
 def CraftItems(path1: str or pathlib.Path, path2: str or pathlib.Path) -> str:
     return str(pathlib.Path(path1) / pathlib.Path(path2))
 
@@ -65,3 +66,20 @@ def WalkCreation(directory: str):
         firstdir += (separator + splits[item])
         if not os.path.isdir(firstdir):
             os.mkdir(firstdir)
+
+
+def GetCurrentDir(file: str, aspathobj: bool = False):
+    result = pathlib.Path(file).parent
+    if aspathobj:
+        return result
+    return result.__str__()
+
+
+def ResetEveryConfig():
+    """
+    Reset every configurations under ~/.config/textworker to default.
+    Will close the app after completed.
+    """
+    shutil.rmtree(os.path.expanduser("~/.config/textworker"), ignore_errors=True)
+    CreateDirectory(os.path.expanduser("~/.config/textworker"))
+    sys.exit()
