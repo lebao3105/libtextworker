@@ -1,9 +1,9 @@
 name: Doxygen GitHub Pages Deploy Action
 
 on:
-  push:
-    branches:
-      - main
+#  push:
+#    branches:
+#      - main
   workflow_dispatch:
 
 jobs:
@@ -15,4 +15,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
           folder: docs/html
-          config_file: Doxyfile
+          config_file: docs/Doxyfile
