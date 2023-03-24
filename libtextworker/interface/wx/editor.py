@@ -23,9 +23,9 @@ default_configs = {
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
 
-    def __init__(self, id=wx.ID_ANY, **kw):
+    def __init__(self, *args, **kw):
         kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
-        super().__init__(id=id, **kw)
+        super().__init__(*args, **kw)
 
         self.clrmgr = clrmgr
         self.cfg = GetConfig(default_configs, EDITOR_DIR + "editor.ini")

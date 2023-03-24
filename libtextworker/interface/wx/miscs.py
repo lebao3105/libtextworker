@@ -16,7 +16,6 @@ def CreateMenu(parent, items: list) -> wx.Menu:
     ]
     ```
     Sub-menus are not supported.
-    Don't forget to set the parent of the menubar first! (SetParent function)
     Returns the generated menu.
     """
     target_menu = wx.Menu()
@@ -44,6 +43,12 @@ class XMLBuilder:
     """
 
     def __init__(self, Parent, FilePath: str, _=None):
+        """
+        Constructor of the class.
+        @param Parent: wxPython window
+        @param FilePath: XRC file to load
+        @param _: (initialized) gettext
+        """
         self.Parent = Parent
         self._ = _
         

@@ -5,7 +5,7 @@ def test_ui():
     app = wx.App(0)
     fm = wx.Frame(None)
 
-    StyledTextControl(parent=fm, line_number=True)
+    StyledTextControl(fm)
 
     fm.Show()
     app.MainLoop()

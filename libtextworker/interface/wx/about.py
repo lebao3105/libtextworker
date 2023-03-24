@@ -62,4 +62,9 @@ class AboutDialog:
         return self.infos.SetWebSite(address)
     
     def ShowBox(self, event = None):
+        """
+        Shows a About dialog with infomations collected.
+        @param event | None: wxPython event
+        @return wx.adv.AboutBox: About window
+        """
         return wx.adv.AboutBox(self.infos, self.Parent)

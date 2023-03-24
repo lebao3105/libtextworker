@@ -1,3 +1,4 @@
+import typing
 import threading
 
 import darkdetect
@@ -9,6 +10,9 @@ from ..general import libTewException
 from ..get_config import ConfigurationError, GetConfig
 from .wx import constants
 
+"""
+Default UI configurations
+"""
 default_configs = {
     "color": {
         "background": "light",
@@ -23,13 +27,23 @@ default_configs = {
     }
 }
 
+
 class ColorManager(GetConfig):
+    """
+    A color manager for GUI widgets.
+    ColorManager reads configs from a file (default is under THEMES_DIR)
+    """
     setcolorfn = {}
     setfontfn = {}
 
     def __init__(
         self, default_configs: dict, customfilepath: str or bool = False
     ):
+        """
+        Constructor of the class.
+        @param default_configs (dict): Defaults to default_configs, this is dev-made configs
+        @param customfilepath (str|bool): Custom file path support. Set to False (default) or "" to disable it.
+        """
         if isinstance(customfilepath, str) and customfilepath != "":
             self.__file = customfilepath
         else:
@@ -37,12 +51,18 @@ class ColorManager(GetConfig):
 
         super().__init__(default_configs, self.__file, default_section="colors")
     
+    
     def reset(self, restore: bool = False):
+        """
+        Reset the configuration file.
+        This is blocked as it can make conflicts with other GUI widgets - unless you shutdown the app immediately..
+        """
         raise NotImplementedError("reset function is blocked on ColorManager. Please use the get_config.GetConfig class instead.")
 
     def backup(self, file: str):
         """
         Backup a file to another file
+        @param file : str : Target backup file
         """
         if file == self.__file:
             raise libTewException("Unusable parameter value: file must not equal ColorManager.__file")
@@ -53,10 +73,13 @@ class ColorManager(GetConfig):
     # Configure widgets
     @property
     def GetFont(self):
+        """
+        Property of ColorManager to call the font definitions.
+        """
         return self._get_font()
 
     @GetFont.setter
-    def GetFont(self, func):
+    def GetFont(self, func: typing.Callable):
         self._get_font = func
 
     @GetFont.deleter
@@ -86,10 +109,13 @@ class ColorManager(GetConfig):
 
     @property
     def GetColor(self):
+        """
+        Property of ColorManager to call the color definitions.
+        """
         return self._get_color()
 
     @GetColor.setter
-    def GetColor(self, func):
+    def GetColor(self, func: typing.Callable):
         self._get_color = func
 
     @GetColor.deleter
@@ -148,25 +174,32 @@ class ColorManager(GetConfig):
 
         return ImageColor.getrgb(color_), ImageColor.getrgb(fontcolor_)
 
-    def setcolorfunc(self, objname: str, func, params: dict):
+    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict):
         """
         Set wxPython widgets background color function.
-        :param objname (str): Object name (for easier access)
-        :param func (function): Function to set the background color (no arg)
-        :param params (dict): Parameters to pass to func
+        @param objname (str): Object name (for easier access)
+        @param func (callable): Function to set the background color (no arg)
+        @param params (dict): Parameters to pass to func
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
-    def setfontcfunc(self, objname: str, func, params: dict):
+    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict):
         """
         Set wxPython widgets background color function.
-        :param objname (str): Object name (for easier access)
-        :param func (function): Function to set the background color (no arg)
-        :param params (dict): Parameters to pass to func
+        @param objname (str): Object name (for easier access)
+        @param func (callable): Function to set the background color (no arg)
+        @param params (dict): Parameters to pass to func
         """
         self.setfontfn[objname] = {"fn": func, "params": params}
 
-    def configure(self, widget):
+    def configure(self, widget: typing.Any):
+        """
+        Configure a widget with pre-defined settings.
+        This function also ables to rerun itself under a threading thread.
+        @param widget : Widget to configure
+        @see setcolorfunc
+        @see setfontcfunc
+        """
         if not widget:
             print("Widget died, skip configuring.")
             return

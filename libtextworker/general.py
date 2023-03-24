@@ -32,18 +32,30 @@ logger.addHandler(file_hdlr)
 
 # Classes
 class libTewException(Exception):
+    """
+    Common exception class for libtextworker
+    """
     def __init__(self, msg: str):
         logger.error(msg, exc_info=1)
         super().__init__(msg)
 
 # Functions
 def CraftItems(path1: str or pathlib.Path, path2: str or pathlib.Path) -> str:
+    """
+    Craft 2 paths together.
+    @param path1 (str|pathlib.Path)
+    @param path2 (str|pathlib.Path)
+    @return str: Result
+    """
     return str(pathlib.Path(path1) / pathlib.Path(path2))
 
 
 def CreateDirectory(directory: str, childs: list[str] = []):
     """
     Create a directory with optional sub-folders.
+    @param directory (str): Directory to create
+    @param childs (list of str): Sub-dirs under @directory
+    @raise Exception: Directory creation failed
     """
     if not os.path.isdir(directory):
         os.mkdir(directory)
@@ -56,8 +68,12 @@ def CreateDirectory(directory: str, childs: list[str] = []):
 
 def WalkCreation(directory: str):
     """
-    I don't know how to describe this function.
-    :raises Exception: Directory creation failed
+    Create directory layer-to-layer.
+    How to understand this? Try this path: path1/path2/path3.
+    WalkCreation will create path1 first, then path2 and path3. Skip existing dirs, yes of course.
+
+    @param directory (str): Directory to create
+    @raise Exception: Directory creation failed
     """
     directory = os.path.normpath(directory)
     splits = directory.split(separator)
@@ -69,6 +85,12 @@ def WalkCreation(directory: str):
 
 
 def GetCurrentDir(file: str, aspathobj: bool = False):
+    """
+    Get the current directory path.
+    @param file (str): File path
+    @param aspathobj (bool): Return pathlib.Path type instead of a string.
+    @return pathlib.Path | str
+    """
     result = pathlib.Path(file).parent
     if aspathobj:
         return result
