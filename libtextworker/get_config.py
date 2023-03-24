@@ -41,10 +41,11 @@ class GetConfig(configparser.ConfigParser):
     _no_values = ["no", "False"]
 
     def __init__(self, config: dict, file: str, **kwds):
-        """Customized configuration parser.
-        :param config : Default configurations, used to reset the file or do some comparisions
-        :param file : Configuration file
-        :param **kwds : To pass to configparser.ConfigParser (base class)
+        """
+        A customized configuration parser.
+        @param config : Default configurations, used to reset the file or do some comparisions
+        @param file : Configuration file
+        @param **kwds : To pass to configparser.ConfigParser (base class)
 
         When initialized, GetConfig loads all default configs (from config param) and store it in
         a dictionary for further actions (backup/restore file).
@@ -62,16 +63,15 @@ class GetConfig(configparser.ConfigParser):
 
     # File tasks
     def readf(self, file: str, encoding: str | None = None):
+        """
+        Open a file to read it.
+        @param file (str): Target file in INI format
+        @param encoding (str|None): File encoding
+        """
         if os.path.isfile(file):
             self.read(file, encoding)
         else:
-            splits = file.split("/")
-            splits.pop()
-            # print(splits)
-            firstdir = splits[0]
-            for item in range(1, len(splits)):
-                firstdir += ("/" + splits[item])
-            # print(firstdir)
+            firstdir = file.removesuffix(os.path.basename(file))
             WalkCreation(firstdir)
             with open(file, mode="w") as f:
                 try:
@@ -83,21 +83,24 @@ class GetConfig(configparser.ConfigParser):
         self.__file = file # Should I?
 
     def reset(self, restore: bool = False) -> bool:
+        """
+        Reset all configs to defaults.
+        @param restore (bool): Restore backups
+        """
         try:
             os.remove(self.__file)
         except:
-            return False
-        else:
-            for key in self.cfg:
-                self[key] = self.cfg[key]
+            pass # File already deleted?
+        for key in self.cfg:
+            self[key] = self.cfg[key]
 
-            if restore and self.backups:
-                for key in self.backups:
-                    self[key] = self.backups[key]
+        if restore and self.backups:
+            for key in self.backups:
+                self[key] = self.backups[key]
 
-            with open(self.__file, mode="w") as f:
-                self.write(f)
-            return True
+        with open(self.__file, mode="w") as f:
+            self.write(f)
+        return True
     
     def update(self):
         with open(self.__file, "w") as f:
