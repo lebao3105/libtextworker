@@ -14,17 +14,13 @@ from .wx import constants
 Default UI configurations
 """
 default_configs = {
-    "color": {
-        "background": "light",
-        "autocolor": "yes",
-        "textcolor": "default"
-    },
+    "color": {"background": "light", "autocolor": "yes", "textcolor": "default"},
     "font": {
         "style": "normal",
         "weight": "normal",
         "family": "default",
-        "size": "normal"
-    }
+        "size": "normal",
+    },
 }
 
 
@@ -33,12 +29,11 @@ class ColorManager(GetConfig):
     A color manager for GUI widgets.
     ColorManager reads configs from a file (default is under THEMES_DIR)
     """
+
     setcolorfn = {}
     setfontfn = {}
 
-    def __init__(
-        self, default_configs: dict, customfilepath: str or bool = False
-    ):
+    def __init__(self, default_configs: dict, customfilepath: str or bool = False):
         """
         Constructor of the class.
         @param default_configs (dict): Defaults to default_configs, this is dev-made configs
@@ -50,14 +45,15 @@ class ColorManager(GetConfig):
             self.__file = THEMES_DIR + "default.ini"
 
         super().__init__(default_configs, self.__file, default_section="colors")
-    
-    
+
     def reset(self, restore: bool = False):
         """
         Reset the configuration file.
         This is blocked as it can make conflicts with other GUI widgets - unless you shutdown the app immediately..
         """
-        raise NotImplementedError("reset function is blocked on ColorManager. Please use the get_config.GetConfig class instead.")
+        raise NotImplementedError(
+            "reset function is blocked on ColorManager. Please use the get_config.GetConfig class instead."
+        )
 
     def backup(self, file: str):
         """
@@ -65,11 +61,13 @@ class ColorManager(GetConfig):
         @param file : str : Target backup file
         """
         if file == self.__file:
-            raise libTewException("Unusable parameter value: file must not equal ColorManager.__file")
-        
+            raise libTewException(
+                "Unusable parameter value: file must not equal ColorManager.__file"
+            )
+
         with open(file, "w") as f:
             self.write(f)
-    
+
     # Configure widgets
     @property
     def GetFont(self):

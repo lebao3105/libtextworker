@@ -4,15 +4,11 @@ import os.path
 
 from .general import WalkCreation, libTewException
 
-__all__ = [
-    'ConfigurationError',
-    'GetConfig'
-]
+__all__ = ["ConfigurationError", "GetConfig"]
+
 
 class ConfigurationError(libTewException):
-    def __init__(
-        self, section: str = "", option: str = "", msg: str = ""
-    ):
+    def __init__(self, section: str = "", option: str = "", msg: str = ""):
         prefix = "Error in the configuration file: "
         if not msg:
             msg = "*UNKNOW ERROR*"
@@ -70,7 +66,7 @@ class GetConfig(configparser.ConfigParser):
             # print(splits)
             firstdir = splits[0]
             for item in range(1, len(splits)):
-                firstdir += ("/" + splits[item])
+                firstdir += "/" + splits[item]
             # print(firstdir)
             WalkCreation(firstdir)
             with open(file, mode="w") as f:
@@ -80,7 +76,7 @@ class GetConfig(configparser.ConfigParser):
                     raise Exception("Unable to access to the file name %s" % file)
                 else:
                     self.read(file, encoding)
-        self.__file = file # Should I?
+        self.__file = file  # Should I?
 
     def reset(self, restore: bool = False) -> bool:
         try:
@@ -98,7 +94,7 @@ class GetConfig(configparser.ConfigParser):
             with open(self.__file, mode="w") as f:
                 self.write(f)
             return True
-    
+
     def update(self):
         with open(self.__file, "w") as f:
             self.write(f)
@@ -120,7 +116,15 @@ class GetConfig(configparser.ConfigParser):
                     self.backups[key][subelm] = self[key][subelm]
                     return self.backups
 
-    def getkey(self, section: str, option: str, needed: bool = False, restore: bool = False, noraiseexp: bool = False, getbool: bool = returnbool) -> str|bool:
+    def getkey(
+        self,
+        section: str,
+        option: str,
+        needed: bool = False,
+        restore: bool = False,
+        noraiseexp: bool = False,
+        getbool: bool = returnbool,
+    ) -> str | bool:
         """
         Try to get the value of an option under the spectified section.
 
@@ -139,7 +143,9 @@ class GetConfig(configparser.ConfigParser):
                 self.add_section(section)
             else:
                 if noraiseexp != True:
-                    raise ConfigurationError(section, msg="Section not found: %s" % section)
+                    raise ConfigurationError(
+                        section, msg="Section not found: %s" % section
+                    )
                 else:
                     return False
 

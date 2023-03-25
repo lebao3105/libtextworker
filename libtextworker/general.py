@@ -35,9 +35,11 @@ class libTewException(Exception):
     """
     Common exception class for libtextworker
     """
+
     def __init__(self, msg: str):
         logger.error(msg, exc_info=1)
         super().__init__(msg)
+
 
 # Functions
 def CraftItems(path1: str or pathlib.Path, path2: str or pathlib.Path) -> str:
@@ -79,7 +81,7 @@ def WalkCreation(directory: str):
     splits = directory.split(separator)
     firstdir = splits[0]
     for item in range(1, len(splits)):
-        firstdir += (separator + splits[item])
+        firstdir += separator + splits[item]
         if not os.path.isdir(firstdir):
             os.mkdir(firstdir)
 

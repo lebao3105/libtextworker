@@ -2,6 +2,7 @@ import re
 import wx
 import wx.xrc
 
+
 def CreateMenu(parent, items: list) -> wx.Menu:
     """
     Create a new wx.Menu with a list of commands.
@@ -36,6 +37,7 @@ def CreateMenu(parent, items: list) -> wx.Menu:
             parent.Bind(wx.EVT_MENU, handler, item)
     return target_menu
 
+
 class XMLBuilder:
     """
     Class to read and build interfaces from a XML file.
@@ -51,24 +53,25 @@ class XMLBuilder:
         """
         self.Parent = Parent
         self._ = _
-        
+
         # Setup translation
         # Cre: https://wiki.wxpython.org/XRCAndI18N
         ## Initial load
         with open(FilePath, encoding="utf-8") as f:
             xrc_data = f.read()
-        
+
         ## Replace texts with translated ones
         xrc_data = re.sub("_\(['\"](.*?)['\"]\)", self.txtLocalize, xrc_data)
         xrc_data = xrc_data.encode("utf8")
-        
+
         # Call out the resource file, with translated strings
         self.Res = wx.xrc.XmlResource()
         self.Res.LoadFromBuffer(xrc_data)
-    
+
     def txtLocalize(self, match_obj):
         if self._ == None:
             import gettext
+
             self._ = gettext.gettext
         return self._(match_obj.group(1))
 
