@@ -21,15 +21,14 @@ import gettext
 import os.path
 import warnings
 
-from .general import WalkCreation
+from .general import WalkCreation, GetCurrentDir, CraftItems
 
 # Setup translations
-LOCALEDIR = "@LOCALEDIR@"
-MESONTOUCHED = "@TOUCHED@"
-APPDOMAIN = "libtextworker"
+LOCALEDIR = "@LOCALEDIR@"   ## Project translations directory
+APPDOMAIN = "libtextworker" ## Project app domain
 
-if not os.path.exists(LOCALEDIR) or MESONTOUCHED != "True":
-    LOCALEDIR = "./po/"
+if not os.path.exists(LOCALEDIR):
+    LOCALEDIR = CraftItems(GetCurrentDir(__file__), "../po")
 
 gettext.bindtextdomain(APPDOMAIN, LOCALEDIR)
 gettext.textdomain(APPDOMAIN)
@@ -49,8 +48,8 @@ else:
 
 # Something else;-;
 __version__ = "0.1.0"
-THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")
-EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")
+THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")         ## Directory of *custom* themes
+EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")  ## Directory of *editor configurations
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)
