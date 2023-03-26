@@ -8,10 +8,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  
   build-and-deploy:
     runs-on: ubuntu-latest
+    
     permissions:
       contents: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -19,15 +22,12 @@ jobs:
       - name: Update APT repos and install doxygen
         run: |
           sudo apt update
-          sudo apt install doxygen graphviz -y
+          sudo apt install doxygen graphviz rsync -y
 
-      - name: Build the page
-        run: |
-          doxygen Doxyfile
-        working-directory: docs
-      
-      - name: Publish
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Build the page and publish
+        uses: DenverCoder1/doxygen-github-pages-action@v1.2.0
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: docs
           folder: docs/html
+          config_file: docs/Doxyfile
