@@ -38,9 +38,9 @@ class GetConfig(configparser.ConfigParser):
 
     def __init__(self, config: dict, file: str, **kwds):
         """Customized configuration parser.
-        :param config : Default configurations, used to reset the file or do some comparisions
-        :param file : Configuration file
-        :param **kwds : To pass to configparser.ConfigParser (base class)
+        @param config : Default configurations, used to reset the file or do some comparisions
+        @param file : Configuration file
+        @param **kwds : To pass to configparser.ConfigParser (base class)
 
         When initialized, GetConfig loads all default configs (from config param) and store it in
         a dictionary for further actions (backup/restore file).

@@ -2,13 +2,11 @@ import typing
 import threading
 
 import darkdetect
-import wx
 from PIL import ImageColor
 
 from .. import THEMES_DIR
-from ..general import libTewException
+from ..general import libTewException, CraftItems
 from ..get_config import ConfigurationError, GetConfig
-from .wx import constants
 
 """
 Default UI configurations
@@ -33,16 +31,16 @@ class ColorManager(GetConfig):
     setcolorfn = {}
     setfontfn = {}
 
-    def __init__(self, default_configs: dict, customfilepath: str or bool = False):
+    def __init__(self, default_configs: dict[str, typing.Any], customfilepath: str or bool = False):
         """
         Constructor of the class.
-        @param default_configs (dict): Defaults to default_configs, this is dev-made configs
+        @param default_configs (dict[str, Any]): Defaults to default_configs, this is dev-made configs
         @param customfilepath (str|bool): Custom file path support. Set to False (default) or "" to disable it.
         """
         if isinstance(customfilepath, str) and customfilepath != "":
             self.__file = customfilepath
         else:
-            self.__file = THEMES_DIR + "default.ini"
+            self.__file = CraftItems(THEMES_DIR, "default.ini")
 
         super().__init__(default_configs, self.__file, default_section="colors")
 
@@ -73,6 +71,8 @@ class ColorManager(GetConfig):
     def GetFont(self):
         """
         Property of ColorManager to call the font definitions.
+        When called, this returns the following:
+            (font) size (int|str), style, weight, family
         """
         return self._get_font()
 
@@ -90,25 +90,24 @@ class ColorManager(GetConfig):
         weight = self.get("font", "weight")
         style = self.get("font", "style")
 
-        weight_ = constants.FONTWT[weight]
-        style_ = constants.FONTST[style]
-
         if family == "default":
             family = ""
 
         try:
             int(size)
         except ValueError:
-            size_ = constants.FONTSZ[size]
+            size_ = size
         else:
             size_ = int(size)
 
-        return wx.Font(size_, wx.FONTFAMILY_DEFAULT, style_, weight_, 0, family)
+        return size_, style, weight, family
 
     @property
     def GetColor(self):
         """
         Property of ColorManager to call the color definitions.
+        When called, it returns the following:
+            background color, foreground color (in hex-rgb format)
         """
         return self._get_color()
 

@@ -45,7 +45,6 @@ except ImportError:
     Importable["interface.wx"] = False
 else:
     Importable["interface.wx"] = True
-finally:
     del wx
 
 # Something else;-;

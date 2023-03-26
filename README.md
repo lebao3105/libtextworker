@@ -20,4 +20,3 @@ Look at the project structure:
 ## Todos
 * Custom config files
 * Support for Tkinter?
-* Library for making extensions for textworker

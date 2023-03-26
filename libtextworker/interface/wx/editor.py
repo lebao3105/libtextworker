@@ -1,10 +1,11 @@
 import wx
 import wx.stc
 
-from .miscs import CreateMenu
 from libtextworker import EDITOR_DIR
-from libtextworker.get_config import GetConfig, ConfigurationError
-from .. import clrmgr
+from libtextworker.get_config import ConfigurationError, GetConfig
+
+from libtextworker.interface.wx import clrmgr
+from libtextworker.interface.wx.miscs import CreateMenu
 
 default_configs = {
     "indentation": {"size": 4, "type": "tabs", "show_guide": "yes"},
@@ -129,8 +130,26 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
                 (wx.ID_REDO, None, None, lambda evt: self.Redo(), None),
                 (wx.ID_DELETE, None, None, lambda evt: self.DeleteBack(), None),
                 (wx.ID_SELECTALL, None, None, lambda evt: self.SelectAll(), None),
+                (None, None, None, None, None),
             ],
         )
+        readonly = wx.MenuItem(
+            menu,
+            wx.ID_ANY,
+            _("Read only"),
+            _("Set the text to be read-only"),
+            wx.ITEM_CHECK,
+        )
+        menu.Append(readonly)
+        self.Bind(
+            wx.EVT_MENU,
+            lambda evt: (
+                self.SetReadOnly(readonly.IsChecked()),
+                print("set to {}".format(readonly.IsChecked())),
+            ),
+            readonly,
+        )
+
         self.PopupMenu(menu, pt)
         menu.Destroy()
 

@@ -1,5 +1,0 @@
-option('ui',
-    type: 'combo',
-    choices: ['wx'],
-    value: 'wx'
-)
