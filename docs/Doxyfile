@@ -1044,7 +1044,13 @@ EXCLUDE_PATTERNS       =
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS        = if else try
+EXCLUDE_SYMBOLS        =    if else try \
+                            LOCALEDIR APPDOMAIN \
+                            DEBUG REQUESTED \
+                            default_configs \
+                            file_hdlr formatter logger \
+                            console_hdlr separator \
+                            FONTST FONTSZ FONTWT
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include

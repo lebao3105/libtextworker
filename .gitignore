@@ -72,6 +72,9 @@ instance/
 # Sphinx documentation
 docs/_build/
 
+# Doxygen documentation
+docs/html
+
 # PyBuilder
 .pybuilder/
 target/
