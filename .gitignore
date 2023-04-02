@@ -74,6 +74,7 @@ docs/_build/
 
 # Doxygen documentation
 docs/html
+html/
 
 # PyBuilder
 .pybuilder/

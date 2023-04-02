@@ -4,7 +4,6 @@ on:
 #  push:
 #   branches:
 #     - main
-#     - docs
   workflow_dispatch:
 
 jobs:
@@ -19,10 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Update APT repos and install doxygen
+      - name: Update APT repos and install rsync (in case needed)
         run: |
           sudo apt update
-          sudo apt install doxygen graphviz rsync -y
+          sudo apt install rsync -y
 
       - name: Build the page and publish
         uses: DenverCoder1/doxygen-github-pages-action@v1.2.0

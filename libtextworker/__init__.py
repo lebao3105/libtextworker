@@ -19,8 +19,8 @@ Public variables:
 
 import gettext
 import os.path
-import warnings
 
+from . import _importer
 from .general import WalkCreation, GetCurrentDir, CraftItems
 
 # Setup translations
@@ -35,25 +35,7 @@ gettext.textdomain(APPDOMAIN)
 gettext.install(APPDOMAIN, LOCALEDIR)
 
 # Module import tests
-Importable = {}
-
-try:
-    import wx
-except ImportError:
-    warnings.warn("wxPython not found. Skipping all relative imports...")
-    Importable["interface.wx"] = False
-else:
-    Importable["interface.wx"] = True
-    del wx
-
-try:
-    import tkinter
-except ImportError:
-    warnings.warn("Tkinter not found. Skipping all relative imports...")
-    Importable["interface.tk"] = False
-else:
-    Importable["interface.tk"] = True
-    del tkinter
+Importable = _importer.Importable
 
 # Something else;-;
 __version__ = "0.1.0"

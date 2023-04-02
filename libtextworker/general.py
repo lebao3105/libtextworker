@@ -70,7 +70,7 @@ def CreateDirectory(directory: str, childs: list[str] = []):
     Create a directory with optional sub-folders.
     @param directory (str): Directory to create
     @param childs (list of str): Sub-dirs under @directory
-    @raise Exception: Directory creation failed
+    @raises Exception: Directory creation failed
     """
     if not os.path.isdir(directory):
         os.mkdir(directory)
@@ -88,7 +88,7 @@ def WalkCreation(directory: str):
     WalkCreation will create path1 first, then path2 and path3. Skip existing dirs, of course.
 
     @param directory (str): Directory to create
-    @raise Exception: Directory creation failed
+    @raises Exception: Directory creation failed
     """
     directory = os.path.normpath(directory)
     splits = directory.split(separator)
