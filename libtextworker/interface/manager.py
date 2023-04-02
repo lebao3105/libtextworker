@@ -30,8 +30,13 @@ class ColorManager(GetConfig):
 
     setcolorfn = {}
     setfontfn = {}
+    threads = {}
 
-    def __init__(self, default_configs: dict[str, typing.Any], customfilepath: str or bool = False):
+    def __init__(
+        self,
+        default_configs: dict[str, typing.Any],
+        customfilepath: str or bool = False,
+    ):
         """
         Constructor of the class.
         @param default_configs (dict[str, Any]): Defaults to default_configs, this is dev-made configs
@@ -96,9 +101,12 @@ class ColorManager(GetConfig):
         try:
             int(size)
         except ValueError:
-            size_ = size
+            size_ = 14
         else:
-            size_ = int(size)
+            if int(size) > 0:
+                size_ = int(size)
+            else:
+                raise ValueError("Font size must be higher than 0")
 
         return size_, style, weight, family
 
@@ -218,10 +226,10 @@ class ColorManager(GetConfig):
             else:
                 fn(self.setcolorfn[item]["params"], color)
 
+    def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "autocolor")
-        if autocolor == True and widget in self.threads:
-            if not self.threads[widget].is_alive():
-                self.threads[widget] = threading.Thread(
-                    args=self.configure(widget), daemon=True
-                )
-                self.threads[widget].start()
+        if autocolor == True or "yes" and widget not in self.threads:
+            self.threads[widget] = threading.Thread(
+                args=self.configure(widget), daemon=True
+            )
+            self.threads[widget].start()

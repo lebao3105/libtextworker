@@ -6,6 +6,7 @@ from . import general
 
 Requested = []
 
+
 def parse_version(project: str):
     """
     Try to import a project then parse its version with the ```packaging.version``` module.
@@ -20,12 +21,15 @@ def parse_version(project: str):
     if project in Requested:
         warnings.warn("%(project)s already requested.")
         return
-    
+
     module = importlib.import_module(project)
     if not module.__version__:
-        raise general.libTewException("%(project)s does not have __version__ attribute!")
+        raise general.libTewException(
+            "%(project)s does not have __version__ attribute!"
+        )
     Requested.append(project)
     return packaging.version.parse(module.__version__)
+
 
 def is_development_version(version: str):
     """
@@ -34,12 +38,14 @@ def is_development_version(version: str):
     """
     return packaging.version.parse(version).is_prerelease
 
+
 def is_development_version_from_project(project: str):
     """
     Like is_development_version(), but read the project's current version instead.
     @see is_development_version
     """
     return parse_version(project).is_prerelease
+
 
 def require(project: str, target_version: str):
     """
@@ -51,7 +57,10 @@ def require(project: str, target_version: str):
     target = packaging.version.parse(target_version)
 
     if currver < target:
-        raise general.libTewException("Project %(project)s not available for version %(target_version)")
+        raise general.libTewException(
+            "Project %(project)s not available for version %(target_version)"
+        )
+
 
 def require_exact(project: str, target_version: str):
     """
@@ -63,8 +72,11 @@ def require_exact(project: str, target_version: str):
     target = packaging.verison.parse(target_version)
 
     if currver != target:
-        raise general.libTewException("Project %(project)s not available for version %(target_version)")
-    
+        raise general.libTewException(
+            "Project %(project)s not available for version %(target_version)"
+        )
+
+
 def require_lower(project: str, target_version: str):
     """
     Ensures the project version is LOWER than the requested one.
@@ -75,4 +87,6 @@ def require_lower(project: str, target_version: str):
     target = packaging.verison.parse(target_version)
 
     if currver >= target:
-        raise general.libTewException("Project %(project)s not available for version %(target_version)")
+        raise general.libTewException(
+            "Project %(project)s not available for version %(target_version)"
+        )

@@ -11,10 +11,14 @@ if platform.system() == "Windows":
 else:
     separator = "/"
 
-# Setup logging
-DEBUG: bool = False
-LOG_PATH = os.path.expanduser("~/libtew.log")
+# Some *other* variables
+DEBUG: bool = False  # Are we really need this? I don't even know.
+LOG_PATH = os.path.expanduser(
+    "~/libtew.log"
+)  # The default log file path. It may be changed in the future.
+TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 
+# Setup logging
 logger = logging.getLogger("textworker")
 
 console_hdlr = logging.StreamHandler()
@@ -42,14 +46,23 @@ class libTewException(Exception):
 
 
 # Functions
-def CraftItems(path1: str or pathlib.Path, path2: str or pathlib.Path) -> str:
+def CraftItems(*args: str | pathlib.Path) -> str:
     """
-    Craft 2 paths together.
-    @param path1 (str|pathlib.Path)
-    @param path2 (str|pathlib.Path)
+    Craft any >=2 paths, together.
+    @param *args (str|pathlib.Path)
     @return str: Result
     """
-    return str(pathlib.Path(path1) / pathlib.Path(path2))
+    new = list(args)
+
+    for i in range(0, len(new)):
+        new[i] = str(new[i]).replace("\\", "/")
+
+    final = pathlib.Path(new[0])
+
+    for i in range(1, len(new)):
+        new[i] = str(new[i]).removeprefix("/").removesuffix("/")
+        final /= new[i]
+    return str(final)
 
 
 def CreateDirectory(directory: str, childs: list[str] = []):
@@ -72,7 +85,7 @@ def WalkCreation(directory: str):
     """
     Create directory layer-to-layer.
     How to understand this? Try this path: path1/path2/path3.
-    WalkCreation will create path1 first, then path2 and path3. Skip existing dirs, yes of course.
+    WalkCreation will create path1 first, then path2 and path3. Skip existing dirs, of course.
 
     @param directory (str): Directory to create
     @raise Exception: Directory creation failed
@@ -90,7 +103,7 @@ def GetCurrentDir(file: str, aspathobj: bool = False):
     """
     Get the current directory path.
     @param file (str): File path
-    @param aspathobj (bool): Return pathlib.Path type instead of a string.
+    @param aspathobj (bool): Return a pathlib.Path object instead of a string.
     @return pathlib.Path | str
     """
     result = pathlib.Path(file).parent
@@ -104,6 +117,7 @@ def ResetEveryConfig():
     Reset every configurations under ~/.config/textworker to default.
     Will close the app after completed.
     """
-    shutil.rmtree(os.path.expanduser("~/.config/textworker"), ignore_errors=True)
-    CreateDirectory(os.path.expanduser("~/.config/textworker"))
+    if os.path.isdir(TOPLV_DIR):
+        shutil.rmtree(TOPLV_DIR)
+    CreateDirectory(TOPLV_DIR)
     sys.exit()

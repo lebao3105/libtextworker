@@ -5,7 +5,7 @@ from libtextworker.get_config import GetConfig
 def test_makedirs():
     CreateDirectory('helloworld', ['one', 'two', 'three'])
     WalkCreation('helloworld/one/configs')
-    WalkCreation(CraftItems('helloworld/two/', 'test'))
+    WalkCreation(CraftItems('helloworld/two', '\\test'))
 
     open('helloworld/.gitignore', 'w').write('*')
 

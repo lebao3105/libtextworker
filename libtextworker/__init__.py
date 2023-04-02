@@ -24,8 +24,8 @@ import warnings
 from .general import WalkCreation, GetCurrentDir, CraftItems
 
 # Setup translations
-LOCALEDIR = "@LOCALEDIR@"   ## Project translations directory
-APPDOMAIN = "libtextworker" ## Project app domain
+LOCALEDIR = CraftItems(GetCurrentDir(__file__), "po")
+APPDOMAIN = "libtextworker"  ## Project app domain
 
 if not os.path.exists(LOCALEDIR):
     LOCALEDIR = CraftItems(GetCurrentDir(__file__), "../po")
@@ -46,10 +46,23 @@ else:
     Importable["interface.wx"] = True
     del wx
 
+try:
+    import tkinter
+except ImportError:
+    warnings.warn("Tkinter not found. Skipping all relative imports...")
+    Importable["interface.tk"] = False
+else:
+    Importable["interface.tk"] = True
+    del tkinter
+
 # Something else;-;
 __version__ = "0.1.0"
-THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")         ## Directory of *custom* themes
-EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")  ## Directory of *editor configurations
+THEMES_DIR = os.path.expanduser(
+    "~/.config/textworker/themes/"
+)  ## Directory of *custom* themes
+EDITOR_DIR = os.path.expanduser(
+    "~/.config/textworker/editorconfigs/"
+)  ## Directory of *editor configurations
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)
