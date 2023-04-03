@@ -4,8 +4,8 @@ import warnings
 from importlib import import_module
 from importlib.metadata import entry_points, EntryPoints
 
-wx_load = entry_points(group='libtextworker.interface.wx')
-tk_load = entry_points(group='libtextworker.interface.tk')
+wx_load = entry_points(group='libtextworker.wx')
+tk_load = entry_points(group='libtextworker.tkinter')
 
 Importable = {}
 
@@ -22,7 +22,7 @@ def test_import(pkgname:str, ep: EntryPoints) -> bool:
             warnings.warn(
                 """
                 {} found, but not you have not installed the support from libtextworker yet.\n
-                Get it with the package libtextworker-{}
+                Get it with the package libtextworker[{}]
                 """.format(pkgname, pkgname)
             )
 

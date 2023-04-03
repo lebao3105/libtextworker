@@ -1,4 +1,4 @@
 configparser
-darkdetect
+importlib-metadata
+packaging
 pillow
-wxpython

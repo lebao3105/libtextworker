@@ -114,8 +114,9 @@ def GetCurrentDir(file: str, aspathobj: bool = False):
 
 def ResetEveryConfig():
     """
-    Reset every configurations under ~/.config/textworker to default.
+    Reset every configurations under @TOPLV to default.
     Will close the app after completed.
+    @see TOPLV
     """
     if os.path.isdir(TOPLV_DIR):
         shutil.rmtree(TOPLV_DIR)

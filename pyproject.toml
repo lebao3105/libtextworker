@@ -1,43 +1,35 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "libtextworker"
-version = "0.1.0"
-requires-python = ">=3.8"
-description = "Library for textworker."
-license = {file = "LICENSE"}
+version = "0.1.1"
+description = "App library for textworker"
+authors = ["lebao3105 <bao12345yocoo@gmail.com>"]
+license = "GPL-3.0-or-later"
 readme = "README.md"
-classifiers = [
-    "Intended Audience :: Developers",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX",
-    "Programming Language :: Python",
-    "Topic :: Text Editors",
-]
-dependencies = [
-    "configparser",
-    "darkdetect",
-    "packaging",
-    "pillow",
-]
+homepage = "https://github.com/lebao3105/libtextworker"
+documentation = "https://lebao3105.github.io/libtextworker"
+keywords = ["wx", "tkinter", "gui"]
 
-[project.entry-points."libtextworker"]
-wx = 'libtextworker.interface.wx.__init__:clrmgr'
-tkinter = 'libtextworker.interface.tk.__init__:clrmgr'
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/lebao3105/libtextworker/issues"
 
-[project.optional-dependencies]
-wx = ['wxPython>=4']
-tkinter = []
+[tool.poetry.dependencies]
+python = "^3.8"
+configparser = "^5.3.0"
+Pillow = "^9.5.0"
+packaging = "^23.0"
+importlib-metadata = "^6.1.0"
 
-[tool.setuptools]
-package-dir = {"libtextworker" = "libtextworker"}
+wxPython = {version = "^4.0.0", optional = true}
+sv-ttk = {version = "^2.4.3", optional = true}
 
-[tool.setuptools.packages.find]
-where = ["libtextworker"]
-exclude = ["tests*", "docs*"]
+[tool.poetry.plugins."libtextworker"]
+wx = "libtextworker.interface.wx:_entry_point"
+tkinter = "libtextworker.interface.tk:_entry_point"
 
-[tool.setuptools.package-data]
-libtextworker = ["licenses/*"]
+[tool.poetry.extras]
+wx = ["wxPython"]
+tkinter = ["sv-ttk"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
