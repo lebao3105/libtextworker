@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['textwidget_128',['TextWidget',['../dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html',1,'libtextworker::interface::tk::textwidget']]]
+  ['xmlbuilder_127',['XMLBuilder',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html',1,'libtextworker::interface::wx::miscs']]]
 ];

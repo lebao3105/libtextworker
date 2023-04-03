@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['dragndroptarget_124',['DragNDropTarget',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html',1,'libtextworker::interface::wx::editor']]]
+  ['getconfig_123',['GetConfig',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html',1,'libtextworker::get_config']]]
 ];

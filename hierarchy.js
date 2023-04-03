@@ -16,10 +16,6 @@ var hierarchy =
     [ "wx.FileDropTarget", null, [
       [ "libtextworker.interface.wx.editor.DragNDropTarget", "d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html", null ]
     ] ],
-    [ "object", null, [
-      [ "libtextworker.interface.tk._entry_point", "d4/d42/classlibtextworker_1_1interface_1_1tk_1_1__entry__point.html", null ],
-      [ "libtextworker.interface.wx._entry_point", "da/d1b/classlibtextworker_1_1interface_1_1wx_1_1__entry__point.html", null ]
-    ] ],
     [ "wx.stc.StyledTextCtrl", null, [
       [ "libtextworker.interface.wx.editor.StyledTextControl", "d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html", null ]
     ] ],

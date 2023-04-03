@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['getconfig_125',['GetConfig',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html',1,'libtextworker::get_config']]]
+  ['libtewexception_124',['libTewException',['../d6/da7/classlibtextworker_1_1general_1_1libTewException.html',1,'libtextworker::general']]]
 ];

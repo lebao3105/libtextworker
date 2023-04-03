@@ -25,11 +25,8 @@
 var NAVTREE =
 [
   [ "libtextworker", "index.html", [
-    [ "libtextworker", "d0/d30/md_README.html", [
-      [ "Implemented things", "d0/d30/md_README.html#autotoc_md1", null ],
-      [ "Usage", "d0/d30/md_README.html#autotoc_md2", null ],
-      [ "Todos", "d0/d30/md_README.html#autotoc_md3", null ]
-    ] ],
+    [ "Usage", "index.html#autotoc_md1", null ],
+    [ "Todos", "index.html#autotoc_md2", null ],
     [ "Packages", "namespaces.html", [
       [ "Packages", "namespaces.html", "namespaces_dup" ],
       [ "Package Functions", "namespacemembers.html", [
