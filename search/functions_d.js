@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['update_0',['update',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a44aa7840abbf6f8a4d9e76b5b93287f1',1,'libtextworker::get_config::GetConfig']]]
+  ['test_5fimport_207',['test_import',['../dc/d97/namespacelibtextworker_1_1__importer.html#a13ad27a82bbef19f99a3b7a34e925478',1,'libtextworker::_importer']]],
+  ['txtlocalize_208',['txtLocalize',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a8f7a6f1d0fa3d450c3b55c14512d7ad5',1,'libtextworker::interface::wx::miscs::XMLBuilder']]]
 ];

@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "libtextworker.interface.wx.about.AboutDialog", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html", null ],
+    [ "libtextworker.interface.tk.ColorManager", "de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html", null ],
     [ "libtextworker.interface.wx.ColorManager", "d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html", null ],
     [ "configparser.ConfigParser", null, [
       [ "libtextworker.get_config.GetConfig", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html", [
@@ -15,11 +16,18 @@ var hierarchy =
     [ "wx.FileDropTarget", null, [
       [ "libtextworker.interface.wx.editor.DragNDropTarget", "d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html", null ]
     ] ],
+    [ "object", null, [
+      [ "libtextworker.interface.tk._entry_point", "d4/d42/classlibtextworker_1_1interface_1_1tk_1_1__entry__point.html", null ],
+      [ "libtextworker.interface.wx._entry_point", "da/d1b/classlibtextworker_1_1interface_1_1wx_1_1__entry__point.html", null ]
+    ] ],
     [ "wx.stc.StyledTextCtrl", null, [
       [ "libtextworker.interface.wx.editor.StyledTextControl", "d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html", null ]
     ] ],
     [ "wx.TextDropTarget", null, [
       [ "libtextworker.interface.wx.editor.DragNDropTarget", "d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html", null ]
     ] ],
-    [ "libtextworker.interface.wx.miscs.XMLBuilder", "db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html", null ]
+    [ "libtextworker.interface.wx.miscs.XMLBuilder", "db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html", null ],
+    [ "Text", null, [
+      [ "libtextworker.interface.tk.textwidget.TextWidget", "dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html", null ]
+    ] ]
 ];

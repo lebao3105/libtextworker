@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['colormanager_0',['ColorManager',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html',1,'libtextworker.interface.manager.ColorManager'],['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html',1,'libtextworker.interface.wx.ColorManager']]],
-  ['configurationerror_1',['ConfigurationError',['../d1/d9d/classlibtextworker_1_1get__config_1_1ConfigurationError.html',1,'libtextworker::get_config']]]
+  ['aboutdialog_121',['AboutDialog',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html',1,'libtextworker::interface::wx::about']]]
 ];

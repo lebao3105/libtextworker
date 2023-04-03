@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['res_0',['Res',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a665fd9c806851bada388ea2be814b0ca',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
-  ['returnbool_1',['returnbool',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a9c231d2c3254a79f8ec4b0afec56d9b6',1,'libtextworker.get_config.GetConfig.returnbool()'],['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a201d775d9e3b95bfde5075f9075e47d5',1,'libtextworker.get_config.GetConfig.returnbool()']]]
+  ['wrapbtn_238',['wrapbtn',['../dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html#a40154d263fd57f1b8589b40914cfcc00',1,'libtextworker::interface::tk::textwidget::TextWidget']]],
+  ['wx_5fload_239',['wx_load',['../dc/d97/namespacelibtextworker_1_1__importer.html#ae435bd57ab5ae6677eab84bf428e63bc',1,'libtextworker::_importer']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['walkcreation_0',['WalkCreation',['../d8/d08/namespacelibtextworker_1_1general.html#a7f947e8904cbd2301ce243a345b625fb',1,'libtextworker::general']]]
+  ['update_209',['update',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a44aa7840abbf6f8a4d9e76b5b93287f1',1,'libtextworker::get_config::GetConfig']]]
 ];

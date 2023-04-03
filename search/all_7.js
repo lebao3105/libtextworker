@@ -1,10 +1,9 @@
 var searchData=
 [
-  ['general_2epy_0',['general.py',['../df/d4f/general_8py.html',1,'']]],
-  ['get_5fconfig_2epy_1',['get_config.py',['../db/d5b/get__config_8py.html',1,'']]],
-  ['getcolor_2',['GetColor',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a91fbb3ec1e1c200fe6a4678a0b0ca079',1,'libtextworker.interface.manager.ColorManager.GetColor(self)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a6dba724ee755c3365412ef6e319f99b9',1,'libtextworker.interface.manager.ColorManager.GetColor(self, typing.Callable func)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a91fbb3ec1e1c200fe6a4678a0b0ca079',1,'libtextworker.interface.manager.ColorManager.GetColor(self)']]],
-  ['getconfig_3',['GetConfig',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html',1,'libtextworker::get_config']]],
-  ['getcurrentdir_4',['GetCurrentDir',['../d8/d08/namespacelibtextworker_1_1general.html#a976df9cde49e6e61f962e8ef489fc054',1,'libtextworker::general']]],
-  ['getfont_5',['GetFont',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#aa23f9b21603727cc7832fdcc0f492659',1,'libtextworker.interface.manager.ColorManager.GetFont(self)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#abb605c47f493307e7fe485e763be8fd1',1,'libtextworker.interface.manager.ColorManager.GetFont(self, typing.Callable func)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#aa23f9b21603727cc7832fdcc0f492659',1,'libtextworker.interface.manager.ColorManager.GetFont(self)']]],
-  ['getkey_6',['getkey',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a3250ab5f0579730c6d043ae6cc37ed66',1,'libtextworker::get_config::GetConfig']]]
+  ['importable_40',['Importable',['../d8/d40/namespacelibtextworker.html#a9229f5c5d1ad571ccc6e25b22d2f7671',1,'libtextworker.Importable()'],['../dc/d97/namespacelibtextworker_1_1__importer.html#ad818ab6aba047d31bfc63021fcff00d5',1,'libtextworker._importer.Importable()']]],
+  ['indentationset_41',['IndentationSet',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#adf9c569ffaf92fe0625520c699d48067',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['infos_42',['infos',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a76eecd973f357c4b64784fe2a091c991',1,'libtextworker::interface::wx::about::AboutDialog']]],
+  ['is_5fdevelopment_5fversion_43',['is_development_version',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a6f6a76a42038f5bc00ac8581d4df6c3f',1,'libtextworker::versioning']]],
+  ['is_5fdevelopment_5fversion_5ffrom_5fproject_44',['is_development_version_from_project',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a9131c328c317aebfaf403952b4dbe88b',1,'libtextworker::versioning']]],
+  ['is_5fshown_45',['is_shown',['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a782b4d653b8dc1c78e82cfdc6abf897b',1,'libtextworker::interface::tk::ColorManager']]]
 ];

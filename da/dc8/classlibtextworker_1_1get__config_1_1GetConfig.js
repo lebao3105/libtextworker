@@ -8,14 +8,10 @@ var classlibtextworker_1_1get__config_1_1GetConfig =
     [ "readf", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a34810bc7d2fe09754b7e9af90f44cd85", null ],
     [ "reset", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a1897afd741e507099e0d5b937fa53912", null ],
     [ "update", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a44aa7840abbf6f8a4d9e76b5b93287f1", null ],
-    [ "_no_values", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#ae0b110b5d6a323de40ce52b452200d08", null ],
-    [ "_yes_values", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a2b051dd6c07e5ff2b574b6fb254723b1", null ],
-    [ "aliases", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a93d64846891fef4db767f5827c073cc3", null ],
-    [ "backups", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a6fe08f8a3b1eea60ca8f0028c48bdead", null ],
+    [ "aliases", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#afa8c635cf4642dfda573fead99a3e1ce", null ],
+    [ "backups", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a3f25ffec3998d024ad73bc00b60a29ab", null ],
+    [ "bool", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a8e82efe64b17b429583dae756d9d9fb3", null ],
     [ "cfg", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#abe06ddf316def1f5c22f97f44009a614", null ],
-    [ "detailedlogs", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#af32fe1bb5aa43c7fea6053d3169644a9", null ],
-    [ "no_values", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#ab135b81e8c121824ba6fa748326540d2", null ],
-    [ "returnbool", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a9c231d2c3254a79f8ec4b0afec56d9b6", null ],
-    [ "returnbool", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a201d775d9e3b95bfde5075f9075e47d5", null ],
-    [ "yes_values", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#aa84e76bdab02317e0a1c49556ac11f6e", null ]
+    [ "list", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a7187f3debfa4c5d96acd10d29a65b9c8", null ],
+    [ "returnbool", "da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a201d775d9e3b95bfde5075f9075e47d5", null ]
 ];

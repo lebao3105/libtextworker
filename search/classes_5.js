@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['styledtextcontrol_0',['StyledTextControl',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html',1,'libtextworker::interface::wx::editor']]]
+  ['libtewexception_126',['libTewException',['../d6/da7/classlibtextworker_1_1general_1_1libTewException.html',1,'libtextworker::general']]]
 ];

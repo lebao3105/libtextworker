@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['xmlbuilder_0',['XMLBuilder',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html',1,'libtextworker::interface::wx::miscs']]]
+  ['styledtextcontrol_127',['StyledTextControl',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html',1,'libtextworker::interface::wx::editor']]]
 ];

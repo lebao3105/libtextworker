@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['no_5fvalues_0',['no_values',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#ab135b81e8c121824ba6fa748326540d2',1,'libtextworker::get_config::GetConfig']]]
+  ['setcolorfn_231',['setcolorfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a4e26692b5443a1c2deb4f2108f8b36c4',1,'libtextworker::interface::manager::ColorManager']]],
+  ['setfontfn_232',['setfontfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a51c819c6e8dec978ce5a50b0c868ac62',1,'libtextworker::interface::manager::ColorManager']]]
 ];

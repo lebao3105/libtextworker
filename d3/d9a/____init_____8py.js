@@ -1,10 +1,7 @@
 var ____init_____8py =
 [
-    [ "APPDOMAIN", "d3/d9a/____init_____8py.html#ab8ae4e94496f9acc25cb22b733ad64a6", null ],
-    [ "EDITOR_DIR", "d3/d9a/____init_____8py.html#a80c2201a809eabe864f310567cf0d986", null ],
-    [ "else", "d3/d9a/____init_____8py.html#a20472bae6dc31f42cfb0c90695c91254", null ],
-    [ "Importable", "d3/d9a/____init_____8py.html#a123f7b2a3a172b5ffbbb51daa01e2262", null ],
-    [ "LOCALEDIR", "d3/d9a/____init_____8py.html#a005bf40d409527fb53878503e52c5c65", null ],
-    [ "THEMES_DIR", "d3/d9a/____init_____8py.html#a45c1999ed18aaec2bad22fa18ba5ee69", null ],
-    [ "try", "d3/d9a/____init_____8py.html#ae5308441ae0f7f2cd51bae3c37fcae19", null ]
+    [ "__version__", "d3/d9a/____init_____8py.html#aac6428e3438835dc7848507caef5be40", null ],
+    [ "EDITOR_DIR", "d3/d9a/____init_____8py.html#abd209f04a55d6bf8906ae4a486a991ea", null ],
+    [ "Importable", "d3/d9a/____init_____8py.html#a9229f5c5d1ad571ccc6e25b22d2f7671", null ],
+    [ "THEMES_DIR", "d3/d9a/____init_____8py.html#af6cb02662a2ab969afae53ddfb7c7f4e", null ]
 ];

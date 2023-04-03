@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['localedir_0',['LOCALEDIR',['../d8/d40/namespacelibtextworker.html#a005bf40d409527fb53878503e52c5c65',1,'libtextworker']]],
-  ['log_5fpath_1',['LOG_PATH',['../d8/d08/namespacelibtextworker_1_1general.html#ac4180978c1adef131977073d5fd72e04',1,'libtextworker::general']]],
-  ['logger_2',['logger',['../d8/d08/namespacelibtextworker_1_1general.html#a172f7df6c0267abe5c1ae0ab7cf8b952',1,'libtextworker::general']]]
+  ['requested_227',['Requested',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a884da2174168cb033769adfbae52d0ba',1,'libtextworker::versioning']]],
+  ['res_228',['Res',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a665fd9c806851bada388ea2be814b0ca',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
+  ['returnbool_229',['returnbool',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a201d775d9e3b95bfde5075f9075e47d5',1,'libtextworker::get_config::GetConfig']]],
+  ['rmenu_230',['RMenu',['../dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html#ac9d99de7d450766fc1fce61888efaaa5',1,'libtextworker::interface::tk::textwidget::TextWidget']]]
 ];
