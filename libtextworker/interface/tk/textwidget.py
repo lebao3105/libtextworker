@@ -1,8 +1,8 @@
 import tkinter.ttk as ttk
 from tkinter import BooleanVar, Menu, Text
 
-class TextWidget(Text):
 
+class TextWidget(Text):
     def __init__(
         self,
         parent,
@@ -38,7 +38,7 @@ class TextWidget(Text):
 
         if useScrollbars is True:
             self._place_scrollbar()
-        
+
         self.configure(wrap="word")
         self.configure(undo=unRedo)
 

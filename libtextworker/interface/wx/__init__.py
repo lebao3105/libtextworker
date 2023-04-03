@@ -49,5 +49,3 @@ class ColorManager(ColorManager):
 
 
 clrmgr = ColorManager(default_configs)
-
-class _entry_point(object): ...

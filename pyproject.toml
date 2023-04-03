@@ -22,10 +22,6 @@ importlib-metadata = "^6.1.0"
 wxPython = {version = "^4.0.0", optional = true}
 sv-ttk = {version = "^2.4.3", optional = true}
 
-[tool.poetry.plugins."libtextworker"]
-wx = "libtextworker.interface.wx:_entry_point"
-tkinter = "libtextworker.interface.tk:_entry_point"
-
 [tool.poetry.extras]
 wx = ["wxPython"]
 tkinter = ["sv-ttk"]
