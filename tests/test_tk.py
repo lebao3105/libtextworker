@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 
 from libtextworker.interface.tk import clrmgr
 
+
 def test_tk():
     app = tk.Tk()
     app.geometry("300x258")
@@ -11,7 +12,7 @@ def test_tk():
     button = ttk.Button(fm, text="No event binded")
 
     clrmgr.configure(fm, True)
-    
+
     label.pack()
     button.pack()
     fm.pack()

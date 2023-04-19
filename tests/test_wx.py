@@ -2,6 +2,7 @@ import wx
 from libtextworker.interface.wx.about import AboutDialog
 from libtextworker.interface.wx.editor import StyledTextControl
 
+
 def test_wx():
     def aboutbox(evt):
         aboutdlg = AboutDialog()

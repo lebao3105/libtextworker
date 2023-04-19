@@ -4,6 +4,7 @@ import pathlib
 import pytest
 import shutil
 
-@pytest.mark.order('last')
+
+@pytest.mark.order("last")
 def test_clean():
-    shutil.rmtree(str(pathlib.Path(__file__).parent / '..' / 'helloworld'))
+    shutil.rmtree(str(pathlib.Path(__file__).parent / ".." / "helloworld"))

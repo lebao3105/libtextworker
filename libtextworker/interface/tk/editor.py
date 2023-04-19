@@ -22,7 +22,7 @@ class TextWidget(Text):
         You can set TextWidget.wrapbtn to your own wrapbtn to use the wrap feature.
         The wrap function is wrapmode(event=None).
         """
-        kwds["undo"] = kwds.get("undo", 0) | self.unRedo
+        self.unRedo = kwds["undo"] = kwds.get("undo", 0) or unRedo
         super().__init__(parent, **kwds)
 
         self.wrapbtn = BooleanVar(self)

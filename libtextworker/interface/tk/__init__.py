@@ -7,7 +7,7 @@ import typing
 from libtextworker import Importable
 from ..manager import ColorManager, default_configs
 
-if Importable["interface.tk"] == True:
+if Importable["tkinter"] == True:
     import darkdetect
     import sv_ttk
     from tkinter import TclError, font, messagebox

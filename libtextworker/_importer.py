@@ -14,6 +14,7 @@ def test_import(pkgname: str) -> bool:
         warnings.warn("%s not found" % pkgname)
         return False
     else:
+        Importable[pkgname] = True
         return True
 
 
