@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libtextworker"
-version = "0.1.1"
+version = "0.1.2"
 description = "App library for textworker"
 authors = ["lebao3105 <bao12345yocoo@gmail.com>"]
 license = "GPL-3.0-or-later"
@@ -21,10 +21,11 @@ importlib-metadata = "^6.1.0"
 
 wxPython = {version = "^4.0.0", optional = true}
 sv-ttk = {version = "^2.4.3", optional = true}
+darkdetect = {version = "^0.8.0", optional = true}
 
 [tool.poetry.extras]
-wx = ["wxPython"]
-tkinter = ["sv-ttk"]
+wx = ["darkdetect", "wxPython"]
+tkinter = ["darkdetect", "sv-ttk"]
 
 [build-system]
 requires = ["poetry-core"]

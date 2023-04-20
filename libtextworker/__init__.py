@@ -38,7 +38,7 @@ gettext.install(APPDOMAIN, LOCALEDIR)
 Importable = _importer.Importable
 
 # Something else;-;
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 THEMES_DIR = os.path.expanduser(
     "~/.config/textworker/themes/"
 )  ## Directory of *custom* themes
