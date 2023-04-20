@@ -90,8 +90,6 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def SetupEditorColor(self):
         bg, fg = self.clrmgr._get_color()
-        bg = "#" + "%02x%02x%02x" % bg
-        fg = "#" + "%02x%02x%02x" % fg
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 

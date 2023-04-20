@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Test configurations (pytest)",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["tests/test_clean.py tests/test_configs.py"],
+            "justMyCode": true
+        },
+        {
+            "name": "Test Tkinter (pytest)",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["tests/test_tk.py"],
+            "justMyCode": true
+        },
+        {
+            "name": "Test wxPython (pytest)",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["tests/test_wx.py"],
+            "justMyCode": true
+        },
+        {
+            "name": "Test everything (pytest)",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "justMyCode": true
+        }
+    ]
+}

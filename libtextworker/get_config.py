@@ -24,20 +24,17 @@ class ConfigurationError(libTewException):
 
 class GetConfig(configparser.ConfigParser):
     # Values
-    yes_values: list = []
-    no_values: list = []
+    yes_values: list = ["yes", "True"]
+    no_values: list = ["no", "False"]
 
     returnbool: bool = True
     aliases = {}
     detailedlogs: bool = True
     backups = {}
 
-    # "Protected" properties
-    _yes_values = ["yes", "True"]
-    _no_values = ["no", "False"]
-
     def __init__(self, config: dict, file: str, **kwds):
-        """Customized configuration parser.
+        """
+        A customized INI file parser.
         @param config : Default configurations, used to reset the file or do some comparisions
         @param file : Configuration file
         @param **kwds : To pass to configparser.ConfigParser (base class)
@@ -61,13 +58,7 @@ class GetConfig(configparser.ConfigParser):
         if os.path.isfile(file):
             self.read(file, encoding)
         else:
-            splits = file.split("/")
-            splits.pop()
-            # print(splits)
-            firstdir = splits[0]
-            for item in range(1, len(splits)):
-                firstdir += "/" + splits[item]
-            # print(firstdir)
+            firstdir = os.path.dirname(file)
             WalkCreation(firstdir)
             with open(file, mode="w") as f:
                 try:
@@ -173,12 +164,6 @@ class GetConfig(configparser.ConfigParser):
             self.update()
 
         value = self.get(section, option)
-
-        # if getbool == True:
-        #     if value in self.yes_values or self._yes_values:
-        #         return True
-        #     if value in self.no_values or self._no_values:
-        #         return False
 
         return value if value not in self.aliases else self.aliases[value]
 

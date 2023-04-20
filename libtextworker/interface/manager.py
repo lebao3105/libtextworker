@@ -147,7 +147,7 @@ class ColorManager(GetConfig):
         resv = {"light": "dark", "dark": "light"}
 
         ## Check
-        if autocolor == True:
+        if autocolor == True or "yes":
             color_ = colors[_get_sys_mode()]
         elif color in colors:
             color_ = colors[color]
@@ -209,8 +209,7 @@ class ColorManager(GetConfig):
             print("Widget died, skip configuring.")
             return
 
-        widget.SetFont(self._get_font())
-        color, fontcolor = self._get_color()
+        color, fontcolor = self.GetColor
 
         for item in self.setfontfn:
             fn = self.setfontfn[item]["fn"]
