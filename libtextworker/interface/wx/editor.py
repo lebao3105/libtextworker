@@ -93,7 +93,6 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
-        # TODO: Fix dark mode
         self.clrmgr.setcolorfunc(
             "textw", self.StyleSetBackground, wx.stc.STC_STYLE_DEFAULT
         )

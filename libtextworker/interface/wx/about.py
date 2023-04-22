@@ -4,15 +4,23 @@ import wx.adv
 from typing import Any, final
 from libtextworker.general import CraftItems, libTewException, GetCurrentDir
 
-available_licenses = ["GPL3_short", "GPL3_full", "MIT"]
+available_licenses = [
+    "AGPL_full",
+    "AGPL_short",
+    "GPL3_full",
+    "GPL3_short",
+    "MIT"
+]
 
 
 @final
 class AboutDialog:
     """
     About dialog built with wxPython.
-    All self-set infomations are stored in the ```infos``` attribute. Just run ShowBox().
+    All self-set infomations are stored in the ```infos``` attribute.
+    Just run ShowBox() to see your work.
     You can set the parent of the dialog if needed, use the Parent variable.
+    This class is not sub-class-able.
     """
 
     infos = wx.adv.AboutDialogInfo()
@@ -36,11 +44,14 @@ class AboutDialog:
     def SetIcon(self, icon: wx.Icon):
         return self.infos.SetIcon(icon)
 
-    def SetLicense(self, license: str):
+    def SetLicense(self, license: str, include_copyright: bool = False):
         """
         Set the long, multiline string containing the text of the program license.
-        Not all license types are available. Please see the attribute available_licenses (not in this class but in the same module).
+        Not all license types are available. You can include your program copyright if needed.
+        @see available_licenses
+        @see SetCopyright
         """
+        data = "" # Our result
         if license not in available_licenses:
             raise libTewException(
                 "Sorry about this, but we couldn't find any license as requested ({}). You should notify this for libtextworker devs".format(
@@ -50,7 +61,9 @@ class AboutDialog:
         targetfile = CraftItems(
             GetCurrentDir(__file__), "../../licenses/{}.txt".format(license)
         )
-        data = open(targetfile, "r").read()
+        if include_copyright == True and self.infos.GetCopyright() != "":
+            data += self.infos.GetCopyright() + "\n"
+        data += open(targetfile, "r").read()
         return self.infos.SetLicence(data)
 
     def SetName(self, name: str):

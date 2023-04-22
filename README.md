@@ -6,6 +6,4 @@ Available packages from Pypi:
 * libtextworker[tkinter]: Tkinter support
 * libtextworker[wx]: wxPython support
 
-## Todos
-* Custom config files
-* Tkinter support (working on)
+You can read the API documents [here.](https://lebao3105.github.io/libtextworker)
