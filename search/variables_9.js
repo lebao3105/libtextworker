@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['setcolorfn_229',['setcolorfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a4e26692b5443a1c2deb4f2108f8b36c4',1,'libtextworker::interface::manager::ColorManager']]],
-  ['setfontfn_230',['setfontfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a51c819c6e8dec978ce5a50b0c868ac62',1,'libtextworker::interface::manager::ColorManager']]]
+  ['parent_239',['Parent',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a457244b1e336a871a8561842e4c3ebed',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
+  ['parser_240',['parser',['../db/db3/namespacebuilder.html#ac8a3be2ee9f2bb78461c0b2663413d29',1,'builder']]]
 ];

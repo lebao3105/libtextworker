@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['ondragover_68',['OnDragOver',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#ab1fd89b570517d21d12ec06e13bf3fd8',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondropfiles_69',['OnDropFiles',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#a5d73250585dd185e3966fc7aae141426',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondroptext_70',['OnDropText',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#ad5a79a0ba613c58910f72891ca15bc89',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['onstcmodify_71',['OnSTCModify',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a8def57a2af89ce622e11b8fa67e2599c',1,'libtextworker::interface::wx::editor::StyledTextControl']]]
+  ['nargs_73',['nargs',['../db/db3/namespacebuilder.html#ac1e57798c729b48808e5a98e48643376',1,'builder']]],
+  ['none_74',['None',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aa735b1f5f4cce2caa9ab0550edf3b432',1,'libtextworker::interface::wx::about::AboutDialog']]]
 ];

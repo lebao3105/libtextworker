@@ -1,10 +1,8 @@
 var namespacelibtextworker =
 [
     [ "_importer", "dc/d97/namespacelibtextworker_1_1__importer.html", [
-      [ "test_import", "dc/d97/namespacelibtextworker_1_1__importer.html#a13ad27a82bbef19f99a3b7a34e925478", null ],
-      [ "Importable", "dc/d97/namespacelibtextworker_1_1__importer.html#ad818ab6aba047d31bfc63021fcff00d5", null ],
-      [ "tk_load", "dc/d97/namespacelibtextworker_1_1__importer.html#ac8bbee22019bed022ef5bbf5f6238718", null ],
-      [ "wx_load", "dc/d97/namespacelibtextworker_1_1__importer.html#ae435bd57ab5ae6677eab84bf428e63bc", null ]
+      [ "test_import", "dc/d97/namespacelibtextworker_1_1__importer.html#a6362c9fc33912ca0eb8b3f513530907a", null ],
+      [ "Importable", "dc/d97/namespacelibtextworker_1_1__importer.html#ad818ab6aba047d31bfc63021fcff00d5", null ]
     ] ],
     [ "general", "d8/d08/namespacelibtextworker_1_1general.html", "d8/d08/namespacelibtextworker_1_1general" ],
     [ "get_config", "df/db5/namespacelibtextworker_1_1get__config.html", "df/db5/namespacelibtextworker_1_1get__config" ],

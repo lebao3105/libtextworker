@@ -6,7 +6,7 @@ var classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog =
     [ "SetDevelopers", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a16d68543036df56f1f68affe0740c5bc", null ],
     [ "SetDocWriters", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#ab9eb998bf9150cb05b5e498cc5383da1", null ],
     [ "SetIcon", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#ad7b75d62c81839476e00e36554f6f73a", null ],
-    [ "SetLicense", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aee02bf77df41f43882c19144821c1e98", null ],
+    [ "SetLicense", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a0cb356df27830372c60c35b7bbe8ff72", null ],
     [ "SetName", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#acd597b0f5313c826f979a13d61a34afc", null ],
     [ "SetTranslators", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a15213fccaa0e1b8797b68973aed1190c", null ],
     [ "SetVersion", "d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a39f693fb52760eb78b780bb9007db54e", null ],

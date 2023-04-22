@@ -24,6 +24,6 @@ var hierarchy =
     ] ],
     [ "libtextworker.interface.wx.miscs.XMLBuilder", "db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html", null ],
     [ "Text", null, [
-      [ "libtextworker.interface.tk.textwidget.TextWidget", "dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html", null ]
+      [ "libtextworker.interface.tk.editor.TextWidget", "dc/dce/classlibtextworker_1_1interface_1_1tk_1_1editor_1_1TextWidget.html", null ]
     ] ]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['general_2epy_147',['general.py',['../df/d4f/general_8py.html',1,'']]],
-  ['get_5fconfig_2epy_148',['get_config.py',['../db/d5b/get__config_8py.html',1,'']]]
+  ['editor_2epy_155',['editor.py',['../d6/deb/tk_2editor_8py.html',1,'(Global Namespace)'],['../df/d06/wx_2editor_8py.html',1,'(Global Namespace)']]]
 ];

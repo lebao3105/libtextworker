@@ -13,8 +13,8 @@ var annotated_dup =
           [ "ColorManager", "dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html", "dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager" ]
         ] ],
         [ "tk", "dd/d15/namespacelibtextworker_1_1interface_1_1tk.html", [
-          [ "textwidget", "d2/da1/namespacelibtextworker_1_1interface_1_1tk_1_1textwidget.html", [
-            [ "TextWidget", "dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget.html", "dc/db0/classlibtextworker_1_1interface_1_1tk_1_1textwidget_1_1TextWidget" ]
+          [ "editor", "df/dc5/namespacelibtextworker_1_1interface_1_1tk_1_1editor.html", [
+            [ "TextWidget", "dc/dce/classlibtextworker_1_1interface_1_1tk_1_1editor_1_1TextWidget.html", "dc/dce/classlibtextworker_1_1interface_1_1tk_1_1editor_1_1TextWidget" ]
           ] ],
           [ "ColorManager", "de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html", "de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager" ]
         ] ],
