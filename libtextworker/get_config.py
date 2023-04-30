@@ -11,7 +11,7 @@ class ConfigurationError(libTewException):
     def __init__(self, section: str = "", option: str = "", msg: str = ""):
         prefix = "Error in the configuration file: "
         if not msg:
-            msg = "*UNKNOW ERROR*"
+            msg = "*UNKNOWN*"
         else:
             msg = "[{}->{}] : {}".format(
                 section,
@@ -32,32 +32,42 @@ class GetConfig(configparser.ConfigParser):
     detailedlogs: bool = True
     backups = {}
 
-    def __init__(self, config: dict, file: str, **kwds):
+    for item in yes_values:
+        aliases[item] = True
+
+    for item in no_values:
+        aliases[item] = False
+
+    def __init__(self, config: dict[str] | str, file: str, **kwds):
         """
         A customized INI file parser.
-        @param config : Default configurations, used to reset the file or do some comparisions
+        @param config (dict[str] or str) : Default configurations, used to reset the file or do some comparisions
         @param file : Configuration file
         @param **kwds : To pass to configparser.ConfigParser (base class)
 
         When initialized, GetConfig loads all default configs (from config param) and store it in
         a dictionary for further actions (backup/restore file).
+
+        @since 0.1.3: Allow config parameter as a str object
         """
         super().__init__(**kwds)
 
         self.cfg = {}
 
-        for key in config:
-            self[key] = config[key]
-            self.cfg[key] = config[key]
+        if isinstance(config, str):
+            self.read_string(config)
+        else:
+            self.read_dict(config)
+
+        for key in self:
+            self.cfg[key] = self[key]
 
         self.readf(file)
         self.__file = file
 
     # File tasks
     def readf(self, file: str, encoding: str | None = None):
-        if os.path.isfile(file):
-            self.read(file, encoding)
-        else:
+        if not os.path.isfile(file):
             firstdir = os.path.dirname(file)
             WalkCreation(firstdir)
             with open(file, mode="w") as f:
@@ -65,9 +75,8 @@ class GetConfig(configparser.ConfigParser):
                     self.write(f)
                 except OSError:
                     raise Exception("Unable to access to the file name %s" % file)
-                else:
-                    self.read(file, encoding)
-        self.__file = file  # Should I?
+        self.read(file, encoding)
+        self.__file = file
 
     def reset(self, restore: bool = False) -> bool:
         try:
@@ -114,20 +123,17 @@ class GetConfig(configparser.ConfigParser):
         needed: bool = False,
         restore: bool = False,
         noraiseexp: bool = False,
-        getbool: bool = returnbool,
-    ) -> str | bool:
+        raw: bool = False,
+    ):
         """
         Try to get the value of an option under the spectified section.
+        @version Updated (parameters) on 0.1.3
 
-        If the option does not exist and needed parameter is set to True,
-        GetConfig will add that option automatically with the value based on
-        its previously initialized configs. If restore parameter is set to True,
-        GetConfig will use the backed up option, if possible.
-
-        If you don't want to see exceptions raised and just need False (when something went wrong),
-        set noraiseexp to True.
-
-        Otherwise it will check for the value's alias, then return the value.
+        @param section, option: Target section->option
+        @param needed (boolean=False): The target option is needed - should use with restore & noraiseexp
+        @param restore (boolean=False): Create the option if it is not found from the search
+        @param noraiseexp (boolean=False): Whetever to raise an Exception if something went wrong (default getkey will)
+        @param raw (boolean=False): Don't use aliases for the value we get.
         """
         if not self.has_section(section):
             if needed == True:
@@ -151,7 +157,7 @@ class GetConfig(configparser.ConfigParser):
                         else self.cfg[section][option],
                     )
                 else:
-                    self.set(section, option, self[section][option])
+                    self.set_and_update(section, option, self[section][option])
             else:
                 if noraiseexp != True:
                     raise ConfigurationError(
@@ -160,12 +166,12 @@ class GetConfig(configparser.ConfigParser):
                 else:
                     return False
 
-        if needed == True:
-            self.update()
-
         value = self.get(section, option)
 
-        return value if value not in self.aliases else self.aliases[value]
+        if raw or not value in self.aliases:
+            return value
+        else:
+            return self.aliases[value]
 
     def aliasyesno(self, yesvalue, novalue, enable: bool = True) -> None:
         """
@@ -181,3 +187,77 @@ class GetConfig(configparser.ConfigParser):
 
     def alias(self, value, value2) -> None:
         self.aliases[value] = value2
+
+    def move(
+        self, list_: dict[str, dict[str, str]], delete_entire_section: bool = False
+    ) -> None:
+        """
+        @since 0.1.3
+
+        Move configurations found from the file that GetConfig currently uses.
+        Below is an example:
+        ```
+        move(
+            list_={
+                "section1->option1": {
+                    "newpath": "section_one->option1",
+                    "file": "unchanged"
+                },
+                "special->option0": {
+                    "newpath": "special_thing->option0",
+                    "file": "~/.config/test.ini"
+                }
+            }
+        )
+        ```
+
+        ```list_``` parameter holds all configs to move. Each of options specified (section->option format)
+        'is' a dictionary: sub-key 'newpath' specifies the location of the option to moved to (section->option format), 'file'
+        specifies the new file to use (if needed, else use 'unchanged' or leave blank).
+        This function won't use backup(). Non-exist things will be ignored silently.
+
+        If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['files'] == 'unchanged'.
+        """
+        curr_sects = self.sections()
+        newfile = configparser.ConfigParser()
+
+        for item in list_:
+            # Split and get values
+            splits = item.split("->")
+            if not splits[0] in curr_sects:
+                break
+            value = self.get(splits[0], splits[1])
+            target = list_[item]["newpath"].split("->")
+            if "file" not in list_[item]:
+                target_file = "unchanged"
+            else:
+                target_file = list_[item]["file"]
+
+            # Start the move
+            if target_file == "unchanged":
+                if not target[0] in self.sections():
+                    self.add_section(target[0])
+                self.set(target[0], target[1], value)
+                if not delete_entire_section:
+                    self.remove_option(splits[0], splits[1])
+                else:
+                    self.remove_section(splits[0])
+                self.update()
+            else:
+                if os.path.isfile(target_file):
+                    newfile.read(target_file)
+                if not target[0] in newfile.sections():
+                    newfile.add_section(target[0])
+                newfile.set(target[0], target[1], value)
+                with open(target_file, "w") as f:
+                    newfile.write(f)
+
+    def set_and_update(
+        self, section: str, option: str, value: str | None = None
+    ) -> None:
+        """
+        @since 0.1.3
+        Set an option, and eventually apply it to the file.
+        """
+        self.set(section, option, value)
+        self.update()

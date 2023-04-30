@@ -1,7 +1,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 
-from libtextworker.interface.tk import clrmgr
+from libtextworker.interface.tk import ColorManager
+
+clrmgr = ColorManager()
 
 
 def test_tk():

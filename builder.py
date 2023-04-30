@@ -6,18 +6,26 @@ import sys
 
 from libtextworker import __version__
 
+print("Library version: %s" % __version__)
 parser = argparse.ArgumentParser(
-    description="Help setting up textworker easier",
+    description="Help setting up libtextworker easier",
     usage="'install' for install the project, 'build' to build, 'maketrans' to create translations (gettext required).\nThat's all.",
 )
-parser.add_argument("--install-req", "-r", type=bool, help="Install requirements")
+parser.add_argument(
+    "--install-req",
+    "-r",
+    const="False",
+    nargs="?",
+    choices=["True", "False"],
+    help="Install requirements",
+)
 parser.add_argument(
     "action", nargs="*", help="Action to run (install, build, maketrans)"
 )
 
 opts = parser.parse_args()
 if opts.install_req:
-    os.system("{} -m pip install -r requirements.txt".format(sys.executable))
+    os.system('"{}" -m pip install -r requirements.txt'.format(sys.executable))
 
 
 def make_trans():
@@ -64,13 +72,13 @@ def make_trans():
 
 def install():
     make_trans()
-    return os.system("{} -m pip install .".format(sys.executable))
+    return os.system('"{}" -m pip install .'.format(sys.executable))
 
 
 def build():
     make_trans()
-    os.system("{} -m pip install poetry".format(sys.executable))
-    return os.system("{} -m poetry build".format(sys.executable))
+    os.system('"{}" -m pip install poetry'.format(sys.executable))
+    return os.system('"{}" -m poetry build'.format(sys.executable))
 
 
 def clean():
@@ -102,3 +110,6 @@ elif "install" in opts.action:
     install()
 elif "clean" in opts.action:
     clean()
+else:
+    parser.print_help()
+    parser.error("No argument provided/invalid argument")

@@ -1,5 +1,5 @@
-import tkinter.ttk as ttk
-from tkinter import BooleanVar, Menu, Text
+from typing import Callable
+from tkinter import BooleanVar, Menu, Text, ttk
 
 
 class TextWidget(Text):
@@ -15,8 +15,8 @@ class TextWidget(Text):
         Customized Tkinter Text widget with a basic right-click menu.
         @param parent : Where to place this widget
         @param useMenu (bool) : Enable right-click menu or not
-        @param unredo (bool)=True : Undo Redo
-        @param useScrollbars (bool)=True : Use scrollbars
+        @param useScrollbars (bool=True) : Use scrollbars
+        @param unRedo (bool=True) : Undo Redo
         @param **kwds : Other configurations (tkinter.Text)
 
         You can set TextWidget.wrapbtn to your own wrapbtn to use the wrap feature.
@@ -88,10 +88,22 @@ class TextWidget(Text):
             self.RMenu.grab_release()
 
     # Add menu item commands
-    def addMenucmd(self, label: str, acc: str = None, fn: object = None, **kw):
+    def addMenucmd(
+        self, label: str, acc: str | None = None, fn: Callable | None = None, **kw
+    ):
+        """
+        Add a (right-click) menu command.
+        @param label (str): Text label of the command
+        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
+        @param fn (Callable | None = None): Callback
+        @param **kw (dict[str]): Other options
+        """
         return self.RMenu.add_command(label=label, accelerator=acc, command=fn, **kw)
 
     def addMenusepr(self):
+        """
+        Add a (right-click) menu separator. Nothing else.
+        """
         return self.RMenu.add_separator()
 
     def addMenucheckbtn(

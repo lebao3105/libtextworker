@@ -25,7 +25,7 @@ default_configs = {
 class ColorManager(GetConfig):
     """
     A color manager for GUI widgets.
-    ColorManager reads configs from a file (default is under THEMES_DIR)
+    ColorManager can be used for multiple GUI widgets with only one call
     """
 
     setcolorfn = {}
@@ -34,7 +34,7 @@ class ColorManager(GetConfig):
 
     def __init__(
         self,
-        default_configs: dict[str, typing.Any],
+        default_configs: dict[str, typing.Any] = default_configs,
         customfilepath: str or bool = False,
     ):
         """
@@ -55,7 +55,7 @@ class ColorManager(GetConfig):
         This is blocked as it can make conflicts with other GUI widgets - unless you shutdown the app immediately..
         """
         raise NotImplementedError(
-            "reset function is blocked on ColorManager. Please use the get_config.GetConfig class instead."
+            "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead."
         )
 
     def backup(self, file: str):
@@ -137,11 +137,7 @@ class ColorManager(GetConfig):
         autocolor = self.getkey("color", "autocolor")
 
         # Interface color
-        ## Default color modes
-        colors = {
-            "light": "#ffffff",
-            "dark": "#1c1c1c",
-        }
+        from ._colors import colors
 
         ##
         resv = {"light": "dark", "dark": "light"}
@@ -153,8 +149,6 @@ class ColorManager(GetConfig):
             color_ = colors[color]
 
         # Text color
-        colors["green"] = "#00ff00"
-        colors["red"] = "#ff0000"
         if fontcolor == "default":
             if autocolor == False:
                 fontcolor_ = colors[resv[color]]

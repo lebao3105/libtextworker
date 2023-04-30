@@ -69,8 +69,8 @@ def CreateDirectory(directory: str, childs: list[str] = []):
     """
     Create a directory with optional sub-folders.
     @param directory (str): Directory to create
-    @param childs (list of str): Sub-dirs under @directory
-    @raises Exception: Directory creation failed
+    @param childs (list of str): Sub-dirs under $directory
+    @throws Exception: Directory creation failed
     """
     if not os.path.isdir(directory):
         os.mkdir(directory)
@@ -85,10 +85,10 @@ def WalkCreation(directory: str):
     """
     Create directory layer-to-layer.
     How to understand this? Try this path: path1/path2/path3.
-    WalkCreation will create path1 first, then path2 and path3. Skip existing dirs, of course.
+    WalkCreation will create path1 first, then path1/path2 and path1/path2/path3. Skip existing dirs, of course.
 
     @param directory (str): Directory to create
-    @raises Exception: Directory creation failed
+    @throws Exception: Directory creation failed
     """
     directory = os.path.normpath(directory)
     splits = directory.split(separator)
@@ -114,9 +114,9 @@ def GetCurrentDir(file: str, aspathobj: bool = False):
 
 def ResetEveryConfig():
     """
-    Reset every configurations under @TOPLV to default.
+    Reset every configurations under $TOPLV_DIR to default.
     Will close the app after completed.
-    @see TOPLV
+    @see TOPLV_DIR
     """
     if os.path.isdir(TOPLV_DIR):
         shutil.rmtree(TOPLV_DIR)

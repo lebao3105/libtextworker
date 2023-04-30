@@ -8,19 +8,19 @@ def CreateMenu(parent, items: list) -> wx.Menu:
     Create a new wx.Menu with a list of commands.
     Menu items use the following format:
     ```
-    [   # Must be a list
-        (id, label, helptext, handler, None),
-        ...
-        (id, label, helptext, handler, wx.ITEM_CHECK), # Add check item
-        (id, label, helptext, handler, wx.ITEM_RADIO) # Add radio item
-        (None, None, None, None, None) # Add separator
-    ]
+    (id, label, helptext, handler, kind) # Stay in a tuple like this
     ```
+    * id: Menu item id (wx.ID_* - ID_ANY is the default)
+    * label: Menu item label
+    * helptext: Text to be shown in the status bar (on the left)
+    * handler (Callable): Callback
+    * kind: Type of the menu item (wx.ITEM_*) (wx.ITEM_NORMAL by default)
+
+    If you want to append a separator, make all items in the tuple None.
     Sub-menus are not supported.
     Returns the generated menu.
     """
     target_menu = wx.Menu()
-
     for id, label, helptext, handler, kind in items:
         if id == label == helptext == handler == kind == None:
             target_menu.AppendSeparator()

@@ -26,6 +26,19 @@ def test_mkconfig():
     cfgs = GetConfig(cfg, "helloworld/one/configs/configs.ini")
     cfgs.set("section1", "option1", "value_changed")
     cfgs.update()
+    cfgs.move(
+        {
+            "section1->option1": {
+                "newpath": "section_one->option1",
+                "file": "unchanged",
+            },
+            "section2->option1": {
+                "newpath": "test_move->section2_opt1",
+                "file": "helloworld/one/configs/new.ini",
+            },
+        },
+        True,
+    )
 
     assert cfgs.getkey("section1", "option1") == "value_changed"
     assert cfgs.getkey("section2", "option1") == "yes"

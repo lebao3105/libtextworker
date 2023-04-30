@@ -2,14 +2,20 @@ import wx
 import wx.adv
 
 from typing import Any, final
-from libtextworker.general import CraftItems, libTewException, GetCurrentDir
+from ...general import CraftItems, GetCurrentDir
 
+## Available pre-stored licenses:
+# * AGPL
+# * GPL 3
+# * LGPL 3
+# * MIT
 available_licenses = [
     "AGPL_full",
     "AGPL_short",
     "GPL3_full",
     "GPL3_short",
-    "MIT"
+    "LGPL_3",
+    "MIT",
 ]
 
 
@@ -48,22 +54,21 @@ class AboutDialog:
         """
         Set the long, multiline string containing the text of the program license.
         Not all license types are available. You can include your program copyright if needed.
+        @version Updated on 0.1.3
         @see available_licenses
         @see SetCopyright
         """
-        data = "" # Our result
-        if license not in available_licenses:
-            raise libTewException(
-                "Sorry about this, but we couldn't find any license as requested ({}). You should notify this for libtextworker devs".format(
-                    license
-                )
-            )
-        targetfile = CraftItems(
-            GetCurrentDir(__file__), "../../licenses/{}.txt".format(license)
-        )
+        data = ""  # Our result
+        if license in available_licenses:
+            license = open(
+                CraftItems(
+                    GetCurrentDir(__file__), "../../licenses/{}.txt".format(license)
+                ),
+                "r",
+            ).read()
         if include_copyright == True and self.infos.GetCopyright() != "":
             data += self.infos.GetCopyright() + "\n"
-        data += open(targetfile, "r").read()
+        data += license
         return self.infos.SetLicence(data)
 
     def SetName(self, name: str):

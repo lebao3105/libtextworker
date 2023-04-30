@@ -4,7 +4,7 @@ import wx.stc
 from libtextworker import EDITOR_DIR
 from libtextworker.get_config import ConfigurationError, GetConfig
 
-from libtextworker.interface.wx import clrmgr
+from libtextworker.interface.wx import ColorManager
 from libtextworker.interface.wx.miscs import CreateMenu
 
 default_configs = {
@@ -15,12 +15,22 @@ default_configs = {
 
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
-    def __init__(self, *args, **kw):
-        kw["style"] = kw.get("style", 0) | wx.stc.STC_STYLE_DEFAULT
-        super().__init__(*args, **kw)
+    """
+    A better styled wxStyledTextCtrl.
+    @since version 0.1.3: \
+        Split __init__ into __init__ and EditorInit(str)
+        Auto-expand linenumber margin
+    """
 
-        self.clrmgr = clrmgr
-        self.cfg = GetConfig(default_configs, EDITOR_DIR + "editor.ini")
+    def EditorInit(self, config_path: str):
+        """
+        @since 0.1.3
+        """
+        if not config_path:
+            config_path = EDITOR_DIR + "editor.ini"
+
+        self.clrmgr = ColorManager()
+        self.cfg = GetConfig(default_configs, config_path)
 
         # Base editor color
         self.SetupEditorColor()
@@ -38,11 +48,12 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         if self.cfg.getkey("menu", "enabled") in [True, "yes"]:
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
+    """
+    Setup GUI elements.
+    """
+
     def DNDSupport(self) -> bool:
-        if (
-            self.cfg.getkey("editor", "dnd_enabled", True, True, getbool=True) != True
-            or "yes"
-        ):
+        if self.cfg.getkey("editor", "dnd_enabled", True, True) not in [True, "yes"]:
             return False
 
         dt = DragNDropTarget(self)
@@ -51,11 +62,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         return True
 
     def IndentationSet(self) -> bool:
-        size = int(self.cfg.getkey("indentation", "size", True, True, getbool=False))
+        size = int(self.cfg.getkey("indentation", "size", True, True))
         tp = self.cfg.getkey("indentation", "type", True, True)
-        show_guide = self.cfg.getkey(
-            "indentation", "show_guide", True, True, getbool=True
-        )
+        show_guide = self.cfg.getkey("indentation", "show_guide", True, True)
 
         if not 8 >= size > 0:
             raise ConfigurationError(
@@ -75,16 +84,13 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             self.SetIndentationGuides(False)
 
     def LineNumbers(self) -> bool:
-        if self.cfg.getkey("editor", "line_count", True, True, getbool=True) not in [
-            True,
-            "yes",
-        ]:
-            self.SetMarginWidth(1, 0)
+        state = self.cfg.getkey("editor", "line_count", True, True)
+        if state in ["no", False]:
+            self.SetMarginWidth(0, 0)
             return False
 
-        self.SetMarginType(1, wx.stc.STC_MARGIN_NUMBER)
-        self.SetMarginMask(1, 0)
-        self.SetMarginWidth(1, 40)
+        self.SetMarginType(0, wx.stc.STC_MARGIN_NUMBER)
+        self.SetMarginMask(0, 0)
 
         return True
 
@@ -102,6 +108,11 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.clrmgr.configure(self)
 
         self.Bind(wx.stc.EVT_STC_MODIFIED, self.OnSTCModify)
+        self.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUIUpdate)
+
+    """
+    Events.
+    """
 
     def OnSTCModify(self, event):
         if event:
@@ -114,8 +125,27 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.SetStyling(length, 0)
         event.Skip()
 
-    def MenuPopup(self, evt):
-        pt = evt.GetPosition()
+    def OnUIUpdate(self, event):  # Thanks to Bing AI!
+        """
+        @since Version 0.1.3
+        Auto-expand linenumber margin.
+        """
+        line_count = self.GetLineCount()
+        last_line_num = str(line_count)
+
+        if len(last_line_num) <= 4:
+            margin_width = 40
+        else:
+            last_line_width = self.TextWidth(wx.stc.STC_STYLE_LINENUMBER, last_line_num)
+            # add some extra space
+            margin_width = last_line_width + 4
+
+        # set the margin width
+        self.SetMarginWidth(0, margin_width)
+        event.Skip()
+
+    def MenuPopup(self, event):
+        pt = event.GetPosition()
         menu = CreateMenu(
             self,
             [
@@ -140,11 +170,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         menu.Append(readonly)
         self.Bind(
             wx.EVT_MENU,
-            lambda evt: (
-                self.SetReadOnly(readonly.IsChecked()),
-                print("set to {}".format(readonly.IsChecked())),
-            ),
+            lambda evt: (self.SetReadOnly(readonly.IsChecked()),),
             readonly,
+            kind=wx.ITEM_CHECK,
         )
 
         self.PopupMenu(menu, pt)
@@ -152,6 +180,10 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
 
 class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
+    """
+    Drag-and-drop (DND) support for wxStyledTextCtrl.
+    """
+
     def __init__(self, textctrl):
         super().__init__()
         self.Target = textctrl

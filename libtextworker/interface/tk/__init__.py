@@ -5,7 +5,7 @@ Contains classes for Tkinter.
 import threading
 import typing
 from libtextworker import Importable
-from ..manager import ColorManager, default_configs
+from ..manager import ColorManager
 
 if Importable["tkinter"] == True:
     import darkdetect
@@ -33,14 +33,13 @@ class ColorManager(ColorManager):
             if not self.is_shown:
                 messagebox.showwarning(
                     message=_(
-                        """
-                        It seemed that your preferred font family does not available on your machine here.\n
-                        Install the font first - and now the program will use Consolas instead.\n
-                        If you think that this is a mistake, please report it.
-                        """
+                        "It seemed that your preferred font family does not available on your machine here.\n"
+                        "Install the font first - and now the program will use Consolas instead.\n"
+                        "If you think that this is a mistake, please report it."
                     )
                 )
                 self.is_shown = True
+            family = "Consolas"
 
         if style == "normal" or style != "italic":
             style = "roman"
@@ -93,4 +92,5 @@ class ColorManager(ColorManager):
             )  # Keep this to avoid 'font already exists' error
 
 
-clrmgr = ColorManager(default_configs)
+## @deprecated On version 0.1.3
+clrmgr = None

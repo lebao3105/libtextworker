@@ -8,8 +8,8 @@ def CreateMenu(
     """
     Make a Tkinter menu with commands.
     Menu items list must follow the format below:
-    ```
-    Each menu item is made under a tuple
+    ```python
+    # Each menu item is made under a tuple
     (
      label[str], accelerator[str], handler[str|Callable],
      onvalue[=None], offvalue[=None], variable[=None],
