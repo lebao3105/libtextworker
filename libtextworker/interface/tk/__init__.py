@@ -1,6 +1,6 @@
 """
 @package libtextworker.interface.tk
-Contains classes for Tkinter.
+Contains class(es) and needed attributes for Tkinter.
 """
 import threading
 import typing
@@ -10,12 +10,11 @@ from ..manager import ColorManager
 if Importable["tkinter"] == True:
     import darkdetect
     import sv_ttk
-    from tkinter import TclError, font, messagebox
-
-    pass
+    from tkinter import TclError, font
 else:
     raise Exception(
-        "interface.tk is called but its dependency Tkinter is not installed"
+        "interface.tk is called but its dependency Tkinter is not installed.\n"
+        "You'll need:\n- tkinter\n- darkdetect\n- sv-ttk\npackages."
     )
 
 
@@ -27,18 +26,9 @@ class ColorManager(ColorManager):
         size, style, weight, family = super()._get_font()
         font_families = font.families()
 
-        if family == "default":
-            family = "Consolas"
-        elif family not in font_families:
-            if not self.is_shown:
-                messagebox.showwarning(
-                    message=_(
-                        "It seemed that your preferred font family does not available on your machine here.\n"
-                        "Install the font first - and now the program will use Consolas instead.\n"
-                        "If you think that this is a mistake, please report it."
-                    )
-                )
-                self.is_shown = True
+        print(family)
+
+        if family == "default" or family not in font_families:
             family = "Consolas"
 
         if style == "normal" or style != "italic":

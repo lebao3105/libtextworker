@@ -1,13 +1,12 @@
 import importlib
 import packaging.version
-import warnings
 
 from . import general
 
 """
 Projects called by functions under libtextworker.versioning.
 """
-Requested = []
+Requested = {}
 
 
 def parse_version(project: str):
@@ -21,17 +20,17 @@ def parse_version(project: str):
     @see require_lower
     @see Requested
     """
-    if project in Requested:
-        warnings.warn("%(project)s already requested.")
-        return
-
+    global Requested
     module = importlib.import_module(project)
-    if not module.__version__:
-        raise general.libTewException(
-            "%(project)s does not have __version__ attribute!"
-        )
-    Requested.append(project)
-    return packaging.version.parse(module.__version__)
+
+    if project not in Requested:
+        if not module.__version__:
+            raise general.libTewException(
+                "%(project)s does not have __version__ attribute!"
+            )
+        Requested[project] = packaging.version.parse(module.__version__)
+
+    return Requested[project]
 
 
 def is_development_version(version: str):
@@ -72,7 +71,7 @@ def require_exact(project: str, target_version: str):
     @param target_version (str): Target project version
     """
     currver = parse_version(project)
-    target = packaging.verison.parse(target_version)
+    target = packaging.version.parse(target_version)
 
     if currver != target:
         raise general.libTewException(
@@ -87,7 +86,7 @@ def require_lower(project: str, target_version: str):
     @param target_version (str): Target project version
     """
     currver = parse_version(project)
-    target = packaging.verison.parse(target_version)
+    target = packaging.version.parse(target_version)
 
     if currver >= target:
         raise general.libTewException(

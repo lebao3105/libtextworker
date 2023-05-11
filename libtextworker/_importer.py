@@ -16,7 +16,3 @@ def test_import(pkgname: str) -> bool:
     else:
         Importable[pkgname] = True
         return True
-
-
-test_import("wx")
-test_import("tkinter")
