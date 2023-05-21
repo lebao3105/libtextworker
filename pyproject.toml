@@ -14,7 +14,6 @@ keywords = ["wx", "tkinter", "gui"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-configparser = "^5.3.0"
 Pillow = "^9.5.0"
 packaging = "^23.0"
 importlib-metadata = "^6.1.0"
@@ -22,6 +21,7 @@ importlib-metadata = "^6.1.0"
 wxPython = {version = "^4.0.0", optional = true}
 sv-ttk = {version = "^2.4.3", optional = true}
 darkdetect = {version = "^0.8.0", optional = true}
+commented-configparser = "^1.0.0"
 
 [tool.poetry.extras]
 wx = ["darkdetect", "wxPython"]

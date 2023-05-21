@@ -1,7 +1,8 @@
 import re
 import wx
+import wx.aui
 import wx.xrc
-
+from typing import Literal
 
 def CreateMenu(parent, items: list) -> wx.Menu:
     """
@@ -36,7 +37,6 @@ def CreateMenu(parent, items: list) -> wx.Menu:
             item = target_menu.Append(id, label, helptext, kind)
             parent.Bind(wx.EVT_MENU, handler, item)
     return target_menu
-
 
 class XMLBuilder:
     """

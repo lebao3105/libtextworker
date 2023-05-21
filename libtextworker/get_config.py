@@ -1,4 +1,9 @@
-import configparser
+"""
+@package libtextworker.get_config
+@brief Contains classes for generic INI files parsing
+@since 0.1.3: Use CommentedConfigParser
+"""
+import commentedconfigparser
 import os
 import os.path
 
@@ -22,7 +27,7 @@ class ConfigurationError(libTewException):
         super().__init__(full)
 
 
-class GetConfig(configparser.ConfigParser):
+class GetConfig(commentedconfigparser.CommentedConfigParser):
     # Values
     yes_values: list = ["yes", "True"]
     no_values: list = ["no", "False"]
@@ -219,7 +224,7 @@ class GetConfig(configparser.ConfigParser):
         If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['files'] == 'unchanged'.
         """
         curr_sects = self.sections()
-        newfile = configparser.ConfigParser()
+        newfile = commentedconfigparser.CommentedConfigParser()
 
         for item in list_:
             # Split and get values
