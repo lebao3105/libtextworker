@@ -39,12 +39,8 @@ Importable = _importer.Importable
 
 # Something else;-;
 __version__ = "0.1.3"
-THEMES_DIR = os.path.expanduser(
-    "~/.config/textworker/themes/"
-)
-EDITOR_DIR = os.path.expanduser(
-    "~/.config/textworker/editorconfigs/"
-)
+THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")
+EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)

@@ -172,7 +172,6 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             wx.EVT_MENU,
             lambda evt: (self.SetReadOnly(readonly.IsChecked()),),
             readonly,
-            kind=wx.ITEM_CHECK,
         )
 
         self.PopupMenu(menu, pt)

@@ -33,7 +33,7 @@ def CreateMenu(
             target.add_command(
                 accelerator=acc, command=handler, label=label, state=state
             )
-            
+
         if kind == "check":
             target.add_checkbutton(
                 accelerator=acc,
