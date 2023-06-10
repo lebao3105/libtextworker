@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 import os.path
@@ -6,33 +7,82 @@ import platform
 import shutil
 import sys
 
+from typing import Literal
+
 if platform.system() == "Windows":
     separator = "\\"
 else:
     separator = "/"
 
-# Some *other* variables
-DEBUG: bool = False  # Are we really need this? I don't even know.
-LOG_PATH = os.path.expanduser(
-    "~/libtew.log"
-)  # The default log file path. It may be changed in the future.
+# @since version 0.1.3
+available_toolkits = Literal[
+    'tk',
+    'wx'
+]
+
+# Logging
+class Logger(logging.Logger):
+
+    def UseGUIToolKit(self, toolkit: available_toolkits): # Currently no Tkinter support
+        self.UseToolKit = toolkit
+
+    def critical(self, msg: object, *args: object, **kwds):
+        super().critical(msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_CRITICAL")(msg)
+    
+    def debug(self, msg: object, *args: object, **kwds):
+        super().debug(msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_DEBUG")(msg)
+
+    def error(self, msg: object, *args: object, **kwds):
+        super().error(msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_ERROR")(msg)
+    
+    def exception(self, msg: object, *args: object, **kwds):
+        super().exception(msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_EXCEPTION")(msg)
+            
+    def log(self, level: int, msg: object, *args: object, **kwds):
+        super().log(level, msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_NORMAL")(msg)
+    
+    def warning(self, msg: object, *args: object, **kwds):
+        super().warning(msg, *args, **kwds)
+        try:
+            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_WARNING")(msg)
+    
+LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
 TOPLV_DIR = os.path.expanduser("~/.config/textworker")
-
-# Setup logging
-logger = logging.getLogger("textworker")
-
-console_hdlr = logging.StreamHandler()
-file_hdlr = logging.FileHandler(LOG_PATH)
-formatter = logging.Formatter("%(asctime)s %(name)s->%(levelname)s : %(message)s")
-
-console_hdlr.setLevel(logging.DEBUG)
-console_hdlr.setFormatter(formatter)
-file_hdlr.setLevel(logging.DEBUG)
-file_hdlr.setFormatter(formatter)
-
-logger.addHandler(console_hdlr)
-logger.addHandler(file_hdlr)
-
+logger = Logger("textworker")
 
 # Classes
 class libTewException(Exception):

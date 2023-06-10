@@ -44,3 +44,4 @@ EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)
+WalkCreation(os.path.expanduser("~/.logs"))

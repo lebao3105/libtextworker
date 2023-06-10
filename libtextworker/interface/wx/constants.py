@@ -19,3 +19,11 @@ FONTSZ = {
     "small": 8,
     "large": 16,
 }
+
+# Logging functions
+LOG_CRITICAL = wx.LogFatalError
+LOG_DEBUG = wx.LogDebug
+LOG_ERROR = wx.LogError
+LOG_EXCEPTION = wx.LogError
+LOG_NORMAL = wx.LogGeneric
+LOG_WARNING = wx.LogWarning
