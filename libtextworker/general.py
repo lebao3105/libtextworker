@@ -15,30 +15,33 @@ else:
     separator = "/"
 
 # @since version 0.1.3
-available_toolkits = Literal[
-    'tk',
-    'wx'
-]
+available_toolkits = Literal["tk", "wx"]
+
 
 # Logging
 class Logger(logging.Logger):
-
-    def UseGUIToolKit(self, toolkit: available_toolkits): # Currently no Tkinter support
+    def UseGUIToolKit(
+        self, toolkit: available_toolkits
+    ):  # Currently no Tkinter support
         self.UseToolKit = toolkit
 
     def critical(self, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
             getattr(do, "LOG_CRITICAL")(msg)
-    
+
     def debug(self, msg: object, *args: object, **kwds):
         super().debug(msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
@@ -47,42 +50,52 @@ class Logger(logging.Logger):
     def error(self, msg: object, *args: object, **kwds):
         super().error(msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
             getattr(do, "LOG_ERROR")(msg)
-    
+
     def exception(self, msg: object, *args: object, **kwds):
         super().exception(msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
             getattr(do, "LOG_EXCEPTION")(msg)
-            
+
     def log(self, level: int, msg: object, *args: object, **kwds):
         super().log(level, msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
             getattr(do, "LOG_NORMAL")(msg)
-    
+
     def warning(self, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
         try:
-            do = importlib.import_module(f"interface.{self.UseToolKit}.constants", "libtextworker")
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
         except ImportError:
             return
         else:
             getattr(do, "LOG_WARNING")(msg)
-    
+
+
 LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
 TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 logger = Logger("textworker")
+
 
 # Classes
 class libTewException(Exception):

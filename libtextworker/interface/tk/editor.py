@@ -109,22 +109,53 @@ class TextWidget(Text):
     def addMenucheckbtn(
         self, label: str, variable: BooleanVar, fn: object, acc: str = None, **kw
     ):
+        """
+        Add a (right-click) menu check command.
+        @param label (str): Text label of the command
+        @param variable (tkinter.BooleanVar)
+        @param fn (Callable | None = None): Callback
+        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
+        @param **kw (dict[str]): Other options by tkinter.Menu.add_checkbutton
+        """
         return self.RMenu.add_checkbutton(
             label=label, accelerator=acc, variable=variable, command=fn, **kw
         )
 
     def addMenuradiobtn(
-        self, label: str, variable: BooleanVar, fn: object, acc: str = None, **kw
+        self,
+        label: str,
+        variable: BooleanVar,
+        fn: Callable,
+        acc: str | None = None,
+        **kw,
     ):
+        """
+        Add a (right-click) menu radio button.
+        @param label (str): Text label of the command
+        @param variable (tkinter.BooleanVar)
+        @param fn (Callable | None = None): Callback
+        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
+        @param **kw (dict[str]): Other options by tkinter.Menu.add_radiobutton
+        """
         return self.RMenu.add_radiobutton(
             label=label, accelerator=acc, variable=variable, command=fn, **kw
         )
 
     def addMenucascade(self, label: str, menu: Menu, **kw):
+        """
+        Add a (right-click) submenu/cascade.
+        @param label (str): Label of the cascade
+        @param menu (tkinter.Menu): Menu to add
+        @param **kw (dict[str]): Other options by tkinter.Menu.add_cascade.
+        """
         return self.RMenu.add_cascade(label=label, menu=menu, **kw)
 
     # Wrap mode
     def wrapmode(self, event=None) -> bool:
+        """
+        Toggle editor wrap mode.
+        Only use with TextWidget.wrapbtn.
+        """
         if self.wrapbtn.get() == True:
             self.configure(wrap="none")
             self.wrapbtn.set(False)

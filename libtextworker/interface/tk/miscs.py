@@ -18,9 +18,11 @@ def CreateMenu(
     )
     ```
     """
+
     target = Menu(parent, tearoff=tearoff)
     none_to_blank = {None: ""}
     none_to_blank_2 = {None: ...}
+
     for label, acc, handler, onvalue, offvalue, variable, state, kind in items:
         label = none_to_blank.get(label, label)
         acc = none_to_blank.get(acc, acc)

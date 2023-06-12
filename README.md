@@ -7,4 +7,4 @@ Available packages from Pypi:
 * libtextworker[tkinter]: Tkinter support
 * libtextworker[wx]: wxPython support
 
-Documents are stored to tags ```v<version>-docs```, normally the document on https://lebao3105.github.io/libtextworker is the latest stable version of libtextworker.
+Documents are stored to ```v<version>-docs``` tag, normally the document on https://lebao3105.github.io/libtextworker is the latest stable version of libtextworker.
