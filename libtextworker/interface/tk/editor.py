@@ -34,7 +34,7 @@ class TextWidget(Text):
         if self.enableMenu is True:
             self.RMenu = Menu(self, tearoff=0)
             self._menu_init()
-            self.bind("<Button-3>", lambda event: self._open_menu(event))
+            self.bind("<Button-3>", self._open_menu)
 
         if useScrollbars is True:
             self._place_scrollbar()
@@ -81,7 +81,7 @@ class TextWidget(Text):
                 command=lambda: root.event_generate("<Control-y>"),
             )
 
-    def _open_menu(self, event=None):
+    def _open_menu(self, event):
         try:
             self.RMenu.post(event.x_root, event.y_root)
         finally:
