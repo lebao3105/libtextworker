@@ -56,7 +56,7 @@ class ColorManager(ColorManager):
         back, fore = self.GetColor
         font_to_use = self.GetFont
 
-        if 'Menu' in widget.winfo_class():
+        if "Menu" in widget.winfo_class():
             font_to_use.configure(size=...)
 
         try:
@@ -87,7 +87,6 @@ class ColorManager(ColorManager):
             self.configure(widget)
 
         if self.getkey("color", "autocolor") == True or "yes":
-            
             if widget not in self.threads or not self.threads[widget].is_alive():
                 self.threads[widget] = threading.Thread(
                     target=darkdetect.listener, args=(_configure,), daemon=True

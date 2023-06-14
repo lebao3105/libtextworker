@@ -5,7 +5,7 @@ import darkdetect
 from PIL import ImageColor
 
 from .. import THEMES_DIR
-from ..general import libTewException, CraftItems
+from ..general import logger, libTewException, CraftItems
 from ..get_config import ConfigurationError, GetConfig
 
 """
@@ -101,7 +101,7 @@ class ColorManager(GetConfig):
         try:
             int(size)
         except ValueError:
-            size_ = 14
+            size_ = 10
         else:
             if int(size) > 0:
                 size_ = int(size)
@@ -175,18 +175,18 @@ class ColorManager(GetConfig):
 
     def setcolorfunc(self, objname: str, func: typing.Callable, params: dict):
         """
-        Set wxPython widgets background color function.
+        Set wxPython widgets background+foreground color function.
         @param objname (str): Object name (for easier access)
-        @param func (callable): Function to set the background color (no arg)
+        @param func (callable): Target function (no arg)
         @param params (dict): Parameters to pass to func
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
     def setfontcfunc(self, objname: str, func: typing.Callable, params: dict):
         """
-        Set wxPython widgets background color function.
+        Set wxPython widgets font style function.
         @param objname (str): Object name (for easier access)
-        @param func (callable): Function to set the background color (no arg)
+        @param func (callable): Function to set the font style (no arg)
         @param params (dict): Parameters to pass to func
         """
         self.setfontfn[objname] = {"fn": func, "params": params}
@@ -200,7 +200,7 @@ class ColorManager(GetConfig):
         @see setfontcfunc
         """
         if not widget:
-            print("Widget died, skip configuring.")
+            logger.debug(f"Widget {widget} died, skip configuring.")
             return
 
         color, fontcolor = self.GetColor

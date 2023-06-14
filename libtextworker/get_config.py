@@ -1,22 +1,26 @@
 """
 @package libtextworker.get_config
 @brief Contains classes for generic INI files parsing
-@since 0.1.3: Use CommentedConfigParser
+@since 0.1.3: Use CommentedConfigParser, but don't replace ConfigParser with it.
 """
-import commentedconfigparser
 import os
-import os.path
+import typing
 
-from .general import WalkCreation, libTewException
+from .general import WalkCreation, libTewException, logger
 
 __all__ = ["ConfigurationError", "GetConfig"]
+
+try:
+    from commentedconfigparser import CommentedConfigParser as ConfigParser
+except ImportError:
+    from configparser import ConfigParser
 
 
 class ConfigurationError(libTewException):
     def __init__(self, section: str = "", option: str = "", msg: str = ""):
         prefix = "Error in the configuration file: "
         if not msg:
-            msg = "*UNKNOWN*"
+            msg = "*Unknown*"
         else:
             msg = "[{}->{}] : {}".format(
                 section,
@@ -27,7 +31,7 @@ class ConfigurationError(libTewException):
         super().__init__(full)
 
 
-class GetConfig(commentedconfigparser.CommentedConfigParser):
+class GetConfig(ConfigParser):
     # Values
     yes_values: list = ["yes", "True"]
     no_values: list = ["no", "False"]
@@ -86,7 +90,8 @@ class GetConfig(commentedconfigparser.CommentedConfigParser):
     def reset(self, restore: bool = False) -> bool:
         try:
             os.remove(self.__file)
-        except:
+        except OSError as e:
+            logger.error(e)
             return False
         else:
             for key in self.cfg:
@@ -129,7 +134,7 @@ class GetConfig(commentedconfigparser.CommentedConfigParser):
         restore: bool = False,
         noraiseexp: bool = False,
         raw: bool = False,
-    ):
+    ) -> typing.Any:
         """
         Try to get the value of an option under the spectified section.
         @version Updated (parameters) on 0.1.3
@@ -179,13 +184,6 @@ class GetConfig(commentedconfigparser.CommentedConfigParser):
             return self.aliases[value]
 
     def aliasyesno(self, yesvalue, novalue, enable: bool = True) -> None:
-        """
-        Use a custom yes/no value, for example:
-        There is an option under [section], and GetConfig will return
-        True if the options is 'yes', False if the options is 'no'.
-        You can change 'yes' and 'no' value for your use.
-        If you dont want the parser return a boolean, set enable to false.
-        """
         self.yes_values.append(yesvalue)
         self.no_values.append(novalue)
         self.returnbool = enable
@@ -221,18 +219,20 @@ class GetConfig(commentedconfigparser.CommentedConfigParser):
         specifies the new file to use (if needed, else use 'unchanged' or leave blank).
         This function won't use backup(). Non-exist things will be ignored silently.
 
-        If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['files'] == 'unchanged'.
+        If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['file'] == 'unchanged'.
         """
         curr_sects = self.sections()
-        newfile = commentedconfigparser.CommentedConfigParser()
+        newfile = ConfigParser()
 
         for item in list_:
             # Split and get values
             splits = item.split("->")
             if not splits[0] in curr_sects:
                 break
+
             value = self.get(splits[0], splits[1])
             target = list_[item]["newpath"].split("->")
+
             if "file" not in list_[item]:
                 target_file = "unchanged"
             else:
@@ -242,18 +242,25 @@ class GetConfig(commentedconfigparser.CommentedConfigParser):
             if target_file == "unchanged":
                 if not target[0] in self.sections():
                     self.add_section(target[0])
+
                 self.set(target[0], target[1], value)
+
                 if not delete_entire_section:
                     self.remove_option(splits[0], splits[1])
                 else:
                     self.remove_section(splits[0])
+
                 self.update()
+
             else:
                 if os.path.isfile(target_file):
                     newfile.read(target_file)
+
                 if not target[0] in newfile.sections():
                     newfile.add_section(target[0])
+
                 newfile.set(target[0], target[1], value)
+
                 with open(target_file, "w") as f:
                     newfile.write(f)
 
