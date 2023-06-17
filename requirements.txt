@@ -1,4 +1,0 @@
-configparser
-importlib-metadata
-packaging
-pillow
