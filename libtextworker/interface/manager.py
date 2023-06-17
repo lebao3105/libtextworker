@@ -1,7 +1,13 @@
 import typing
 import threading
 
-import darkdetect
+try:
+    import darkdetect
+except ImportError:
+    AUTOCOLOR = False
+else:
+    AUTOCOLOR = True
+
 from PIL import ImageColor
 
 from .. import THEMES_DIR
@@ -78,6 +84,9 @@ class ColorManager(GetConfig):
         Property of ColorManager to call the font definitions.
         When called, this returns the following:
             (font) size (int|str), style, weight, family
+        It will vary on different GUI toolkits:
+        * wxPython: wx.Font object
+        * Tkinter: tkinter.font.Font object
         """
         return self._get_font()
 
@@ -143,16 +152,16 @@ class ColorManager(GetConfig):
         resv = {"light": "dark", "dark": "light"}
 
         ## Check
-        if autocolor == True or "yes":
+        if autocolor in self.yesvalues and AUTOCOLOR is True:
             color_ = colors[_get_sys_mode()]
-        elif color in colors:
+        else:
             color_ = colors[color]
 
         # Text color
         if fontcolor == "default":
-            if autocolor == False:
+            if autocolor not in self.yesvalues or AUTOCOLOR is False:
                 fontcolor_ = colors[resv[color]]
-            else:
+            elif autocolor in self.yesvalues and AUTOCOLOR is True:
                 fontcolor_ = colors[resv[_get_sys_mode()]]
         else:
             if fontcolor in colors:
@@ -173,21 +182,21 @@ class ColorManager(GetConfig):
 
         return ImageColor.getrgb(color_), ImageColor.getrgb(fontcolor_)
 
-    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict):
+    def setcolorfunc(self, objname: str, func: typing.Callable, params: typing.Any):
         """
         Set wxPython widgets background+foreground color function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Target function (no arg)
-        @param params (dict): Parameters to pass to func
+        @param params: Parameters to pass to func
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
-    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict):
+    def setfontcfunc(self, objname: str, func: typing.Callable, params: typing.Any):
         """
         Set wxPython widgets font style function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Function to set the font style (no arg)
-        @param params (dict): Parameters to pass to func
+        @param params: Parameters to pass to func
         """
         self.setfontfn[objname] = {"fn": func, "params": params}
 
@@ -221,6 +230,9 @@ class ColorManager(GetConfig):
 
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "autocolor")
+        if not AUTOCOLOR:
+            raise Exception("ColorManager.autocolor_run() called when auto-color system is not usable")
+        
         if autocolor == True or "yes" and widget not in self.threads:
             self.threads[widget] = threading.Thread(
                 args=self.configure(widget), daemon=True
