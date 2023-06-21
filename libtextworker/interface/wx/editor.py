@@ -17,14 +17,17 @@ default_configs = {
 class StyledTextControl(wx.stc.StyledTextCtrl):
     """
     A better styled wxStyledTextCtrl.
-    @since version 0.1.3: \
+    @since version 0.1.3:
         Split __init__ into __init__ and EditorInit(str)
         Auto-expand linenumber margin
     """
 
-    def EditorInit(self, config_path: str):
+    def EditorInit(self, config_path: str = ""):
         """
         @since 0.1.3
+        Initialize the editor, customized part.
+        You can't ignore __init__() function;)
+        @param config_path (str): Configuration path (optional - defaults to lib's path)
         """
         if not config_path:
             config_path = EDITOR_DIR + "editor.ini"
@@ -45,7 +48,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.IndentationSet()
 
         # Right click menu
-        if self.cfg.getkey("menu", "enabled") in [True, "yes"]:
+        if self.cfg.getkey("menu", "enabled") in self.cfg.yes_values:
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
     """
@@ -53,7 +56,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     """
 
     def DNDSupport(self) -> bool:
-        if self.cfg.getkey("editor", "dnd_enabled", True, True) not in [True, "yes"]:
+        if self.cfg.getkey("editor", "dnd_enabled", True, True) not in self.cfg.yes_values:
             return False
 
         dt = DragNDropTarget(self)
@@ -125,7 +128,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.SetStyling(length, 0)
         event.Skip()
 
-    def OnUIUpdate(self, event):  # Thanks to Bing AI!
+    def OnUIUpdate(self, event):  # MS Bing helped me this
         """
         @since Version 0.1.3
         Auto-expand linenumber margin.

@@ -2,7 +2,8 @@ import re
 import wx
 import wx.aui
 import wx.xrc
-from typing import Literal
+
+from typing import Callable
 
 
 def CreateMenu(parent, items: list) -> wx.Menu:
@@ -39,6 +40,15 @@ def CreateMenu(parent, items: list) -> wx.Menu:
             parent.Bind(wx.EVT_MENU, handler, item)
     return target_menu
 
+def BindMenuEvents(obj: wx.Window, menu: wx.Menu, items: list[tuple[Callable, int]]):
+    """
+    Bind wxEVT_MENU events an easier way. Ideal for XRC menus.
+    @param obj (wx.Window): Object to call Bind() from
+    @param menu (wx.Menu): Target menu
+    @param items (list of tuple_s[Callable, int]): List of tuples, each tuple has a function + menu item index
+    """
+    for callback, pos in items:
+        obj.Bind(wx.EVT_MENU, callback, menu.FindItemByPosition(pos))
 
 class XMLBuilder:
     """
@@ -46,14 +56,20 @@ class XMLBuilder:
     Use this class by call it as a varible, or make a sub-class.
     """
 
-    def __init__(self, Parent, FilePath: str, _=None):
+    def __init__(self, Parent: wx.Window, FilePath: str, _=None):
         """
         Constructor of the class.
-        @param Parent: wxPython window
+        @param Parent: wx.Window object
         @param FilePath: XRC file to load
         @param _: (initialized) gettext
         """
-        self.Parent = Parent
+
+        """
+        @since 0.1.3: \
+            Changed self.Parent -> self.Master to avoid confusion when the class \
+            is being subclassed with other wxPython classes
+        """
+        self.Master: wx.Window = Parent
         self._ = _
 
         # Setup translation
@@ -78,4 +94,11 @@ class XMLBuilder:
         return self._(match_obj.group(1))
 
     def loadObject(self, objectname, objecttype):
-        return self.Res.LoadObject(self.Parent, objectname, objecttype)
+        """
+        Load an XRC object.
+        This function not always works, you can get error "Object <name> class <name> not found" \
+            which means the load is failed. To address this, use wx.xrc.XRCCTRL or use the object's \
+            children relative functions (e.g GetChildren/GetMenu/(wxMenu)FindItemByPostion...)
+        However, this function is ideal to get the top-level objects;)
+        """
+        return self.Res.LoadObject(self.Master, objectname, objecttype)
