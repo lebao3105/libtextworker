@@ -4,17 +4,11 @@ Library of the textworker project.
 
 libtextworker contains customizable widgets and powerful settings system in order to make GUI apps greater!
 
-How to use this library:
-* Make sure to have at least Python 3.8+, then choose a GUI framework (only wxPython for now, should not use on Python 3.11+)
-* Install requirements first (configparser, darkdetect, pillow)
-* Visit our online website (https://lebao3105.github.io/libtextworker)
-* Include this project as a git submodule (if needed), also make this project a dependency of your project!
-
 Public variables:
 * Importable (dict) : GUI frameworks check
 * \__version__ (str) : Library version
-* THEMES_DIR (str, should not be edited) : Themes directory
-* EDITOR_DIR (str, should not be edited) : Editor configurations directory
+* THEMES_DIR (str) : (for GUI) Themes directory
+* EDITOR_DIR (str) : (for GUI) Editor configurations directory
 """
 
 import gettext
