@@ -1,22 +1,14 @@
 import importlib
 import logging
 import os
-import os.path
 import pathlib
-import platform
 import shutil
 import sys
 
 from typing import Literal
 
-if platform.system() == "Windows":
-    separator = "\\"
-else:
-    separator = "/"
-
 # @since version 0.1.3
 available_toolkits = Literal["tk", "wx"]
-
 
 # Logging
 class Logger(logging.Logger):
@@ -154,10 +146,10 @@ def WalkCreation(directory: str):
     @throws Exception: Directory creation failed
     """
     directory = os.path.normpath(directory)
-    splits = directory.split(separator)
+    splits = directory.split(os.pathsep)
     firstdir = splits[0]
     for item in range(1, len(splits)):
-        firstdir += separator + splits[item]
+        firstdir += os.pathsep + splits[item]
         if not os.path.isdir(firstdir):
             os.mkdir(firstdir)
 

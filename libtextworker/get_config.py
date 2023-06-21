@@ -33,8 +33,8 @@ class ConfigurationError(libTewException):
 
 class GetConfig(ConfigParser):
     # Values
-    yes_values: list = ["yes", "True"]
-    no_values: list = ["no", "False"]
+    yes_values: list = ["yes", "True", True]
+    no_values: list = ["no", "False", False]
 
     returnbool: bool = True
     aliases = {}
