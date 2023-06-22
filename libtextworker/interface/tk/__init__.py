@@ -13,7 +13,7 @@ if Importable["tkinter"] == True:
 else:
     raise Exception(
         "interface.tk is called but its dependency Tkinter is not installed.\n"
-        "You'll need:\n- tkinter\n- darkdetect\n- sv-ttk (optional)\npackages."
+        "You'll need:\n- tkinter\n- darkdetect (optional)\n- sv-ttk (optional)\npackages."
     )
 
 try:
@@ -27,12 +27,6 @@ else:
 class ColorManager(ColorManager):
     recursive_configure: bool = True
     is_shown: bool = False  # Messages
-
-    def GetFont(self):
-        """
-        Property of ColorManager which is a tkinter.font.Font object when called.
-        """
-        return self._get_font
 
     def _get_font(self):
         size, style, weight, family = super()._get_font()
@@ -54,7 +48,7 @@ class ColorManager(ColorManager):
 
     def configure(self, widget: Misc, childs_too: bool = recursive_configure):
         back, fore = self.GetColor
-        font_to_use = self.GetFont
+        font_to_use = self._get_font()
 
         if "Menu" in widget.winfo_class():
             font_to_use.configure(size=...)
@@ -73,12 +67,9 @@ class ColorManager(ColorManager):
         except TclError:
             pass
 
-        self.autocolor_run(widget)
-
         if childs_too:
             for child in widget.winfo_children():
                 self.configure(child, self.recursive_configure)
-                self.autocolor_run(child)
 
     def autocolor_run(self, widget: typing.Any):
         def _configure(theme: str):
@@ -86,12 +77,10 @@ class ColorManager(ColorManager):
                 sv_ttk.set_theme(theme.lower())
             self.configure(widget)
 
-        if self.getkey("color", "autocolor") == True or "yes":
-            if widget not in self.threads or not self.threads[widget].is_alive():
-                self.threads[widget] = threading.Thread(
-                    target=darkdetect.listener, args=(_configure,), daemon=True
-                )
-                self.threads[widget].start()
+        if self.getkey("color", "autocolor") in self.yes_values:
+            threading.Thread(
+                target=darkdetect.listener, args=(_configure,), daemon=True
+            ).start()
 
             if SVTTK_AVAILABLE:
                 sv_ttk.set_theme(

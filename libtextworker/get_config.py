@@ -2,7 +2,9 @@
 @package libtextworker.get_config
 @brief Contains classes for generic INI files parsing
 @since 0.1.3: Use CommentedConfigParser, but don't replace ConfigParser with it.
+@since 0.1.4: Add json support; remake ConfigurationError class
 """
+import json
 import os
 import typing
 
@@ -17,19 +19,12 @@ except ImportError:
 
 
 class ConfigurationError(libTewException):
-    def __init__(self, section: str = "", option: str = "", msg: str = ""):
-        prefix = "Error in the configuration file: "
-        if not msg:
-            msg = "*Unknown*"
-        else:
-            msg = "[{}->{}] : {}".format(
-                section,
-                "(None)" if option == "" else option,
-                "No Message" if msg == "" else msg,
-            )
-        full = prefix + msg
-        super().__init__(full)
+    path: str
 
+    def __init__(self, msg: str, section: str, option: str = "\\global\\"):
+        full = "Configuration file {}, path [{}->{}]: {}"
+        full = full.format(self.path, section, option, msg)
+        super().__init__(full)
 
 class GetConfig(ConfigParser):
     # Values
@@ -58,6 +53,7 @@ class GetConfig(ConfigParser):
         a dictionary for further actions (backup/restore file).
 
         @since 0.1.3: Allow config parameter as a str object
+        @since 0.1.4: Allow importing+exporting configs as a json object
         """
         super().__init__(**kwds)
 
@@ -72,43 +68,37 @@ class GetConfig(ConfigParser):
             self.cfg[key] = self[key]
 
         self.readf(file)
-        self.__file = file
+        self._file = file
 
     # File tasks
     def readf(self, file: str, encoding: str | None = None):
         if not os.path.isfile(file):
             firstdir = os.path.dirname(file)
             WalkCreation(firstdir)
-            with open(file, mode="w") as f:
-                try:
-                    self.write(f)
-                except OSError:
-                    raise Exception("Unable to access to the file name %s" % file)
-        self.read(file, encoding)
-        self.__file = file
-
-    def reset(self, restore: bool = False) -> bool:
-        try:
-            os.remove(self.__file)
-        except OSError as e:
-            logger.error(e)
-            return False
+            self.write(open(file, "w"))
         else:
-            for key in self.cfg:
-                self[key] = self.cfg[key]
+            try:
+                self.read_dict(json.loads(open(file, "r").read()))
+            except:
+                self.read(file, encoding)
 
-            if restore and self.backups:
-                for key in self.backups:
-                    self[key] = self.backups[key]
+        self._file = file
 
-            with open(self.__file, mode="w") as f:
-                self.write(f)
-            return True
+    def reset(self, restore: bool = False):
+        os.remove(self._file)
+        for key in self.cfg:
+            self[key] = self.cfg[key]
+
+        if restore and self.backups:
+            for key in self.backups:
+                self[key] = self.backups[key]
+
+        self.update()
 
     def update(self):
-        with open(self.__file, "w") as f:
+        with open(self._file, "w") as f:
             self.write(f)
-        self.read(self.__file)
+        self.read(self._file)
 
     # Options
     def backup(self, keys: dict, direct_to_keys: bool = False) -> dict:
@@ -125,6 +115,17 @@ class GetConfig(ConfigParser):
                 else:
                     self.backups[key][subelm] = self[key][subelm]
                     return self.backups
+    
+    def full_backup(self, path:str, use_json: bool = False):
+        """
+        @since 0.1.4
+        Do a full backup.
+        """
+        with open(path, "w") as f:
+            if use_json:
+                json.dump(self, f)
+            else:
+                self.write(f)
 
     def getkey(
         self,

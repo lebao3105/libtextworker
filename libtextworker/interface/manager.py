@@ -36,7 +36,6 @@ class ColorManager(GetConfig):
 
     setcolorfn = {}
     setfontfn = {}
-    threads = {}
 
     def __init__(
         self,
@@ -49,11 +48,11 @@ class ColorManager(GetConfig):
         @param customfilepath (str|bool): Custom file path support. Set to False (default) or "" to disable it.
         """
         if isinstance(customfilepath, str) and customfilepath != "":
-            self.__file = customfilepath
+            self._file = customfilepath
         else:
-            self.__file = CraftItems(THEMES_DIR, "default.ini")
+            self._file = CraftItems(THEMES_DIR, "default.ini")
 
-        super().__init__(default_configs, self.__file, default_section="colors")
+        super().__init__(default_configs, self._file, default_section="colors")
 
     def reset(self, restore: bool = False):
         """
@@ -69,9 +68,9 @@ class ColorManager(GetConfig):
         Backup a file to another file
         @param file : str : Target backup file
         """
-        if file == self.__file:
+        if file == self._file:
             raise libTewException(
-                "Unusable parameter value: file must not equal ColorManager.__file"
+                "Unusable parameter value: file must not equal ColorManager._file"
             )
 
         with open(file, "w") as f:
@@ -96,13 +95,13 @@ class ColorManager(GetConfig):
 
     @GetFont.deleter
     def GetFont(self):
-        self._get_font = print("Deleted object: GetConfig.GetFont/_get_font")
+        self._get_font = print("ColorManager.GetFont | _get_font died")
 
     def _get_font(self):
-        family = self.get("font", "family")
-        size = self.get("font", "size")
-        weight = self.get("font", "weight")
-        style = self.get("font", "style")
+        family = self.getkey("font", "family", False, True)
+        size = self.getkey("font", "size", False, True)
+        weight = self.getkey("font", "weight", False, True)
+        style = self.getkey("font", "style", False, True)
 
         if family == "default":
             family = ""
@@ -134,16 +133,16 @@ class ColorManager(GetConfig):
 
     @GetColor.deleter
     def GetColor(self):
-        self._get_color = print("Deleted object: GetConfig.GetColor/_get_color")
+        self._get_color = print("ColorManager.GetColor | _get_color died")
 
     def _get_color(self):
         def _get_sys_mode():
             return darkdetect.theme().lower()
 
         # Get values
-        color = self.getkey("color", "background")
-        fontcolor = self.getkey("color", "textcolor")
-        autocolor = self.getkey("color", "autocolor")
+        color = self.getkey("color", "background", False, True)
+        fontcolor = self.getkey("color", "textcolor", False, True)
+        autocolor = self.getkey("color", "autocolor", False, True)
 
         # Interface color
         from ._colors import colors
@@ -152,48 +151,53 @@ class ColorManager(GetConfig):
         resv = {"light": "dark", "dark": "light"}
 
         ## Check
-        if autocolor in self.yesvalues and AUTOCOLOR is True:
+        if autocolor in self.yes_values and AUTOCOLOR is True:
             color_ = colors[_get_sys_mode()]
         else:
             color_ = colors[color]
 
         # Text color
         if fontcolor == "default":
-            if autocolor not in self.yesvalues or AUTOCOLOR is False:
+            if autocolor not in self.yes_values or AUTOCOLOR is False:
                 fontcolor_ = colors[resv[color]]
-            elif autocolor in self.yesvalues and AUTOCOLOR is True:
+                
+            elif autocolor in self.yes_values and AUTOCOLOR is True:
                 fontcolor_ = colors[resv[_get_sys_mode()]]
-        else:
-            if fontcolor in colors:
-                fontcolor_ = colors[fontcolor]
-            elif fontcolor.startswith("#") and len(fontcolor) == 7:
-                try:
-                    ImageColor.getrgb(fontcolor)
-                except ValueError:
-                    raise ConfigurationError(
-                        "interface", "textcolor", "Invalid color name/code"
-                    )
-                else:
-                    fontcolor_ = fontcolor
-            else:
+
+        elif fontcolor in colors:
+            fontcolor_ = colors[fontcolor]
+
+        elif fontcolor.startswith("#") and len(fontcolor) == 7:
+            try:
+                ImageColor.getrgb(fontcolor)
+            except ValueError:
                 raise ConfigurationError(
                     "interface", "textcolor", "Invalid color name/code"
                 )
+            else:
+                fontcolor_ = fontcolor
+        else:
+            raise ConfigurationError(
+                "interface", "textcolor", "Invalid color name/code"
+            )
 
         return ImageColor.getrgb(color_), ImageColor.getrgb(fontcolor_)
 
     def setcolorfunc(self, objname: str, func: typing.Callable, params: typing.Any):
         """
-        Set wxPython widgets background+foreground color function.
+        Set GUI widget background+foreground color-set function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Target function (no arg)
-        @param params: Parameters to pass to func
+        @param params: Parameters to pass to
+
+        Function paramers must have %(back) and %(fore) in order to
+            pass color values.
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
     def setfontcfunc(self, objname: str, func: typing.Callable, params: typing.Any):
         """
-        Set wxPython widgets font style function.
+        Set GUI widget font color-set function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Function to set the font style (no arg)
         @param params: Parameters to pass to func
@@ -202,12 +206,25 @@ class ColorManager(GetConfig):
 
     def configure(self, widget: typing.Any):
         """
-        Configure a widget with pre-defined settings.
-        This function also ables to rerun itself under a threading thread.
+        Style a widget (only fore+back) with pre-defined settings.
         @param widget : Widget to configure
         @see setcolorfunc
         @see setfontcfunc
         """
+
+        def runfn(func, args, extra, extra_alias: str):
+            if isinstance(args, tuple):
+                for item in args:
+                    if isinstance(item, str) and item == extra_alias:
+                        args[args.index(item)] = extra
+                func(*args)
+
+            elif isinstance(args, dict):
+                for item in args:
+                    if isinstance(args[item], str) and args[item] == extra_alias:
+                        args[item] = extra
+                func(**args)
+
         if not widget:
             logger.debug(f"Widget {widget} died, skip configuring.")
             return
@@ -219,22 +236,21 @@ class ColorManager(GetConfig):
             if not self.setfontfn[item]["params"]:
                 fn(fontcolor)
             else:
-                fn(self.setfontfn[item]["params"], fontcolor)
+                runfn(fn, self.setfontfn[item]["params"], fontcolor, "%(font)")
 
         for item in self.setcolorfn:
             fn = self.setcolorfn[item]["fn"]
             if not self.setcolorfn[item]["params"]:
                 fn(color)
             else:
-                fn(self.setcolorfn[item]["params"], color)
+                runfn(fn, self.setcolorfn[item]["params"], color, "%(color)")
 
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "autocolor")
         if not AUTOCOLOR:
             raise Exception("ColorManager.autocolor_run() called when auto-color system is not usable")
         
-        if autocolor == True or "yes" and widget not in self.threads:
-            self.threads[widget] = threading.Thread(
+        if autocolor in self.yes_values:
+            threading.Thread(
                 args=self.configure(widget), daemon=True
-            )
-            self.threads[widget].start()
+            ).start()
