@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['ondragover_191',['OnDragOver',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#ab1fd89b570517d21d12ec06e13bf3fd8',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondropfiles_192',['OnDropFiles',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#a5d73250585dd185e3966fc7aae141426',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondroptext_193',['OnDropText',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#ad5a79a0ba613c58910f72891ca15bc89',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['onstcmodify_194',['OnSTCModify',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a8def57a2af89ce622e11b8fa67e2599c',1,'libtextworker::interface::wx::editor::StyledTextControl']]]
+  ['menupopup_0',['MenuPopup',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#ac293f6b46c249d8d95d9cb2e98437b4c',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['move_1',['move',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a5601b9b6e41b6b69167d80ecfe4860bd',1,'libtextworker::get_config::GetConfig']]]
 ];

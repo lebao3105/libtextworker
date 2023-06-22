@@ -1,18 +1,9 @@
 var searchData=
 [
-  ['setartists_202',['SetArtists',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aa5be235ea626f7c790f525ecfaa62a41',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setcolorfunc_203',['setcolorfunc',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a3f3efbde0a2110e9b1703292dca4ca8e',1,'libtextworker.interface.manager.ColorManager.setcolorfunc()'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a3b7c9d1081535fff2b988201202d2995',1,'libtextworker.interface.tk.ColorManager.setcolorfunc()']]],
-  ['setcopyright_204',['SetCopyright',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a08c613106391e63c87646b317ba3ed45',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setdescription_205',['SetDescription',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a0a025e0f9ba0f1ab34c6882e52addf2b',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setdevelopers_206',['SetDevelopers',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a16d68543036df56f1f68affe0740c5bc',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setdocwriters_207',['SetDocWriters',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#ab9eb998bf9150cb05b5e498cc5383da1',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setfontcfunc_208',['setfontcfunc',['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#ab3349eb2c94bf692100eb7f2b2ac7364',1,'libtextworker.interface.tk.ColorManager.setfontcfunc()'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a1991607cd179a6063be9af48c7aef334',1,'libtextworker.interface.manager.ColorManager.setfontcfunc()']]],
-  ['seticon_209',['SetIcon',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#ad7b75d62c81839476e00e36554f6f73a',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setlicense_210',['SetLicense',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a0cb356df27830372c60c35b7bbe8ff72',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setname_211',['SetName',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#acd597b0f5313c826f979a13d61a34afc',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['settranslators_212',['SetTranslators',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a15213fccaa0e1b8797b68973aed1190c',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setupeditorcolor_213',['SetupEditorColor',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#ab900d5d169655863f14a539fb0291204',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
-  ['setversion_214',['SetVersion',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a39f693fb52760eb78b780bb9007db54e',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['setwebsite_215',['SetWebSite',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a4086f6bd6be6b04f4973d859a4f9a62f',1,'libtextworker::interface::wx::about::AboutDialog']]],
-  ['showbox_216',['ShowBox',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aab4c633b5a27f87984f9b3f4d197df02',1,'libtextworker::interface::wx::about::AboutDialog']]]
+  ['readf_0',['readf',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a71c899da09f113f4e99894b93f609928',1,'libtextworker::get_config::GetConfig']]],
+  ['require_1',['require',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a5e260a9743b3aff2143c420edab56ae9',1,'libtextworker::versioning']]],
+  ['require_5fexact_2',['require_exact',['../d6/dfb/namespacelibtextworker_1_1versioning.html#af05443425f699ba0953dbf163ba0af17',1,'libtextworker::versioning']]],
+  ['require_5flower_3',['require_lower',['../d6/dfb/namespacelibtextworker_1_1versioning.html#ac5e711fb99793df6cccd2bbbf7aebd0e',1,'libtextworker::versioning']]],
+  ['reset_4',['reset',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a1897afd741e507099e0d5b937fa53912',1,'libtextworker.get_config.GetConfig.reset()'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a3840505e43677f4a0b38ab8ac06ba388',1,'libtextworker.interface.manager.ColorManager.reset()']]],
+  ['reseteveryconfig_5',['ResetEveryConfig',['../d8/d08/namespacelibtextworker_1_1general.html#a8cdb38ab238314ff84d3f1830164f93e',1,'libtextworker::general']]]
 ];

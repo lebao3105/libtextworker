@@ -5,5 +5,6 @@ var namespacelibtextworker_1_1interface_1_1tk =
       [ "CreateMenu", "dd/d2e/namespacelibtextworker_1_1interface_1_1tk_1_1miscs.html#ac9fefa631df4c7d4c17585cd9433820f", null ]
     ] ],
     [ "ColorManager", "de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html", "de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager" ],
-    [ "clrmgr", "dd/d15/namespacelibtextworker_1_1interface_1_1tk.html#a451999822bc411fe278c3cb4779247f3", null ]
+    [ "clrmgr", "dd/d15/namespacelibtextworker_1_1interface_1_1tk.html#a451999822bc411fe278c3cb4779247f3", null ],
+    [ "SVTTK_AVAILABLE", "dd/d15/namespacelibtextworker_1_1interface_1_1tk.html#a8ef82900ebf03fb9b2b885e0af58c576", null ]
 ];

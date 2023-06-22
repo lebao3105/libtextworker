@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['nargs_73',['nargs',['../db/db3/namespacebuilder.html#ac1e57798c729b48808e5a98e48643376',1,'builder']]],
-  ['none_74',['None',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aa735b1f5f4cce2caa9ab0550edf3b432',1,'libtextworker::interface::wx::about::AboutDialog']]]
+  ['no_5fvalues_0',['no_values',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#ab135b81e8c121824ba6fa748326540d2',1,'libtextworker::get_config::GetConfig']]]
 ];

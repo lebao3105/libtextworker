@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['walkcreation_220',['WalkCreation',['../d8/d08/namespacelibtextworker_1_1general.html#a7f947e8904cbd2301ce243a345b625fb',1,'libtextworker::general']]],
-  ['wrapmode_221',['wrapmode',['../dc/dce/classlibtextworker_1_1interface_1_1tk_1_1editor_1_1TextWidget.html#a561e30e385f914c923d623c48ca72cf1',1,'libtextworker::interface::tk::editor::TextWidget']]]
+  ['update_0',['update',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a5c5a641c881d40308e902bd6e9929a21',1,'libtextworker::get_config::GetConfig']]],
+  ['useguitoolkit_1',['UseGUIToolKit',['../d0/de7/classlibtextworker_1_1general_1_1Logger.html#a3fc2e1c7794a20ab3e421f4e72e2c3c1',1,'libtextworker::general::Logger']]]
 ];

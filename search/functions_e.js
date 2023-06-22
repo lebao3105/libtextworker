@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_219',['update',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a44aa7840abbf6f8a4d9e76b5b93287f1',1,'libtextworker::get_config::GetConfig']]]
+  ['txtlocalize_0',['txtLocalize',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a6c73700fdac7e43f894f4bcde224f85f',1,'libtextworker::interface::wx::miscs::XMLBuilder']]]
 ];

@@ -26,9 +26,10 @@ var NAVTREE =
 [
   [ "libtextworker", "index.html", [
     [ "Usage", "index.html#autotoc_md1", null ],
+    [ "Deprecated List", "da/d58/deprecated.html", null ],
     [ "Packages", "namespaces.html", [
-      [ "Packages", "namespaces.html", "namespaces_dup" ],
-      [ "Package Functions", "namespacemembers.html", [
+      [ "Package List", "namespaces.html", "namespaces_dup" ],
+      [ "Package Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
         [ "Variables", "namespacemembers_vars.html", null ]
@@ -52,7 +53,8 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"annotated.html",
+"db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#acc7e88f31cf3843c2eaf07df9a5d3821"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

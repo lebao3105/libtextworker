@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['backups_224',['backups',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a3f25ffec3998d024ad73bc00b60a29ab',1,'libtextworker::get_config::GetConfig']]],
-  ['bool_225',['bool',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a8e82efe64b17b429583dae756d9d9fb3',1,'libtextworker.get_config.GetConfig.bool()'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a7eca6c59d1e770ae1287a1becc188258',1,'libtextworker.interface.tk.ColorManager.bool()'],['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html#a119c531187caa10b6c8d386e2601a8ba',1,'libtextworker.interface.wx.ColorManager.bool()'],['../db/db3/namespacebuilder.html#a5ca5757837d2916c87d5686195a7ec0d',1,'builder.bool()'],['../d8/d08/namespacelibtextworker_1_1general.html#a41448ffe7c5aa4dea0d49ac498a4d928',1,'libtextworker.general.bool()']]]
+  ['aliases_0',['aliases',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a93d64846891fef4db767f5827c073cc3',1,'libtextworker::get_config::GetConfig']]],
+  ['autocolor_1',['AUTOCOLOR',['../dc/d8a/namespacelibtextworker_1_1interface_1_1manager.html#a990ff783ab20d7402da875edf30c4872',1,'libtextworker::interface::manager']]],
+  ['available_5flicenses_2',['available_licenses',['../d6/df3/namespacelibtextworker_1_1interface_1_1wx_1_1about.html#ab992214506b84ea58a1fba71b9fed22c',1,'libtextworker::interface::wx::about']]],
+  ['available_5ftoolkits_3',['available_toolkits',['../d8/d08/namespacelibtextworker_1_1general.html#a0ccf3b090ca36a9aaf28333713e9e354',1,'libtextworker::general']]]
 ];

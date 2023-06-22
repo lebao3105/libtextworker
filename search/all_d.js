@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['parent_80',['Parent',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a457244b1e336a871a8561842e4c3ebed',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
-  ['parse_5fversion_81',['parse_version',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a796da99019928472616a0406259ae6b5',1,'libtextworker::versioning']]],
-  ['parser_82',['parser',['../db/db3/namespacebuilder.html#ac8a3be2ee9f2bb78461c0b2663413d29',1,'builder']]]
+  ['parent_0',['Parent',['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#aa0a06d42504ba84a5f56dd1dfb68d3dd',1,'libtextworker.interface.wx.about.AboutDialog.Parent'],['../d3/d3c/classlibtextworker_1_1interface_1_1wx_1_1about_1_1AboutDialog.html#a0b2a061fc76811a84c94ea2e520d8b03',1,'libtextworker.interface.wx.about.AboutDialog.Parent']]],
+  ['parse_5fversion_1',['parse_version',['../d6/dfb/namespacelibtextworker_1_1versioning.html#ae5c88fd150e97f8567354a6b72d44ce8',1,'libtextworker::versioning']]],
+  ['patcheddirctrl_2',['PatchedDirCtrl',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html',1,'libtextworker::interface::wx::dirctrl']]]
 ];

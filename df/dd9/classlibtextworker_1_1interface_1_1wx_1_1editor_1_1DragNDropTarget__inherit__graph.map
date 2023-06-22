@@ -1,5 +1,7 @@
 <map id="libtextworker.interface.wx.editor.DragNDropTarget" name="libtextworker.interface.wx.editor.DragNDropTarget">
-<area shape="rect" id="node1" title=" " alt="" coords="42,80,279,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,148,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="173,5,319,32"/>
+<area shape="rect" id="Node000001" title="Drag&#45;and&#45;drop (DND) support for wxStyledTextCtrl." alt="" coords="45,80,255,123"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,137,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,41,132,78,128,82,91,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="161,5,296,32"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,45,171,82,168,78,204,41"/>
 </map>

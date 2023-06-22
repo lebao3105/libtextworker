@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['setcolorfn_245',['setcolorfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a4e26692b5443a1c2deb4f2108f8b36c4',1,'libtextworker::interface::manager::ColorManager']]],
-  ['setfontfn_246',['setfontfn',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a51c819c6e8dec978ce5a50b0c868ac62',1,'libtextworker::interface::manager::ColorManager']]]
+  ['onstcmodify_0',['OnSTCModify',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#ae660267a80ec7d950c6f173782a3e0ac',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['onuiupdate_1',['OnUIUpdate',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a438b88fbffbc2c0e1b938a9d0ecc6157',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['openfolder_2',['openfolder',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html#a217dda62d5ad1e6db8cde7b5ae959d71',1,'libtextworker::interface::wx::dirctrl::PatchedDirCtrl']]]
 ];
