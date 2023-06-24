@@ -18,7 +18,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     """
     A better styled wxStyledTextCtrl.
     @since version 0.1.3:
-        Split __init__ into __init__ and EditorInit(str)
+        Moved all customs from __init__ (derived) to EditorInit func()
         Auto-expand linenumber margin
     """
 
@@ -88,7 +88,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def LineNumbers(self) -> bool:
         state = self.cfg.getkey("editor", "line_count", True, True)
-        if state in ["no", False]:
+        if state in self.cfg.no_values:
             self.SetMarginWidth(0, 0)
             return False
 

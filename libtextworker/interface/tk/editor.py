@@ -1,28 +1,25 @@
 from typing import Callable
 from tkinter import BooleanVar, Menu, Text, ttk
 
-
 class TextWidget(Text):
     def __init__(
         self,
         parent,
         useMenu: bool = True,
         useScrollbars: bool = True,
-        unRedo: bool = True,
         **kwds,
     ):
         """
         Customized Tkinter Text widget with a basic right-click menu.
-        @param parent : Where to place this widget
+        @param parent : Where to place this widget (replaces master)
         @param useMenu (bool) : Enable right-click menu or not
         @param useScrollbars (bool=True) : Use scrollbars
-        @param unRedo (bool=True) : Undo Redo
         @param **kwds : Other configurations (tkinter.Text)
 
         You can set TextWidget.wrapbtn to your own wrapbtn to use the wrap feature.
         The wrap function is wrapmode(event=None).
         """
-        self.unRedo = kwds["undo"] = kwds.get("undo", 0) or unRedo
+        self.unRedo = kwds.get("undo", False)
         super().__init__(parent, **kwds)
 
         self.wrapbtn = BooleanVar(self)
@@ -39,8 +36,6 @@ class TextWidget(Text):
         if useScrollbars is True:
             self._place_scrollbar()
 
-        self.configure(wrap="word")
-        self.configure(undo=unRedo)
 
     # Place scrollbars
     def _place_scrollbar(self):
@@ -154,7 +149,7 @@ class TextWidget(Text):
     def wrapmode(self, event=None) -> bool:
         """
         Toggle editor wrap mode.
-        Only use with TextWidget.wrapbtn.
+        Only use with TextWidget.wrapbtn BooleanVar.
         """
         if self.wrapbtn.get() == True:
             self.configure(wrap="none")

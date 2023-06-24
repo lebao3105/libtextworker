@@ -6,26 +6,17 @@ try:
 except ImportError:
     AUTOCOLOR = False
 else:
-    AUTOCOLOR = True
+    if darkdetect.theme() is None:
+        AUTOCOLOR = False
+    else: 
+        AUTOCOLOR = True
 
 from PIL import ImageColor
 
 from .. import THEMES_DIR
 from ..general import logger, libTewException, CraftItems
 from ..get_config import ConfigurationError, GetConfig
-
-"""
-Default UI configurations
-"""
-default_configs = {
-    "color": {"background": "light", "autocolor": "yes", "textcolor": "default"},
-    "font": {
-        "style": "normal",
-        "weight": "normal",
-        "family": "default",
-        "size": "normal",
-    },
-}
+from ..interface import stock_ui_configs, colors
 
 
 class ColorManager(GetConfig):
@@ -39,12 +30,12 @@ class ColorManager(GetConfig):
 
     def __init__(
         self,
-        default_configs: dict[str, typing.Any] = default_configs,
+        default_configs: dict[str, typing.Any] = stock_ui_configs,
         customfilepath: str or bool = False,
     ):
         """
         Constructor of the class.
-        @param default_configs (dict[str, Any]): Defaults to default_configs, this is dev-made configs
+        @param default_configs (dict[str, Any]): Defaults to dev-premade configs
         @param customfilepath (str|bool): Custom file path support. Set to False (default) or "" to disable it.
         """
         if isinstance(customfilepath, str) and customfilepath != "":
@@ -143,9 +134,6 @@ class ColorManager(GetConfig):
         color = self.getkey("color", "background", False, True)
         fontcolor = self.getkey("color", "textcolor", False, True)
         autocolor = self.getkey("color", "autocolor", False, True)
-
-        # Interface color
-        from ._colors import colors
 
         ##
         resv = {"light": "dark", "dark": "light"}
