@@ -51,7 +51,7 @@ class ColorManager(ColorManager):
         font_to_use = self._get_font()
 
         if "Menu" in widget.winfo_class():
-            font_to_use.configure(size=...)
+            font_to_use.configure(size=10)
 
         try:
             widget.configure(font=font_to_use)
