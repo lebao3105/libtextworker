@@ -14,6 +14,59 @@ LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
 TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 
 # Classes
+## Logging
+class Logger(logging.Logger):
+    UseToolKit : available_toolkits | bool = False
+
+    def UseGUIToolKit(
+        self, toolkit: available_toolkits
+    ):  # Currently no Tkinter support
+        self.UseToolKit = toolkit
+    
+    def CallFunc(self,
+                 name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"],
+                 msg: object,
+                 *args: object
+        ):
+        """
+        Call GUI toolkit logging function.
+        """
+        try:
+            do = importlib.import_module(
+                f"interface.{self.UseToolKit}.constants", "libtextworker"
+            )
+        except ImportError:
+            return
+        else:
+            getattr(do, "LOG_" + name)(msg, args)
+
+    def critical(self, msg: object, *args: object, **kwds):
+        super().critical(msg, *args, **kwds)
+        self.CallFunc('CRITICAL', msg, args)
+
+    def debug(self, msg: object, *args: object, **kwds):
+        super().debug(msg, *args, **kwds)
+        self.CallFunc('DEBUG', msg, args)
+
+    def error(self, msg: object, *args: object, **kwds):
+        super().error(msg, *args, **kwds)
+        self.CallFunc('ERROR', msg, args)
+
+    def exception(self, msg: object, *args: object, **kwds):
+        super().exception(msg, *args, **kwds)
+        self.CallFunc('EXCEPTION', msg, args)
+
+    def log(self, level: int, msg: object, *args: object, **kwds):
+        super().log(level, msg, *args, **kwds)
+        self.CallFunc('NORMAL', msg, args)
+
+    def warning(self, msg: object, *args: object, **kwds):
+        super().warning(msg, *args, **kwds)
+        self.CallFunc('WARNING', msg, args)
+
+logger = Logger("textworker")
+
+## Base Exception class
 class libTewException(Exception):
     """
     Common exception class for libtextworker
@@ -23,81 +76,6 @@ class libTewException(Exception):
         logger.error(msg, exc_info=1)
         super().__init__(msg)
 
-
-## Logging
-class Logger(logging.Logger):
-    def UseGUIToolKit(
-        self, toolkit: available_toolkits
-    ):  # Currently no Tkinter support
-        self.UseToolKit = toolkit
-
-    def critical(self, msg: object, *args: object, **kwds):
-        super().critical(msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_CRITICAL")(msg)
-
-    def debug(self, msg: object, *args: object, **kwds):
-        super().debug(msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_DEBUG")(msg)
-
-    def error(self, msg: object, *args: object, **kwds):
-        super().error(msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_ERROR")(msg)
-
-    def exception(self, msg: object, *args: object, **kwds):
-        super().exception(msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_EXCEPTION")(msg)
-
-    def log(self, level: int, msg: object, *args: object, **kwds):
-        super().log(level, msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_NORMAL")(msg)
-
-    def warning(self, msg: object, *args: object, **kwds):
-        super().warning(msg, *args, **kwds)
-        try:
-            do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
-            )
-        except ImportError:
-            return
-        else:
-            getattr(do, "LOG_WARNING")(msg)
-
-logger = Logger("textworker")
 
 # Functions
 def CraftItems(*args: str | pathlib.Path) -> str:

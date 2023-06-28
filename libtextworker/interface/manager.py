@@ -14,10 +14,12 @@ else:
 from PIL import ImageColor
 
 from .. import THEMES_DIR
-from ..general import logger, libTewException, CraftItems
+from ..general import logger, libTewException, CraftItems, logger
 from ..get_config import ConfigurationError, GetConfig
 from ..interface import stock_ui_configs, colors
 
+if AUTOCOLOR is False:
+    logger.warning("GUI auto-color is not usable")
 
 class ColorManager(GetConfig):
     """
@@ -43,12 +45,12 @@ class ColorManager(GetConfig):
         else:
             self._file = CraftItems(THEMES_DIR, "default.ini")
 
-        super().__init__(default_configs, self._file, default_section="colors")
+        super().__init__(default_configs, self._file)
 
     def reset(self, restore: bool = False):
         """
         Reset the configuration file.
-        This is blocked as it can make conflicts with other GUI widgets - unless you shutdown the app immediately..
+        This is blocked as it can make conflicts with other instances of the class - unless you shutdown the app immediately..
         """
         raise NotImplementedError(
             "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead."
@@ -74,7 +76,7 @@ class ColorManager(GetConfig):
         Property of ColorManager to call the font definitions.
         When called, this returns the following:
             (font) size (int|str), style, weight, family
-        It will vary on different GUI toolkits:
+        The output will vary on different GUI toolkits:
         * wxPython: wx.Font object
         * Tkinter: tkinter.font.Font object
         """
@@ -132,8 +134,8 @@ class ColorManager(GetConfig):
 
         # Get values
         color = self.getkey("color", "background", False, True)
-        fontcolor = self.getkey("color", "textcolor", False, True)
-        autocolor = self.getkey("color", "autocolor", False, True)
+        fontcolor = self.getkey("color", "foreground", False, True)
+        autocolor = self.getkey("color", "auto", False, True)
 
         ##
         resv = {"light": "dark", "dark": "light"}
@@ -171,24 +173,27 @@ class ColorManager(GetConfig):
 
         return ImageColor.getrgb(color_), ImageColor.getrgb(fontcolor_)
 
-    def setcolorfunc(self, objname: str, func: typing.Callable, params: typing.Any):
+    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict|tuple):
         """
-        Set GUI widget background+foreground color-set function.
+        Set GUI widget background color-set function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Target function (no arg)
         @param params: Parameters to pass to
 
-        Function paramers must have %(back) and %(fore) in order to
-            pass color values.
+        Function paramers must have %(color) in order to
+            pass color value.
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
-    def setfontcfunc(self, objname: str, func: typing.Callable, params: typing.Any):
+    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict|tuple):
         """
         Set GUI widget font color-set function.
         @param objname (str): Object name (for easier access)
         @param func (callable): Function to set the font style (no arg)
         @param params: Parameters to pass to func
+
+        Function paramers must have %(font) in order to
+            pass color value.
         """
         self.setfontfn[objname] = {"fn": func, "params": params}
 

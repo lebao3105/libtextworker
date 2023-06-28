@@ -32,10 +32,10 @@ gettext.install(APPDOMAIN, LOCALEDIR)
 Importable = _importer.Importable
 
 # Something else;-;
-__version__ = "0.1.3"
-THEMES_DIR = os.path.expanduser("~/.config/textworker/themes/")
-EDITOR_DIR = os.path.expanduser("~/.config/textworker/editorconfigs/")
+__version__ = "0.1.4"
+THEMES_DIR = rf'{os.path.expanduser("~/.config/textworker/themes/")}'
+EDITOR_DIR = rf'{os.path.expanduser("~/.config/textworker/editorconfigs/")}'
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)
-WalkCreation(os.path.expanduser("~/.logs"))
+WalkCreation(rf'{os.path.expanduser("~/.logs")}')

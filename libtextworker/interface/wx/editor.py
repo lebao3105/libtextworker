@@ -103,12 +103,12 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
         self.clrmgr.setcolorfunc(
-            "textw", self.StyleSetBackground, wx.stc.STC_STYLE_DEFAULT
+            "textw", self.StyleSetBackground, {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color)"}
         )
         self.clrmgr.setfontcfunc(
-            "textw", self.StyleSetForeground, wx.stc.STC_STYLE_DEFAULT
+            "textw", self.StyleSetForeground, {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font)"}
         )
-        self.clrmgr.configure(self)
+        self.clrmgr.configure(self, False)
 
         self.Bind(wx.stc.EVT_STC_MODIFIED, self.OnSTCModify)
         self.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUIUpdate)

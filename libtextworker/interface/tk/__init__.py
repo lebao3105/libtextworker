@@ -4,15 +4,14 @@ Contains class(es) and needed attributes for Tkinter.
 """
 import threading
 import typing
-from libtextworker import Importable
-from ..manager import ColorManager
+from ... import Importable
+from ..manager import ColorManager, AUTOCOLOR
 
 if Importable["tkinter"] == True:
-    import darkdetect
     from tkinter import TclError, font, Misc
 else:
     raise Exception(
-        "interface.tk is called but its dependency Tkinter is not installed.\n"
+        "interface.tk is called but its dependencies are not installed.\n"
         "You'll need:\n- tkinter\n- darkdetect (optional)\n- sv-ttk (optional)\npackages."
     )
 
@@ -23,6 +22,10 @@ except ImportError:
 else:
     SVTTK_AVAILABLE = True
 
+if AUTOCOLOR:
+    import darkdetect
+else:
+    pass
 
 class ColorManager(ColorManager):
     recursive_configure: bool = True
@@ -37,6 +40,14 @@ class ColorManager(ColorManager):
 
         if style == "normal" or style != "italic":
             style = "roman"
+        
+        if weight == "system":
+            weight = "normal"
+        
+        if weight not in ["system", "normal", "bold"]:
+            # from warnings import warn
+            # warn("Tkinter font weight must be 'normal', 'system' (an alias to 'normal') or 'bold'")
+            weight = "normal"
 
         return font.Font(None, family=family, weight=weight, slant=style, size=size)
 
@@ -72,7 +83,9 @@ class ColorManager(ColorManager):
                 self.configure(child, self.recursive_configure)
 
     def autocolor_run(self, widget: typing.Any):
-        def _configure(theme: str):
+        def _configure(theme: str = ""):
+            if not theme:
+                theme = self.getkey("color", "background", True, True, True)
             if SVTTK_AVAILABLE:
                 sv_ttk.set_theme(theme.lower())
             self.configure(widget)
@@ -82,11 +95,11 @@ class ColorManager(ColorManager):
                 target=darkdetect.listener, args=(_configure,), daemon=True
             ).start()
 
-            if SVTTK_AVAILABLE:
-                sv_ttk.set_theme(
-                    darkdetect.theme().lower()
-                )  # Keep this to avoid 'font already exists' error
+            if SVTTK_AVAILABLE: # To avoid 'font already exists' error
+                if not AUTOCOLOR:
+                    sv_ttk.set_theme(self.getkey("color", "background", True, True, True))
+                else:
+                    sv_ttk.set_theme(
+                        darkdetect.theme().lower()
+                    )
 
-
-## @deprecated On version 0.1.3
-clrmgr = None

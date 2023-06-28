@@ -8,7 +8,7 @@ import json
 import os
 import typing
 
-from .general import WalkCreation, libTewException, logger
+from .general import WalkCreation, libTewException
 
 __all__ = ["ConfigurationError", "GetConfig"]
 
@@ -19,11 +19,10 @@ except ImportError:
 
 
 class ConfigurationError(libTewException):
-    path: str
 
-    def __init__(self, msg: str, section: str, option: str = "\\global\\"):
+    def __init__(self, path: str, msg: str, section: str, option: str = "\\not_specified\\"):
         full = "Configuration file {}, path [{}->{}]: {}"
-        full = full.format(self.path, section, option, msg)
+        full = full.format(path, section, option, msg)
         super().__init__(full)
 
 class GetConfig(ConfigParser):
@@ -31,7 +30,6 @@ class GetConfig(ConfigParser):
     yes_values: list = ["yes", "True", True]
     no_values: list = ["no", "False", False]
 
-    returnbool: bool = True
     aliases = {}
     detailedlogs: bool = True
     backups = {}
@@ -45,7 +43,7 @@ class GetConfig(ConfigParser):
     def __init__(self, config: dict[str] | str, file: str, **kwds):
         """
         A customized INI file parser.
-        @param config (dict[str] or str) : Default configurations, used to reset the file or do some comparisions
+        @param config (dict[str] or str) : Your stock settings, used to reset the file or do some comparisions
         @param file : Configuration file
         @param **kwds : To pass to configparser.ConfigParser (base class)
 
@@ -72,9 +70,8 @@ class GetConfig(ConfigParser):
 
     # File tasks
     def readf(self, file: str, encoding: str | None = None):
-        if not os.path.isfile(file):
-            firstdir = os.path.dirname(file)
-            WalkCreation(firstdir)
+        WalkCreation(os.path.dirname(file))
+        if not os.path.exists(file):
             self.write(open(file, "w"))
         else:
             try:
@@ -120,6 +117,8 @@ class GetConfig(ConfigParser):
         """
         @since 0.1.4
         Do a full backup.
+        @param path (str): Target backup file
+        @param use_json (bool = False): Use the backup file in JSON format
         """
         with open(path, "w") as f:
             if use_json:
@@ -135,66 +134,70 @@ class GetConfig(ConfigParser):
         restore: bool = False,
         noraiseexp: bool = False,
         raw: bool = False,
-    ) -> typing.Any:
+    ) -> typing.Any | None:
         """
         Try to get the value of an option under the spectified section.
         @version Updated (parameters) on 0.1.3
+        @version Updated return types on 0.1.4
 
         @param section, option: Target section->option
-        @param needed (boolean=False): The target option is needed - should use with restore & noraiseexp
+        @param needed (boolean=False): The target option is needed - should use with restore & noraiseexp.
         @param restore (boolean=False): Create the option if it is not found from the search
-        @param noraiseexp (boolean=False): Whetever to raise an Exception if something went wrong (default getkey will)
+        @param noraiseexp (boolean=False): Make getkey() raise exceptions or not (when neccessary)
         @param raw (boolean=False): Don't use aliases for the value we get.
+
+        @return False if the option does not exist and needed parameter set to False.
         """
         if not self.has_section(section):
             if needed == True:
                 self.add_section(section)
             else:
-                if noraiseexp != True:
+                if not noraiseexp:
                     raise ConfigurationError(
-                        section, msg="Section not found: %s" % section
+                        self._file, "Section not found", section
                     )
                 else:
-                    return False
+                    return None
 
         if not option in self[section]:
             if needed == True:
                 if restore == True:
-                    self.set(
-                        section,
-                        option,
-                        self.backups[section][option]
-                        if option in self.backups[section]
-                        else self.cfg[section][option],
-                    )
+                    self[section][option] = \
+                        self.backups[section][option] \
+                        if option in self.backups[section] \
+                        else self.cfg[section][option]
                 else:
                     self.set_and_update(section, option, self[section][option])
             else:
                 if noraiseexp != True:
                     raise ConfigurationError(
-                        section, option, "Option not found: %s" % option
+                        self._file, "Option not found: %s" % option, section, option
                     )
                 else:
-                    return False
+                    return None
 
         value = self.get(section, option)
 
-        if raw or not value in self.aliases:
+        if raw or not value.lower() in self.aliases:
             return value
         else:
             return self.aliases[value]
 
-    def aliasyesno(self, yesvalue, novalue, enable: bool = True) -> None:
-        self.yes_values.append(yesvalue)
-        self.no_values.append(novalue)
-        self.returnbool = enable
+    def aliasyesno(self, yesvalue=None, novalue=None) -> None:
+        if yesvalue:
+            self.yes_values.append(yesvalue)
+            self.aliases[yesvalue] = True
+
+        if novalue:
+            self.no_values.append(novalue)
+            self.aliases[novalue] = False
 
     def alias(self, value, value2) -> None:
         self.aliases[value] = value2
 
     def move(
         self, list_: dict[str, dict[str, str]], delete_entire_section: bool = False
-    ) -> None:
+    ):
         """
         @since 0.1.3
 
