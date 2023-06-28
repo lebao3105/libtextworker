@@ -40,5 +40,6 @@ def test_mkconfig():
         True,
     )
 
-    assert cfgs.getkey("section1", "option1") == "value_changed"
-    assert cfgs.getkey("section2", "option1") == "yes"
+    assert cfgs.getkey("section_one", "option1") == "value_changed" # 28/06/2023: This should be fixed before ("section_one" instead of "section1")
+    cfgs.readf("helloworld/one/configs/new.ini")
+    assert cfgs.getkey("test_move", "section2_opt1") in cfgs.yes_values

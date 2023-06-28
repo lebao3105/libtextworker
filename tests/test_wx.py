@@ -1,6 +1,8 @@
 import webbrowser
 import wx
 from libtextworker import __version__ as ver
+from libtextworker import _importer
+_importer.test_import("wx")
 from libtextworker.interface.wx.about import AboutDialog
 from libtextworker.interface.wx.editor import StyledTextControl
 from libtextworker.interface.wx.miscs import CreateMenu
@@ -40,7 +42,7 @@ def test_wx():
     menubar.Append(the_only_one, "The only one.")
     fm.SetMenuBar(menubar)
 
-    StyledTextControl(fm)
+    StyledTextControl(fm).EditorInit()
 
     fm.Show()
     app.MainLoop()
