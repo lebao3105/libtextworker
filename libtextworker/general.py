@@ -10,7 +10,21 @@ from typing import Literal
 # @since version 0.1.3
 available_toolkits = Literal["tk", "wx"]
 
-# Logging
+LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
+TOPLV_DIR = os.path.expanduser("~/.config/textworker")
+
+# Classes
+class libTewException(Exception):
+    """
+    Common exception class for libtextworker
+    """
+
+    def __init__(self, msg: str):
+        logger.error(msg, exc_info=1)
+        super().__init__(msg)
+
+
+## Logging
 class Logger(logging.Logger):
     def UseGUIToolKit(
         self, toolkit: available_toolkits
@@ -83,22 +97,7 @@ class Logger(logging.Logger):
         else:
             getattr(do, "LOG_WARNING")(msg)
 
-
-LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
-TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 logger = Logger("textworker")
-
-
-# Classes
-class libTewException(Exception):
-    """
-    Common exception class for libtextworker
-    """
-
-    def __init__(self, msg: str):
-        logger.error(msg, exc_info=1)
-        super().__init__(msg)
-
 
 # Functions
 def CraftItems(*args: str | pathlib.Path) -> str:
@@ -145,11 +144,11 @@ def WalkCreation(directory: str):
     @param directory (str): Directory to create
     @throws Exception: Directory creation failed
     """
-    directory = os.path.normpath(directory)
-    splits = directory.split(os.pathsep)
+    directory = directory.replace("\\", "/")
+    splits = directory.split("/")
     firstdir = splits[0]
     for item in range(1, len(splits)):
-        firstdir += os.pathsep + splits[item]
+        firstdir += ("/" + splits[item])
         if not os.path.isdir(firstdir):
             os.mkdir(firstdir)
 
