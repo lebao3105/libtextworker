@@ -1,79 +1,105 @@
-from typing import Callable
+"""
+@package libtextworker.interface.tk.editor
+@brief Home of Tkinter(Ttk) text editors.
+@since 0.1.4: TextWidget is now a StyledTextControl alias (will be removed in the future). Customizations in __init__() are now moved to EditorInit().
+"""
 from tkinter import BooleanVar, Menu, Text, ttk
+from typing import Literal
 
-class TextWidget(Text):
-    def __init__(
+from libtextworker import EDITOR_DIR
+
+from . import ColorManager
+from ..import stock_editor_configs
+from ...get_config import GetConfig
+
+
+class StyledTextControl(Text):
+    """
+    Customized Tkinter Text widget with some extra features.
+
+    You can set the wrapbtn variable to your own wrapbtn to use the wrap feature.
+    The wrap function is wrapmode(event=None).
+    """
+
+    clrmgr = ColorManager()
+    cfger = GetConfig(stock_editor_configs, EDITOR_DIR + "editor.ini")
+
+    def EditorInit(
         self,
-        parent,
-        useMenu: bool = True,
-        useScrollbars: bool = True,
-        **kwds,
+        useMenu: bool = cfger.getkey("menu", "enabled", True, True, True) in cfger.yes_values,
+        useScrollBars: bool = True,
+        unRedoable: bool = True,
+        textwrap: Literal["char", "none", "word"] = "word"
     ):
         """
-        Customized Tkinter Text widget with a basic right-click menu.
-        @param parent : Where to place this widget (replaces master)
-        @param useMenu (bool) : Enable right-click menu or not
-        @param useScrollbars (bool=True) : Use scrollbars
-        @param **kwds : Other configurations (tkinter.Text)
-
-        You can set TextWidget.wrapbtn to your own wrapbtn to use the wrap feature.
-        The wrap function is wrapmode(event=None).
+        Initialize the editor, libtextworker's customize part.
+        @param useMenu: Enable right-click menu (depends on the user setting - else defaults to disable)
+        @type useMenu: boolean
+        @param useScrollBars: Show scroll bars
+        @type useScrollBars: boolean
+        @param unRedoable: Set the text widget to be able to use undo/redo (default is True)
+        @type unRedoable: boolean
+        @param textwrap: Text wrap option ("char(acter)", "none" (turn off) or "word")
+        @type textwrap: str (limited to 3 options above)
         """
-        self.unRedo = kwds.get("undo", False)
-        super().__init__(parent, **kwds)
 
+        self.unRedo = unRedoable
         self.wrapbtn = BooleanVar(self)
-        self.wrapbtn.set(True)
 
-        if useMenu != None:
-            self.enableMenu = useMenu
-
-        if self.enableMenu is True:
+        if useMenu:
             self.RMenu = Menu(self, tearoff=0)
+
+            self.addMenucascade = self.RMenu.add_cascade
+            self.addMenucheckbtn = self.RMenu.add_checkbutton
+            self.addMenucmd = self.RMenu.add_command
+            self.addMenuradiobtn = self.RMenu.add_radiobutton
+            self.addMenusepr = self.RMenu.add_separator
+
             self._menu_init()
             self.bind("<Button-3>", self._open_menu)
 
-        if useScrollbars is True:
+        if useScrollBars is True:
             self._place_scrollbar()
-
+        
+        self.clrmgr.configure(self, True)
+        self.configure(wrap=textwrap, undo=unRedoable)
 
     # Place scrollbars
     def _place_scrollbar(self):
         xbar = ttk.Scrollbar(self, orient="horizontal", command=self.xview)
         ybar = ttk.Scrollbar(self, orient="vertical", command=self.yview)
+        ybar.set = (ybar.quit)
         xbar.pack(side="bottom", fill="x")
         ybar.pack(side="right", fill="y")
 
     # Right click menu
     def _menu_init(self):
-        addcmd = self.RMenu.add_command
-        root = self.master
-        addcmd(
+        self.addMenucmd(
             label=_("Cut"),
             accelerator="Ctrl+X",
-            command=lambda: root.event_generate("<Control-x>"),
+            command=lambda: self.event_generate("<Control-x>"),
         )
-        addcmd(
+        self.addMenucmd(
             label=_("Copy"),
             accelerator="Ctrl+C",
-            command=lambda: root.event_generate("<Control-c>"),
+            command=lambda: self.event_generate("<Control-c>"),
         )
-        addcmd(
+        self.addMenucmd(
             label=_("Paste"),
             accelerator="Ctrl+V",
-            command=lambda: root.event_generate("<Control-v>"),
+            command=lambda: self.event_generate("<Control-v>"),
         )
         if self.unRedo:
             self.RMenu.add_separator()
-            addcmd(
+            self.addMenucmd(
                 label=_("Undo"),
                 accelerator="Ctrl+Z",
-                command=lambda: root.event_generate("<Control-z>"),
+                command=lambda: self.edit_undo(),
             )
-            addcmd(
+            self.addMenucmd(
                 label=_("Redo"),
                 accelerator="Ctrl+Y",
-                command=lambda: root.event_generate("<Control-y>"),
+                command=lambda: self.edit_redo(),
             )
 
     def _open_menu(self, event):
@@ -81,69 +107,6 @@ class TextWidget(Text):
             self.RMenu.post(event.x_root, event.y_root)
         finally:
             self.RMenu.grab_release()
-
-    # Add menu item commands
-    def addMenucmd(
-        self, label: str, acc: str | None = None, fn: Callable | None = None, **kw
-    ):
-        """
-        Add a (right-click) menu command.
-        @param label (str): Text label of the command
-        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
-        @param fn (Callable | None = None): Callback
-        @param **kw (dict[str]): Other options
-        """
-        return self.RMenu.add_command(label=label, accelerator=acc, command=fn, **kw)
-
-    def addMenusepr(self):
-        """
-        Add a (right-click) menu separator. Nothing else.
-        """
-        return self.RMenu.add_separator()
-
-    def addMenucheckbtn(
-        self, label: str, variable: BooleanVar, fn: object, acc: str = None, **kw
-    ):
-        """
-        Add a (right-click) menu check command.
-        @param label (str): Text label of the command
-        @param variable (tkinter.BooleanVar)
-        @param fn (Callable | None = None): Callback
-        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
-        @param **kw (dict[str]): Other options by tkinter.Menu.add_checkbutton
-        """
-        return self.RMenu.add_checkbutton(
-            label=label, accelerator=acc, variable=variable, command=fn, **kw
-        )
-
-    def addMenuradiobtn(
-        self,
-        label: str,
-        variable: BooleanVar,
-        fn: Callable,
-        acc: str | None = None,
-        **kw,
-    ):
-        """
-        Add a (right-click) menu radio button.
-        @param label (str): Text label of the command
-        @param variable (tkinter.BooleanVar)
-        @param fn (Callable | None = None): Callback
-        @param acc (str | None = None): Accelerator (Format: <Key>+<Key>)
-        @param **kw (dict[str]): Other options by tkinter.Menu.add_radiobutton
-        """
-        return self.RMenu.add_radiobutton(
-            label=label, accelerator=acc, variable=variable, command=fn, **kw
-        )
-
-    def addMenucascade(self, label: str, menu: Menu, **kw):
-        """
-        Add a (right-click) submenu/cascade.
-        @param label (str): Label of the cascade
-        @param menu (tkinter.Menu): Menu to add
-        @param **kw (dict[str]): Other options by tkinter.Menu.add_cascade.
-        """
-        return self.RMenu.add_cascade(label=label, menu=menu, **kw)
 
     # Wrap mode
     def wrapmode(self, event=None) -> bool:
@@ -159,3 +122,5 @@ class TextWidget(Text):
             self.configure(wrap="word")
             self.wrapbtn.set(True)
             return True
+
+TextWidget = StyledTextControl
