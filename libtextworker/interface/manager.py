@@ -33,12 +33,12 @@ class ColorManager(GetConfig):
     def __init__(
         self,
         default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str or bool = False,
+        customfilepath: str = "",
     ):
         """
         Constructor of the class.
         @param default_configs (dict[str, Any]): Defaults to dev-premade configs
-        @param customfilepath (str|bool): Custom file path support. Set to False (default) or "" to disable it.
+        @param customfilepath (str): Custom file path. Set to "" (default) to disable it.
         """
         if isinstance(customfilepath, str) and customfilepath != "":
             self._file = customfilepath
