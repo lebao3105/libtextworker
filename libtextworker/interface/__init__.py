@@ -13,6 +13,13 @@ stock_ui_configs = {
     }
 }
 
+"""Default editor configs"""
+stock_editor_configs = {
+    "indentation": {"size": 4, "type": "tabs", "show_guide": "yes"},
+    "menu": {"enabled": "yes"},
+    "editor": {"line_count": "yes", "dnd_enabled": "yes"},
+}
+
 """
 Custom colors.
 @since 0.1.3 first debut on libtextworker.interface._colors

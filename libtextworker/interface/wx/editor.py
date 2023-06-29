@@ -4,14 +4,9 @@ import wx.stc
 from libtextworker import EDITOR_DIR
 from libtextworker.get_config import ConfigurationError, GetConfig
 
-from libtextworker.interface.wx import ColorManager
-from libtextworker.interface.wx.miscs import CreateMenu
-
-default_configs = {
-    "indentation": {"size": 4, "type": "tabs", "show_guide": "yes"},
-    "menu": {"enabled": "yes"},
-    "editor": {"line_count": "yes", "dnd_enabled": "yes"},
-}
+from . import ColorManager
+from .miscs import CreateMenu
+from .. import stock_editor_configs
 
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
@@ -33,7 +28,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             config_path = EDITOR_DIR + "editor.ini"
 
         self.clrmgr = ColorManager()
-        self.cfg = GetConfig(default_configs, config_path)
+        self.cfg = GetConfig(stock_editor_configs, config_path)
 
         # Base editor color
         self.SetupEditorColor()
