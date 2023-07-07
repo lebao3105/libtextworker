@@ -3,6 +3,7 @@
 Contains class(es) and needed attributes for Tkinter.
 """
 import threading
+from tkinter import Menu
 import typing
 from ... import Importable
 from ..manager import ColorManager, AUTOCOLOR
@@ -63,6 +64,8 @@ class ColorManager(ColorManager):
 
         if "Menu" in widget.winfo_class():
             font_to_use.configure(size=10)
+            for i in range(0, int(widget.index("end"))):
+                widget.entryconfigure(i, background=back)
 
         try:
             widget.configure(font=font_to_use)
@@ -90,7 +93,7 @@ class ColorManager(ColorManager):
                 sv_ttk.set_theme(theme.lower())
             self.configure(widget)
 
-        if self.getkey("color", "autocolor") in self.yes_values:
+        if self.getkey("color", "auto") in self.yes_values:
             threading.Thread(
                 target=darkdetect.listener, args=(_configure,), daemon=True
             ).start()
