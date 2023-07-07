@@ -24,17 +24,15 @@ else:
 class ColorManager(ColorManager):
     recursive_configure: bool = True
 
-    def _get_color(self):
-        back, fore = super()._get_color()
-        back = "#" + "%02x%02x%02x" % back
-        fore = "#" + "%02x%02x%02x" % fore
-        return back, fore
-
     def _get_font(self):
         size, style, weight, family = super()._get_font()
+        
+        if style == "system": style = "normal"
+        if weight == "system": weight = "normal"
+
         return wx.Font(
             size,
-            wx.FONTFAMILY_DEFAULT,
+            wx.FONTFAMILY_MODERN,
             constants.FONTST[style],
             constants.FONTWT[weight],
             0,
