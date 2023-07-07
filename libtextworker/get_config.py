@@ -220,7 +220,7 @@ class GetConfig(ConfigParser):
 
         ```list_``` parameter holds all configs to move. Each of options specified (section->option format)
         'is' a dictionary: sub-key 'newpath' specifies the location of the option to moved to (section->option format), 'file'
-        specifies the new file to use (if needed, else use 'unchanged' or leave blank).
+        specifies the new file to use (if needed, else use 'unchanged' or don't use the 'file' field).
         This function won't use backup(). Non-exist things will be ignored silently.
 
         If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['file'] == 'unchanged'.
