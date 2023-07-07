@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libtextworker"
-version = "0.1.3"
+version = "0.1.4"
 description = "App library for textworker"
 authors = ["lebao3105 <bao12345yocoo@gmail.com>"]
 license = "GPL-3.0-or-later"
@@ -14,7 +14,6 @@ keywords = ["wx", "tkinter", "gui"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Pillow = "^9.5.0"
 packaging = "^23.0"
 importlib-metadata = "^6.1.0"
 

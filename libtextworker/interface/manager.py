@@ -1,3 +1,5 @@
+import json
+import os
 import typing
 import threading
 
@@ -10,8 +12,6 @@ else:
         AUTOCOLOR = False
     else: 
         AUTOCOLOR = True
-
-from PIL import ImageColor
 
 from .. import THEMES_DIR
 from ..general import logger, libTewException, CraftItems, logger
@@ -33,7 +33,7 @@ class ColorManager(GetConfig):
     def __init__(
         self,
         default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str = "",
+        customfilepath: str = ""
     ):
         """
         Constructor of the class.
@@ -46,6 +46,9 @@ class ColorManager(GetConfig):
             self._file = CraftItems(THEMES_DIR, "default.ini")
 
         super().__init__(default_configs, self._file)
+
+        if os.path.exists("mergelist.json"):
+            self.move(json.loads(open("mergelist.json", "r").read()))
 
     def reset(self, restore: bool = False):
         """
@@ -157,21 +160,12 @@ class ColorManager(GetConfig):
         elif fontcolor in colors:
             fontcolor_ = colors[fontcolor]
 
-        elif fontcolor.startswith("#") and len(fontcolor) == 7:
-            try:
-                ImageColor.getrgb(fontcolor)
-            except ValueError:
-                raise ConfigurationError(
-                    "interface", "textcolor", "Invalid color name/code"
-                )
-            else:
-                fontcolor_ = fontcolor
         else:
             raise ConfigurationError(
                 "interface", "textcolor", "Invalid color name/code"
             )
 
-        return ImageColor.getrgb(color_), ImageColor.getrgb(fontcolor_)
+        return color_, fontcolor_
 
     def setcolorfunc(self, objname: str, func: typing.Callable, params: dict|tuple):
         """
@@ -239,7 +233,7 @@ class ColorManager(GetConfig):
                 runfn(fn, self.setcolorfn[item]["params"], color, "%(color)")
 
     def autocolor_run(self, widget: typing.Any):
-        autocolor = self.getkey("color", "autocolor")
+        autocolor = self.getkey("color", "auto")
         if not AUTOCOLOR:
             raise Exception("ColorManager.autocolor_run() called when auto-color system is not usable")
         

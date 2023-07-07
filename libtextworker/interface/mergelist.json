@@ -1,0 +1,10 @@
+{
+    "color->autocolor": {
+        "newpath": "color->auto",
+        "file" : "unchanged"
+    },
+    "color->textcolor": {
+        "newpath": "color->foreground",
+        "file": "unchanged"
+    }
+}

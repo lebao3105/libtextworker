@@ -1,5 +1,3 @@
-# This script is used to test the import of
-# GUI libraries, and the support of libtextworker for they.
 import warnings
 from importlib import import_module
 

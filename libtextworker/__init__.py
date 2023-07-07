@@ -1,16 +1,3 @@
-"""
-@package libtextworker
-Library of the textworker project.
-
-libtextworker contains customizable widgets and powerful settings system in order to make GUI apps greater!
-
-Public variables:
-* Importable (dict) : GUI frameworks check
-* \__version__ (str) : Library version
-* THEMES_DIR (str) : (for GUI) Themes directory
-* EDITOR_DIR (str) : (for GUI) Editor configurations directory
-"""
-
 import gettext
 import os.path
 
@@ -35,6 +22,7 @@ Importable = _importer.Importable
 __version__ = "0.1.4"
 THEMES_DIR = rf'{os.path.expanduser("~/.config/textworker/themes/")}'
 EDITOR_DIR = rf'{os.path.expanduser("~/.config/textworker/editorconfigs/")}'
+LICENSES = rf'{os.path.abspath(CraftItems(GetCurrentDir(__file__), "licenses"))}'
 
 WalkCreation(THEMES_DIR)
 WalkCreation(EDITOR_DIR)
