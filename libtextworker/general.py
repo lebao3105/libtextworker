@@ -8,6 +8,7 @@ import sys
 from typing import Literal
 
 # @since version 0.1.3
+# Available GUI toolkits that this library supports
 available_toolkits = Literal["tk", "wx"]
 
 LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
@@ -23,7 +24,7 @@ class Logger(logging.Logger):
     ):  # Currently no Tkinter support
         self.UseToolKit = toolkit
     
-    def CallFunc(self,
+    def CallGUILog(self,
                  name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"],
                  msg: object,
                  *args: object
@@ -35,34 +36,34 @@ class Logger(logging.Logger):
             do = importlib.import_module(
                 f"interface.{self.UseToolKit}.constants", "libtextworker"
             )
-        except ImportError:
+        except ImportError or ModuleNotFoundError:
             return
         else:
             getattr(do, "LOG_" + name)(msg, args)
 
     def critical(self, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
-        self.CallFunc('CRITICAL', msg, args)
+        self.CallGUILog('CRITICAL', msg, args)
 
     def debug(self, msg: object, *args: object, **kwds):
         super().debug(msg, *args, **kwds)
-        self.CallFunc('DEBUG', msg, args)
+        self.CallGUILog('DEBUG', msg, args)
 
     def error(self, msg: object, *args: object, **kwds):
         super().error(msg, *args, **kwds)
-        self.CallFunc('ERROR', msg, args)
+        self.CallGUILog('ERROR', msg, args)
 
     def exception(self, msg: object, *args: object, **kwds):
         super().exception(msg, *args, **kwds)
-        self.CallFunc('EXCEPTION', msg, args)
+        self.CallGUILog('EXCEPTION', msg, args)
 
     def log(self, level: int, msg: object, *args: object, **kwds):
         super().log(level, msg, *args, **kwds)
-        self.CallFunc('NORMAL', msg, args)
+        self.CallGUILog('NORMAL', msg, args)
 
     def warning(self, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
-        self.CallFunc('WARNING', msg, args)
+        self.CallGUILog('WARNING', msg, args)
 
 logger = Logger("textworker")
 
@@ -86,8 +87,8 @@ def CraftItems(*args: str | pathlib.Path) -> str:
     """
     new = list(args)
 
-    for i in range(0, len(new)):
-        new[i] = str(new[i]).replace("\\", "/")
+    for i in range(0, len(args)):
+        new[i] = str(args[i]).replace("\\", "/")
 
     final = pathlib.Path(new[0])
 
