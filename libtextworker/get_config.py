@@ -137,8 +137,6 @@ class GetConfig(ConfigParser):
     ) -> typing.Any | None:
         """
         Try to get the value of an option under the spectified section.
-        @version Updated (parameters) on 0.1.3
-        @version Updated return types on 0.1.4
 
         @param section, option: Target section->option
         @param needed (boolean=False): The target option is needed - should use with restore & noraiseexp.
@@ -171,12 +169,12 @@ class GetConfig(ConfigParser):
             else:
                 if noraiseexp != True:
                     raise ConfigurationError(
-                        self._file, "Option not found: %s" % option, section, option
+                        self._file, "Option not found", section, option
                     )
                 else:
                     return None
 
-        value = self.get(section, option)
+        value = self.get(section, option).removeprefix('"').removesuffix('"')
 
         if raw or not value.lower() in self.aliases:
             return value
