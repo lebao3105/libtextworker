@@ -4,6 +4,9 @@ stock_ui_configs = {
         "background": "light",
         "foreground": "default",
         "auto": "yes"
+        # New in 0.1.4:
+        # background and foreground color specificially for light and dark mode,
+        # suffixed by "-light" and/or "-dark"
     },
     "font": { # default value 'normal' now switched to 'system'
         "style": "system",
@@ -34,3 +37,13 @@ colors = {
     "light_pink": "#ffd1d6",
     "light_green": "#20eaaa",
 }
+
+## Available pre-stored licenses
+available_licenses = [
+    "AGPL_full",
+    "AGPL_short",
+    "GPL3_full",
+    "GPL3_short",
+    "LGPL_3",
+    "MIT",
+]
