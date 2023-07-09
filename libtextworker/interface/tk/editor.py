@@ -7,7 +7,11 @@ from tkinter import BooleanVar, Menu, Text, Misc, TclError
 from tkinter.ttk import Scrollbar, Frame
 
 try:
-	from tklinenums import TkLineNumbers
+    from tklinenums import TkLineNumbers
+except:
+    LINENUMS = False
+else:
+    LINENUMS = True
 
 from libtextworker import EDITOR_DIR, THEMES_DIR
 
@@ -71,9 +75,10 @@ class StyledTextControl(Text):
             self._place_scrollbar()
 
         # Place the line-numbers margin
-        ln = TkLineNumbers(self._frame, self, "center")
-        ln.pack(fill="y", side="left")
-        self.bind("<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True)
+        if LINENUMS and self.cfger.getkey("editor", "line_count", noraiseexp=True) in self.cfger.yes_values:
+            ln = TkLineNumbers(self._frame, self, "center")
+            ln.pack(fill="y", side="left")
+            self.bind("<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True)
 
         self.clrmgr.configure(self._frame, False)
         self.configure(tabs=self.clrmgr.GetFont.measure(" " * tabwidth))

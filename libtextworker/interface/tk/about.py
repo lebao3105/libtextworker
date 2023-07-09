@@ -58,6 +58,7 @@ class AboutDialog:
         """
         dlg = Toplevel(master)
         dlg.wm_title(_("About this project"))
+        dlg.geometry("350x450") # legit?
 
         project_infos = \
             _("About this project\n" \
@@ -97,7 +98,7 @@ class AboutDialog:
         # Bottom frame, containing a "OK" button
         bottomfm = Frame(dlg)
         quitbtn = Button(bottomfm, text="OK", default="active")
-        quitbtn.bind("<Button-1>", lambda evt: (dlg.quit()))
+        quitbtn.bind("<Button-1>", lambda evt: (dlg.destroy()))
         quitbtn.pack(side="right")
         bottomfm.pack(fill="x", side="bottom")
 
