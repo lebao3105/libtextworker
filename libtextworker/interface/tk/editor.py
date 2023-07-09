@@ -3,10 +3,13 @@
 @brief Home of Tkinter(Ttk) text editors.
 @since 0.1.4: TextWidget is now a StyledTextControl alias (will be removed in the future). Customizations in __init__() are now moved to EditorInit().
 """
-from tkinter import BooleanVar, Menu, Text, ttk
-from typing import Literal
+from tkinter import BooleanVar, Menu, Text, Misc, TclError
+from tkinter.ttk import Scrollbar, Frame
 
-from libtextworker import EDITOR_DIR
+try:
+	from tklinenums import TkLineNumbers
+
+from libtextworker import EDITOR_DIR, THEMES_DIR
 
 from . import ColorManager
 from ..import stock_editor_configs
@@ -16,35 +19,41 @@ from ...get_config import GetConfig
 class StyledTextControl(Text):
     """
     Customized Tkinter Text widget with some extra features.
-
-    You can set the wrapbtn variable to your own wrapbtn to use the wrap feature.
-    The wrap function is wrapmode(event=None).
+    Note: When placing this widget, not only the editor itself, please also place the _frame object as the real editor's parent.
     """
 
-    clrmgr = ColorManager()
-    cfger = GetConfig(stock_editor_configs, EDITOR_DIR + "editor.ini")
+    def __init__(self, master: Misc | None = None, **kwds):
+        self._frame = Frame(master)
+        super().__init__(self._frame, **kwds)
 
     def EditorInit(
         self,
-        useMenu: bool = cfger.getkey("menu", "enabled", True, True, True) in cfger.yes_values,
+        useMenu: bool = False,
         useScrollBars: bool = True,
-        unRedoable: bool = True,
-        textwrap: Literal["char", "none", "word"] = "word"
+        custom_config_path: str = EDITOR_DIR + "editor.ini",
+        custom_theme_path: str = THEMES_DIR + "default.ini",
+        tabwidth: int = 4
     ):
         """
         Initialize the editor, libtextworker's customize part.
         @param useMenu: Enable right-click menu (depends on the user setting - else defaults to disable)
-        @type useMenu: boolean
         @param useScrollBars: Show scroll bars
-        @type useScrollBars: boolean
-        @param unRedoable: Set the text widget to be able to use undo/redo (default is True)
-        @type unRedoable: boolean
-        @param textwrap: Text wrap option ("char(acter)", "none" (turn off) or "word")
-        @type textwrap: str (limited to 3 options above)
+        @param custom_config_path: Custom editor configs path (optional)
+        @param custom_theme_path: Custom editor theme path (optional)
+        @param tabwidth: Tab (\t character) width (defaults to user setting else 4)
         """
 
-        self.unRedo = unRedoable
+        self.cfger = GetConfig(stock_editor_configs, custom_config_path)
+        self.clrmgr = ColorManager(customfilepath=custom_theme_path)
+
+        self.unRedo = self["undo"]
         self.wrapbtn = BooleanVar(self)
+
+        if self.cfger.getkey("menu", "enabled", False, True, True):
+            useMenu = bool(self.cfger.getkey("menu", "enabled"))
+        
+        if int(self.cfger.getkey("indentation", "size", False, True, True)):
+            tabwidth = int(self.cfger.getkey("indentation", "size"))
 
         if useMenu:
             self.RMenu = Menu(self, tearoff=0)
@@ -60,15 +69,20 @@ class StyledTextControl(Text):
 
         if useScrollBars is True:
             self._place_scrollbar()
-        
-        self.clrmgr.configure(self, True)
-        self.configure(wrap=textwrap, undo=unRedoable)
+
+        # Place the line-numbers margin
+        ln = TkLineNumbers(self._frame, self, "center")
+        ln.pack(fill="y", side="left")
+        self.bind("<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True)
+
+        self.clrmgr.configure(self._frame, False)
+        self.configure(tabs=self.clrmgr.GetFont.measure(" " * tabwidth))
 
     # Place scrollbars
     def _place_scrollbar(self):
-        xbar = ttk.Scrollbar(self, orient="horizontal", command=self.xview)
-        ybar = ttk.Scrollbar(self, orient="vertical", command=self.yview)
-        ybar.set = (ybar.quit)
+        xbar = Scrollbar(self._frame, orient="horizontal", command=self.xview)
+        ybar = Scrollbar(self._frame, orient="vertical", command=self.yview)
+        # ybar.set = ybar.quit
         xbar.pack(side="bottom", fill="x")
         ybar.pack(side="right", fill="y")
 
@@ -111,7 +125,7 @@ class StyledTextControl(Text):
     # Wrap mode
     def wrapmode(self, event=None) -> bool:
         """
-        Toggle editor wrap mode.
+        Toggle editor word wrap mode.
         Only use with TextWidget.wrapbtn BooleanVar.
         """
         if self.wrapbtn.get() == True:
@@ -122,5 +136,18 @@ class StyledTextControl(Text):
             self.configure(wrap="word")
             self.wrapbtn.set(True)
             return True
+
+    # Undo/redo forks
+    def edit_undo(self) -> None:
+        try:
+            super().edit_undo()
+        except TclError:
+            pass
+    
+    def edit_redo(self) -> None:
+        try:
+            super().edit_redo()
+        except TclError:
+            pass
 
 TextWidget = StyledTextControl

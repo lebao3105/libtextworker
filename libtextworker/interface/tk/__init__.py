@@ -83,7 +83,7 @@ class ColorManager(ColorManager):
 
         if childs_too:
             for child in widget.winfo_children():
-                self.configure(child, self.recursive_configure)
+                self.configure(child, True)
 
     def autocolor_run(self, widget: typing.Any):
         def _configure(theme: str = ""):

@@ -17,17 +17,18 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         Auto-expand linenumber margin
     """
 
-    def EditorInit(self, config_path: str = ""):
+    def EditorInit(self, config_path: str = "", color_config_path: str = ""):
         """
         @since 0.1.3
         Initialize the editor, customized part.
         You can't ignore __init__() function;)
         @param config_path (str): Configuration path (optional - defaults to lib's path)
+        @param color_config_path (str): Configuration path for the color (optional)
         """
         if not config_path:
             config_path = EDITOR_DIR + "editor.ini"
 
-        self.clrmgr = ColorManager()
+        self.clrmgr = ColorManager(customfilepath=color_config_path)
         self.cfg = GetConfig(stock_editor_configs, config_path)
 
         # Base editor color
@@ -93,15 +94,17 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         return True
 
     def SetupEditorColor(self):
-        bg, fg = self.clrmgr._get_color()
+        bg, fg = self.clrmgr.GetColor
+        # print(bg, fg)
+        self.StyleClearAll()
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
         self.clrmgr.setcolorfunc(
-            "textw", self.StyleSetBackground, {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color)"}
+            "textw", self.StyleSetBackground, {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color-rgb)"}
         )
         self.clrmgr.setfontcfunc(
-            "textw", self.StyleSetForeground, {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font)"}
+            "textw", self.StyleSetForeground, {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font-rgb)"}
         )
         self.clrmgr.configure(self, False)
 

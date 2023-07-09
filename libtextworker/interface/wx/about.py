@@ -4,20 +4,6 @@ import wx.adv
 from typing import Any, final
 from ...general import CraftItems, GetCurrentDir
 
-## Available pre-stored licenses:
-# * AGPL
-# * GPL 3
-# * LGPL 3
-# * MIT
-available_licenses = [
-    "AGPL_full",
-    "AGPL_short",
-    "GPL3_full",
-    "GPL3_short",
-    "LGPL_3",
-    "MIT",
-]
-
 
 @final
 class AboutDialog:

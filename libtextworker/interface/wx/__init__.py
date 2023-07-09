@@ -44,8 +44,8 @@ class ColorManager(ColorManager):
 
         if childs_too and hasattr(widget, "GetChildren"):
             for child in widget.GetChildren():
-                self.configure(child, self.recursive_configure)
-                self.autocolor_run(child)
+                self.configure(child, True)
+                # self.autocolor_run(child)
 
 
 ## @deprecated On version 0.1.3
