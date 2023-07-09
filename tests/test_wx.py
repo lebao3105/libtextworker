@@ -1,5 +1,8 @@
+import os
 import webbrowser
 import wx
+
+from . import THEMEPATH
 from libtextworker import __version__ as ver
 from libtextworker import _importer
 _importer.test_import("wx")
@@ -16,7 +19,7 @@ def test_wx():
         aboutdlg = AboutDialog()
         aboutdlg.SetName("libtextworker")
         aboutdlg.SetVersion(ver)
-        aboutdlg.SetDevelopers(["Le Bao Nguyen (@lebao3105)"])
+        aboutdlg.SetDevelopers(["Le Bao Nguyen (@lebao3105 on Github and Gitlab)"])
         aboutdlg.SetWebSite(GITHUB_URL)
         aboutdlg.SetLicense("GPL3_short")
         return aboutdlg.ShowBox()
@@ -42,7 +45,7 @@ def test_wx():
     menubar.Append(the_only_one, "The only one.")
     fm.SetMenuBar(menubar)
 
-    StyledTextControl(fm).EditorInit()
+    StyledTextControl(fm).EditorInit(color_config_path=THEMEPATH)
 
     fm.Show()
     app.MainLoop()
