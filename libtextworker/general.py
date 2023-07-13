@@ -84,18 +84,17 @@ def CraftItems(*args: str | pathlib.Path) -> str:
     Craft any >=2 paths, together.
     @param *args (str|pathlib.Path)
     @return str: Result
+    @raise Exception: not enough arguments (must be >=2)
     """
-    new = list(args)
+    if len(args) < 2:
+        raise Exception("Not enough arguments")
+    
+    final = pathlib.Path(args[0])
+    
+    for i in range(1, len(args)):
+        final /= str(args[i])
 
-    for i in range(0, len(args)):
-        new[i] = str(args[i]).replace("\\", "/")
-
-    final = pathlib.Path(new[0])
-
-    for i in range(1, len(new)):
-        new[i] = str(new[i]).removeprefix("/").removesuffix("/")
-        final /= new[i]
-    return str(final)
+    return os.path.abspath(final)
 
 
 def CreateDirectory(directory: str, childs: list[str] = []):

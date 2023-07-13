@@ -41,7 +41,7 @@ class ColorManager(GetConfig):
         @param customfilepath (str): Custom file path. Set to "" (default) to disable it.
         """
         if customfilepath != "":
-            self._file = customfilepath
+            self._file = os.path.abspath(customfilepath)
         else:
             self._file = CraftItems(THEMES_DIR, "default.ini")
 

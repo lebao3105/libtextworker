@@ -2,8 +2,9 @@ import wx
 import wx.adv
 
 from typing import Any, final
-from ...general import CraftItems, GetCurrentDir
-
+from ...general import CraftItems
+from .. import available_licenses
+from ... import LICENSES
 
 @final
 class AboutDialog:
@@ -18,29 +19,21 @@ class AboutDialog:
     infos = wx.adv.AboutDialogInfo()
     Parent: Any | None = None
 
-    def SetArtists(self, artists):
-        return self.infos.SetArtists(artists)
-
-    def SetCopyright(self, text: str):
-        return self.infos.SetCopyright(text)
-
-    def SetDescription(self, des: str):
-        return self.infos.SetDescription(des)
-
-    def SetDevelopers(self, developers):
-        return self.infos.SetDevelopers(developers)
-
-    def SetDocWriters(self, writers):
-        return self.infos.SetDocWriters(writers)
-
-    def SetIcon(self, icon: wx.Icon):
-        return self.infos.SetIcon(icon)
+    SetArtists = infos.SetArtists
+    SetCopyright = infos.SetCopyright
+    SetDescription = infos.SetDescription
+    SetDevelopers = infos.SetDevelopers
+    SetDocWriters = infos.SetDocWriters
+    SetIcon = infos.SetIcon
+    SetName = infos.SetName
+    SetTranslators = infos.SetTranslators
+    SetVersion = infos.SetVersion
+    SetWebSite = infos.SetWebSite
 
     def SetLicense(self, license: str, include_copyright: bool = False):
         """
         Set the long, multiline string containing the text of the program license.
         Not all license types are available. You can include your program copyright if needed.
-        @version Updated on 0.1.3
         @see available_licenses
         @see SetCopyright
         """
@@ -48,26 +41,14 @@ class AboutDialog:
         if license in available_licenses:
             license = open(
                 CraftItems(
-                    GetCurrentDir(__file__), "../../licenses/{}.txt".format(license)
+                    LICENSES, license + ".txt"
                 ),
                 "r",
             ).read()
         if include_copyright == True and self.infos.GetCopyright() != "":
             data += self.infos.GetCopyright() + "\n"
         data += license
-        return self.infos.SetLicence(data)
-
-    def SetName(self, name: str):
-        return self.infos.SetName(name)
-
-    def SetTranslators(self, translators):
-        return self.infos.SetTranslators(translators)
-
-    def SetVersion(self, version: str | float, longversion: str = ""):
-        return self.infos.SetVersion(version.__str__(), longversion)
-
-    def SetWebSite(self, address: str):
-        return self.infos.SetWebSite(address)
+        self.infos.SetLicence(data)
 
     def ShowBox(self, event=None):
         """

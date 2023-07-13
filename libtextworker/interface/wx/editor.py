@@ -26,7 +26,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         @param color_config_path (str): Configuration path for the color (optional)
         """
         if not config_path:
-            config_path = EDITOR_DIR + "editor.ini"
+            config_path = EDITOR_DIR + "default.ini"
 
         self.clrmgr = ColorManager(customfilepath=color_config_path)
         self.cfg = GetConfig(stock_editor_configs, config_path)
