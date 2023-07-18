@@ -8,19 +8,19 @@ stock_ui_configs = {
         # background and foreground color specificially for light and dark mode,
         # suffixed by "-light" and/or "-dark"
     },
-    "font": { # default value 'normal' now switched to 'system'
+    "font": {  # default value 'normal' now switched to 'system'
         "style": "system",
         "weight": "system",
         "family": "system",
-        "size": "system"
-    }
+        "size": "system",
+    },
 }
 
 """Default editor configs"""
 stock_editor_configs = {
     "indentation": {"size": 4, "type": "tabs", "show_guide": "yes"},
     "menu": {"enabled": "yes"},
-    "editor": {"line_count": "yes", "dnd_enabled": "yes"},
+    "editor": {"line_count": "yes", "dnd_enabled": "yes", "wordwrap": "yes"},
 }
 
 """

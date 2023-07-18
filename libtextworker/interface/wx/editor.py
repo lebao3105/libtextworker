@@ -47,12 +47,26 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         if self.cfg.getkey("menu", "enabled") in self.cfg.yes_values:
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
+        # Word wrap
+        self.SetWrapMode(bool(self.cfg.getkey("editor", "wordwrap")))
+
+        # Multiple-selection support.
+        # Since we can't make "Change all occurrences" features like VSCode
+        # which makes this feature really work, I disabled it now.
+
+        # self.SetMultipleSelection(True)
+        # self.SetAdditionalCaretsVisible(True)
+        # self.Bind(wx.EVT_LEFT_UP, self.MultiSelection)
+
     """
     Setup GUI elements.
     """
 
     def DNDSupport(self) -> bool:
-        if self.cfg.getkey("editor", "dnd_enabled", True, True) not in self.cfg.yes_values:
+        if (
+            self.cfg.getkey("editor", "dnd_enabled", True, True)
+            not in self.cfg.yes_values
+        ):
             return False
 
         dt = DragNDropTarget(self)
@@ -101,10 +115,14 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
 
         self.clrmgr.setcolorfunc(
-            "textw", self.StyleSetBackground, {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color-rgb)"}
+            "textw",
+            self.StyleSetBackground,
+            {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color-rgb)"},
         )
         self.clrmgr.setfontcfunc(
-            "textw", self.StyleSetForeground, {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font-rgb)"}
+            "textw",
+            self.StyleSetForeground,
+            {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font-rgb)"},
         )
         self.clrmgr.configure(self, False)
 
@@ -177,6 +195,16 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
         self.PopupMenu(menu, pt)
         menu.Destroy()
+
+    # def MultiSelection(self, event: wx.MouseEvent):
+    #     kbs = wx.KeyboardState()
+    #     if event.ControlDown() and kbs.ControlDown():
+    #         currpos = self.GetCurrentPos()
+    #         wordstartpos = self.WordStartPosition(currpos, True)
+    #         wordendpos = self.WordEndPosition(wordstartpos, True)
+    #         self.AddSelection(wordstartpos, currpos)
+    #         self.AddSelection(currpos, wordendpos)
+    #     event.Skip()
 
 
 class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
