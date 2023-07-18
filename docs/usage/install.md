@@ -19,9 +19,12 @@ As of the 0.1.3 version, we have the following packages:
 5. libtextworker[all]: Install everything above
 
 Note: For the application autocolor support, the support is OS-dependent:
+
 * Windows 10 1607+
 * macOS 10.14
 * Linux/BSD with at least GTK3?
+
+'Autocolor' means getting the current OS color scheme (dark/light) and eventually apply changes to the interface. And that dark/light scheme is only available on systems that I listed above.
 
 ## Install
 
