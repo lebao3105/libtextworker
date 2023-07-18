@@ -5,8 +5,8 @@ from . import editor
 from .. import available_licenses
 from ... import LICENSES
 
-class AboutDialog:
 
+class AboutDialog:
     # Project credits
     ArtMakers: str = ""
     Developers: str = ""
@@ -22,34 +22,34 @@ class AboutDialog:
 
     def SetArtMakers(self, _: list | str):
         self.ArtMakers = "\n\t".join(_) if isinstance(_, list) else _
-    
+
     def SetDevelopers(self, _: list | str):
         self.Developers = "\n\t".join(_) if isinstance(_, list) else _
-    
+
     def SetAppTesters(self, _: list | str):
         self.Testers = "\n\t".join(_) if isinstance(_, list) else _
-    
+
     def SetAppTranslators(self, _: list | str):
         self.Translators = "\n\t".join(_) if isinstance(_, list) else _
-    
+
     def SetProjectName(self, _: str):
         self.ProjectName = _
-    
+
     def SetProjectVersion(self, _: AnyStr):
         self.ProjectVersion = _
-    
+
     def SetProjectSite(self, _: AnyStr):
         self.ProjectSite = _
-    
+
     def SetProjectDescription(self, _: AnyStr):
         self.ProjectDescription = _
-    
+
     def SetProjectLicense(self, _: str):
         if _ in available_licenses:
-            self.ProjectLicense = open(LICENSES + "/" +  _ + ".txt", "r").read()
+            self.ProjectLicense = open(LICENSES + "/" + _ + ".txt", "r").read()
         else:
             self.ProjectLicense = _
-    
+
     def ShowDialog(self, master: Misc | None = None):
         """
         Here goes the real About dialog.
@@ -58,30 +58,33 @@ class AboutDialog:
         """
         dlg = Toplevel(master)
         dlg.wm_title(_("About this project"))
-        dlg.geometry("350x450") # legit?
+        dlg.geometry("350x450")  # legit?
 
-        project_infos = \
-            _("About this project\n" \
-            f"{self.ProjectName} version {self.ProjectVersion}\n" \
-            f"Description: {self.ProjectDescription}\n" \
-            f"Project website: {self.ProjectSite}")
-        
-        project_credits = \
-            _("This software is made thanks to many contributors:\n" \
-            f"Developers:\n{self.Developers}")
-        
+        project_infos = _(
+            "About this project\n"
+            f"{self.ProjectName} version {self.ProjectVersion}\n"
+            f"Description: {self.ProjectDescription}\n"
+            f"Project website: {self.ProjectSite}"
+        )
+
+        project_credits = _(
+            "This software is made thanks to many contributors:\n"
+            f"Developers:\n{self.Developers}"
+        )
+
         if self.ArtMakers:
             project_credits += _(f"\nArtists:\n{self.ArtMakers}")
-        
+
         if self.Testers:
             project_credits += _(f"\nTesters:\n{self.Testers}")
-        
+
         if self.Translators:
             project_credits += _(f"\nTranslators:\n{self.Translators}")
-        
-        project_license = \
-            f'{_("This project is licensed to the following license:")}' \
+
+        project_license = (
+            f'{_("This project is licensed to the following license:")}'
             f"\n\n\n{self.ProjectLicense}"
+        )
 
         nb = Notebook(dlg)
         nb.pack(fill="both", expand=True)
@@ -90,7 +93,7 @@ class AboutDialog:
         license_te = editor.StyledTextControl(dlg, state="disabled", wrap="word")
         license_te.insert(1.0, project_license)
         license_te.pack(expand=True, fill="both")
-        
+
         nb.add(Label(dlg, text=project_infos), text=_("This software"))
         nb.add(Label(dlg, text=project_credits), text=_("Contributors"))
         nb.add(license_te._frame, text=_("License"))

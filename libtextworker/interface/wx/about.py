@@ -6,6 +6,7 @@ from ...general import CraftItems
 from .. import available_licenses
 from ... import LICENSES
 
+
 @final
 class AboutDialog:
     """
@@ -40,9 +41,7 @@ class AboutDialog:
         data = ""  # Our result
         if license in available_licenses:
             license = open(
-                CraftItems(
-                    LICENSES, license + ".txt"
-                ),
+                CraftItems(LICENSES, license + ".txt"),
                 "r",
             ).read()
         if include_copyright == True and self.infos.GetCopyright() != "":

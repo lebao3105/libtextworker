@@ -28,6 +28,7 @@ if AUTOCOLOR:
 else:
     pass
 
+
 class ColorManager(ColorManager):
     recursive_configure: bool = True
     is_shown: bool = False  # Messages
@@ -41,10 +42,10 @@ class ColorManager(ColorManager):
 
         if style == "normal" or style != "italic":
             style = "roman"
-        
+
         if weight == "system":
             weight = "normal"
-        
+
         if weight not in ["system", "normal", "bold"]:
             # from warnings import warn
             # warn("Tkinter font weight must be 'normal', 'system' (an alias to 'normal') or 'bold'")
@@ -98,11 +99,10 @@ class ColorManager(ColorManager):
                 target=darkdetect.listener, args=(_configure,), daemon=True
             ).start()
 
-            if SVTTK_AVAILABLE: # To avoid 'font already exists' error
+            if SVTTK_AVAILABLE:  # To avoid 'font already exists' error
                 if not AUTOCOLOR:
-                    sv_ttk.set_theme(self.getkey("color", "background", True, True, True))
-                else:
                     sv_ttk.set_theme(
-                        darkdetect.theme().lower()
+                        self.getkey("color", "background", True, True, True)
                     )
-
+                else:
+                    sv_ttk.set_theme(darkdetect.theme().lower())

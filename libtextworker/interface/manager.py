@@ -8,9 +8,9 @@ try:
 except ImportError:
     AUTOCOLOR = False
 else:
-    if darkdetect.theme() is None: # Unsupported OS
+    if darkdetect.theme() is None:  # Unsupported OS
         AUTOCOLOR = False
-    else: 
+    else:
         AUTOCOLOR = True
 
 from .. import THEMES_DIR
@@ -20,6 +20,7 @@ from ..interface import stock_ui_configs, colors
 
 if AUTOCOLOR is False:
     logger.warning("GUI auto-color is not usable")
+
 
 class ColorManager(GetConfig):
     """
@@ -33,7 +34,7 @@ class ColorManager(GetConfig):
     def __init__(
         self,
         default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str = ""
+        customfilepath: str = "",
     ):
         """
         Constructor of the class.
@@ -96,7 +97,7 @@ class ColorManager(GetConfig):
     def _get_font(self):
         if not self.has_section("font"):
             return 10, "system", "system", ""
-        
+
         family = self.getkey("font", "family", False, True)
         size = self.getkey("font", "size", False, True)
         weight = self.getkey("font", "weight", False, True)
@@ -140,8 +141,8 @@ class ColorManager(GetConfig):
             currmode = darkdetect.theme().lower()
         else:
             currmode = str(self.getkey("color", "background", restore=True)).lower()
-        
-        if not currmode in ["dark", "light"]: # This for the value infile
+
+        if not currmode in ["dark", "light"]:  # This for the value infile
             raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
@@ -152,7 +153,7 @@ class ColorManager(GetConfig):
             back_ = test_back
         else:
             back_ = colors[currmode]
-        
+
         fore_ = self.getkey("color", "foreground", restore=True)
         if fore_ == "default":
             fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
@@ -160,7 +161,7 @@ class ColorManager(GetConfig):
         if test_fore:
             fore_ = test_fore
 
-        elif fore_.startswith("#"): # hex colors. TODO: rgb support?
+        elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
             pass
 
         elif fore_ in colors:
@@ -171,10 +172,10 @@ class ColorManager(GetConfig):
 
         else:
             raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
-        
+
         return back_, fore_
 
-    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict|tuple):
+    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
         """
         Set GUI widget background color-set function.
         @param objname (str): Object name (for easier access)
@@ -186,7 +187,7 @@ class ColorManager(GetConfig):
         """
         self.setcolorfn[objname] = {"fn": func, "params": params}
 
-    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict|tuple):
+    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
         """
         Set GUI widget font color-set function.
         @param objname (str): Object name (for easier access)
@@ -208,7 +209,12 @@ class ColorManager(GetConfig):
         @see setfontcfunc
         """
 
-        def runfn(args: tuple | dict, extra: str = "", extra_alias: str = "", fn: typing.Callable | None = None) -> dict | tuple | None:
+        def runfn(
+            args: tuple | dict,
+            extra: str = "",
+            extra_alias: str = "",
+            fn: typing.Callable | None = None,
+        ) -> dict | tuple | None:
             FOUND: bool = False
 
             if isinstance(args, tuple):
@@ -222,12 +228,12 @@ class ColorManager(GetConfig):
             elif isinstance(args, dict):
                 if fn:
                     return fn(**args)
-                
+
                 for item in args:
                     if isinstance(args[item], str) and args[item] == extra_alias:
                         FOUND = True
                         args[item] = extra
-            
+
             return args if FOUND else None
 
         if not widget:
@@ -244,13 +250,15 @@ class ColorManager(GetConfig):
                 args = runfn(
                     args=self.setfontfn[item]["params"],
                     extra=fontcolor,
-                    extra_alias="%(font)"
+                    extra_alias="%(font)",
                 )
                 if not args:
                     args = runfn(
                         args=self.setfontfn[item]["params"],
-                        extra=tuple(int(fontcolor.lstrip("#")[i:i+2], 16) for i in (0, 2, 4)),
-                        extra_alias="%(font-rgb)"
+                        extra=tuple(
+                            int(fontcolor.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+                        ),
+                        extra_alias="%(font-rgb)",
                     )
                 runfn(fn=fn, args=args)
 
@@ -258,26 +266,28 @@ class ColorManager(GetConfig):
             fn = self.setcolorfn[item]["fn"]
             if not self.setcolorfn[item]["params"]:
                 fn(color)
-            else: 
+            else:
                 args = runfn(
                     args=self.setcolorfn[item]["params"],
                     extra=color,
-                    extra_alias="%(color)"
+                    extra_alias="%(color)",
                 )
                 if not args:
                     args = runfn(
                         args=self.setcolorfn[item]["params"],
-                        extra=tuple(int(color.lstrip("#")[i:i+2], 16) for i in (0, 2, 4)),
-                        extra_alias="%(color-rgb)"
+                        extra=tuple(
+                            int(color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
+                        ),
+                        extra_alias="%(color-rgb)",
                     )
                 runfn(fn=fn, args=args)
 
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "auto")
         if not AUTOCOLOR:
-            logger.info("ColorManager.autocolor_run() called when auto-color system is not usable. Skipping.")
-        
+            logger.info(
+                "ColorManager.autocolor_run() called when auto-color system is not usable. Skipping."
+            )
+
         if autocolor in self.yes_values:
-            threading.Thread(
-                args=self.configure(widget), daemon=True
-            ).start()
+            threading.Thread(args=self.configure(widget), daemon=True).start()

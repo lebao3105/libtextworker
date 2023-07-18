@@ -26,9 +26,11 @@ class ColorManager(ColorManager):
 
     def _get_font(self):
         size, style, weight, family = super()._get_font()
-        
-        if style == "system": style = "normal"
-        if weight == "system": weight = "normal"
+
+        if style == "system":
+            style = "normal"
+        if weight == "system":
+            weight = "normal"
 
         return wx.Font(
             size,

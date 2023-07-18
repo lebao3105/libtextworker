@@ -40,6 +40,7 @@ def CreateMenu(parent, items: list) -> wx.Menu:
             parent.Bind(wx.EVT_MENU, handler, item)
     return target_menu
 
+
 def BindMenuEvents(obj: wx.Window, menu: wx.Menu, items: list[tuple[Callable, int]]):
     """
     Bind wxEVT_MENU events an easier way. Ideal for XRC menus.
@@ -49,6 +50,7 @@ def BindMenuEvents(obj: wx.Window, menu: wx.Menu, items: list[tuple[Callable, in
     """
     for callback, pos in items:
         obj.Bind(wx.EVT_MENU, callback, menu.FindItemByPosition(pos))
+
 
 class XMLBuilder:
     """

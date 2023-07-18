@@ -19,20 +19,23 @@ except ImportError:
 
 
 class ConfigurationError(libTewException):
-
-    def __init__(self, path: str, msg: str, section: str, option: str = "\\not_specified\\"):
+    def __init__(
+        self, path: str, msg: str, section: str, option: str = "\\not_specified\\"
+    ):
         full = "Configuration file {}, path [{}->{}]: {}"
         full = full.format(path, section, option, msg)
         super().__init__(full)
 
+
 class GetConfig(ConfigParser):
     # Values
-    yes_values: list = ["yes", "True", True]
-    no_values: list = ["no", "False", False]
+    yes_values: list = ["yes", "True", True, "1", 1, "on"]
+    no_values: list = ["no", "False", False, "0", 0, "off"]
 
     aliases = {}
     detailedlogs: bool = True
     backups = {}
+    cfg = {}
 
     for item in yes_values:
         aliases[item] = True
@@ -40,7 +43,7 @@ class GetConfig(ConfigParser):
     for item in no_values:
         aliases[item] = False
 
-    def __init__(self, config: dict[str] | str, file: str, **kwds):
+    def __init__(self, config: dict[str] | str | None, file: str, **kwds):
         """
         A customized INI file parser.
         @param config (dict[str] or str) : Your stock settings, used to reset the file or do some comparisions
@@ -51,19 +54,18 @@ class GetConfig(ConfigParser):
         a dictionary for further actions (backup/restore file).
 
         @since 0.1.3: Allow config parameter as a str object
-        @since 0.1.4: Allow importing+exporting configs as a json object
+        @since 0.1.4: Allow importing+exporting configs as a json object, allow config param to be None
         """
         super().__init__(**kwds)
 
-        self.cfg = {}
-
         if isinstance(config, str):
             self.read_string(config)
-        else:
+        elif isinstance(config, dict):
             self.read_dict(config)
 
-        for key in self:
-            self.cfg[key] = self[key]
+        if config != None:
+            for key in self:
+                self.cfg[key] = self[key]
 
         self.readf(file)
         self._file = file
@@ -112,8 +114,8 @@ class GetConfig(ConfigParser):
                 else:
                     self.backups[key][subelm] = self[key][subelm]
                     return self.backups
-    
-    def full_backup(self, path:str, use_json: bool = False):
+
+    def full_backup(self, path: str, use_json: bool = False):
         """
         @since 0.1.4
         Do a full backup.
@@ -146,37 +148,43 @@ class GetConfig(ConfigParser):
 
         @return False if the option does not exist and needed parameter set to False.
         """
-        if not self.has_section(section):
-            if needed == True:
-                self.add_section(section)
-            else:
-                if not noraiseexp:
+
+        def bringitback():
+            if needed:
+                if restore:
+                    try:
+                        self.add_section(section)
+                    except:
+                        pass
+                if not section in self.backups:
                     raise ConfigurationError(
-                        self._file, "Section not found", section
+                        self._file, "Section not found in the backup", section
                     )
-                else:
-                    return None
-
-        if not option in self[section]:
-            if needed == True:
-                if restore == True:
-                    self[section][option] = \
-                        self.backups[section][option] \
-                        if option in self.backups[section] \
-                        else self.cfg[section][option]
-                else:
-                    self.set_and_update(section, option, self[section][option])
-            else:
-                if noraiseexp != True:
+                elif not option in self.backups:
                     raise ConfigurationError(
-                        self._file, "Option not found", section, option
+                        self._file, "Value not found in the backup", section, option
                     )
-                else:
-                    return None
+                self.set(section, option, self.backups[section][option])
+            if restore:
+                self.update()
+            return self.backups[section][option]
 
-        value = self.get(section, option).removeprefix('"').removesuffix('"')
+        try:
+            value = self.get(section, option)
+        except:
+            if noraiseexp:
+                value = bringitback()
+            else:
+                raise ConfigurationError(
+                    self._file, "Section or option not found", section, option
+                )
 
-        if raw or not value.lower() in self.aliases:
+        # Remove ' / "
+        trans = ["'", '"']
+        for key in trans:
+            value = value.removeprefix(key).removesuffix(key)
+
+        if not value in self.aliases or raw is True:
             return value
         else:
             return self.aliases[value]
@@ -193,9 +201,7 @@ class GetConfig(ConfigParser):
     def alias(self, value, value2) -> None:
         self.aliases[value] = value2
 
-    def move(
-        self, list_: dict[str, dict[str, str]], delete_entire_section: bool = False
-    ):
+    def move(self, list_: dict[str, dict[str, str]]):
         """
         @since 0.1.3
 
@@ -216,55 +222,45 @@ class GetConfig(ConfigParser):
         )
         ```
 
-        ```list_``` parameter holds all configs to move. Each of options specified (section->option format)
-        'is' a dictionary: sub-key 'newpath' specifies the location of the option to moved to (section->option format), 'file'
-        specifies the new file to use (if needed, else use 'unchanged' or don't use the 'file' field).
-        This function won't use backup(). Non-exist things will be ignored silently.
-
-        If you use delete_entire_section, this func will REMOVE ALL sections found on the move. Only for ['file'] == 'unchanged'.
+        "list_" is a dictionary - each key is a dictionary which defines how a setting should be moved.
+        The key name is your setting (section->option). Under that 'key' is 2 options:
+        * "newpath" specifies the location of the setting in the target file (section->option)
+        * "file" specifies the location of the target file we'll move the options to. Ignore it or leave it "unchanged" to tell
+            the function that you don't want to move the setting else where than the current file.
+        * "delete_entire_section" (ignorable, values are 'yes' and 'no') allows you to remove the old section after the move.
         """
-        curr_sects = self.sections()
-        newfile = ConfigParser()
 
-        for item in list_:
-            # Split and get values
-            splits = item.split("->")
-            if not splits[0] in curr_sects:
-                break
+        for section in list_.keys():
+            # Prepare for the move
+            section_ = section.split("->")[0]
+            option_ = section.split("->")[1]
 
-            value = self.get(splits[0], splits[1])
-            target = list_[item]["newpath"].split("->")
+            if not section_ in self.sections():
+                raise ConfigurationError(self._file, "Section not found", section_)
+            if not option_ in self[section]:
+                raise ConfigurationError(
+                    self._file, "Option not found", section_, option_
+                )
 
-            if "file" not in list_[item]:
-                target_file = "unchanged"
+            value = self[section_][option_]
+
+            # Start
+            newsection = list_[section]["newpath"].split("->")[0]
+            newoption = list_[section]["newpath"].split("->")[1]
+            if not "file" in list_[section] or list_[section]["file"] == "unchanged":
+                if not newsection in self.sections():
+                    self.add_section(newsection)
+                self.set_and_update(newsection, newoption, value)
             else:
-                target_file = list_[item]["file"]
+                newobj = GetConfig(None, list_[section]["file"])
+                newobj.add_section(newsection)
+                newobj.set_and_update(newsection, newoption, value)
 
-            # Start the move
-            if target_file == "unchanged":
-                if not target[0] in self.sections():
-                    self.add_section(target[0])
-
-                self.set(target[0], target[1], value)
-
-                if not delete_entire_section:
-                    self.remove_option(splits[0], splits[1])
-                else:
-                    self.remove_section(splits[0])
-
-                self.update()
-
-            else:
-                if os.path.isfile(target_file):
-                    newfile.read(target_file)
-
-                if not target[0] in newfile.sections():
-                    newfile.add_section(target[0])
-
-                newfile.set(target[0], target[1], value)
-
-                with open(target_file, "w") as f:
-                    newfile.write(f)
+            if (
+                "delete_entire_section" in list_[section]
+                and list_[section_]["delete_entire_section"] == "yes"
+            ):
+                self.remove_section(section_)
 
     def set_and_update(
         self, section: str, option: str, value: str | None = None

@@ -16,7 +16,7 @@ else:
 from libtextworker import EDITOR_DIR, THEMES_DIR
 
 from . import ColorManager
-from ..import stock_editor_configs
+from .. import stock_editor_configs
 from ...get_config import GetConfig
 
 
@@ -36,7 +36,7 @@ class StyledTextControl(Text):
         useScrollBars: bool = True,
         custom_config_path: str = EDITOR_DIR + "editor.ini",
         custom_theme_path: str = THEMES_DIR + "default.ini",
-        tabwidth: int = 4
+        tabwidth: int = 4,
     ):
         """
         Initialize the editor, libtextworker's customize part.
@@ -55,7 +55,7 @@ class StyledTextControl(Text):
 
         if self.cfger.getkey("menu", "enabled", False, True, True):
             useMenu = bool(self.cfger.getkey("menu", "enabled"))
-        
+
         if int(self.cfger.getkey("indentation", "size", False, True, True)):
             tabwidth = int(self.cfger.getkey("indentation", "size"))
 
@@ -75,10 +75,16 @@ class StyledTextControl(Text):
             self._place_scrollbar()
 
         # Place the line-numbers margin
-        if LINENUMS and self.cfger.getkey("editor", "line_count", noraiseexp=True) in self.cfger.yes_values:
+        if (
+            LINENUMS
+            and self.cfger.getkey("editor", "line_count", noraiseexp=True)
+            in self.cfger.yes_values
+        ):
             ln = TkLineNumbers(self._frame, self, "center")
             ln.pack(fill="y", side="left")
-            self.bind("<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True)
+            self.bind(
+                "<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True
+            )
 
         self.clrmgr.configure(self._frame, False)
         self.configure(tabs=self.clrmgr.GetFont.measure(" " * tabwidth))
@@ -148,11 +154,12 @@ class StyledTextControl(Text):
             super().edit_undo()
         except TclError:
             pass
-    
+
     def edit_redo(self) -> None:
         try:
             super().edit_redo()
         except TclError:
             pass
+
 
 TextWidget = StyledTextControl

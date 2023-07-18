@@ -14,21 +14,23 @@ available_toolkits = Literal["tk", "wx"]
 LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
 TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 
+
 # Classes
 ## Logging
 class Logger(logging.Logger):
-    UseToolKit : available_toolkits | bool = False
+    UseToolKit: available_toolkits | bool = False
 
     def UseGUIToolKit(
         self, toolkit: available_toolkits
     ):  # Currently no Tkinter support
         self.UseToolKit = toolkit
-    
-    def CallGUILog(self,
-                 name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"],
-                 msg: object,
-                 *args: object
-        ):
+
+    def CallGUILog(
+        self,
+        name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"],
+        msg: object,
+        *args: object,
+    ):
         """
         Call GUI toolkit logging function.
         """
@@ -43,29 +45,31 @@ class Logger(logging.Logger):
 
     def critical(self, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
-        self.CallGUILog('CRITICAL', msg, args)
+        self.CallGUILog("CRITICAL", msg, args)
 
     def debug(self, msg: object, *args: object, **kwds):
         super().debug(msg, *args, **kwds)
-        self.CallGUILog('DEBUG', msg, args)
+        self.CallGUILog("DEBUG", msg, args)
 
     def error(self, msg: object, *args: object, **kwds):
         super().error(msg, *args, **kwds)
-        self.CallGUILog('ERROR', msg, args)
+        self.CallGUILog("ERROR", msg, args)
 
     def exception(self, msg: object, *args: object, **kwds):
         super().exception(msg, *args, **kwds)
-        self.CallGUILog('EXCEPTION', msg, args)
+        self.CallGUILog("EXCEPTION", msg, args)
 
     def log(self, level: int, msg: object, *args: object, **kwds):
         super().log(level, msg, *args, **kwds)
-        self.CallGUILog('NORMAL', msg, args)
+        self.CallGUILog("NORMAL", msg, args)
 
     def warning(self, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
-        self.CallGUILog('WARNING', msg, args)
+        self.CallGUILog("WARNING", msg, args)
+
 
 logger = Logger("textworker")
+
 
 ## Base Exception class
 class libTewException(Exception):
@@ -88,9 +92,9 @@ def CraftItems(*args: str | pathlib.Path) -> str:
     """
     if len(args) < 2:
         raise Exception("Not enough arguments")
-    
+
     final = pathlib.Path(args[0])
-    
+
     for i in range(1, len(args)):
         final /= str(args[i])
 
@@ -126,7 +130,7 @@ def WalkCreation(directory: str):
     splits = directory.split("/")
     firstdir = splits[0]
     for item in range(1, len(splits)):
-        firstdir += ("/" + splits[item])
+        firstdir += "/" + splits[item]
         if not os.path.isdir(firstdir):
             os.mkdir(firstdir)
 
