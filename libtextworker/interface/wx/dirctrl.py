@@ -6,7 +6,7 @@ from libtextworker.general import CraftItems
 
 
 # Referenced from https://python-forum.io/thread-8513.html
-class PatchedDirCtrl(wx.TreeCtrl):
+class DirCtrl(wx.TreeCtrl):
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
 
@@ -83,3 +83,7 @@ class PatchedDirCtrl(wx.TreeCtrl):
         result.reverse()
 
         return CraftItems(*tuple(result))
+
+# @since 0.1.4: PatchedDirCtrl renamed to DirCtrl, and PatchedDirCtrl now points to that class
+# @brief "Patched".. seems not right:v (it's derived from wxTreeCtrl not wxGenericDirCtrl)
+PatchedDirCtrl = DirCtrl
