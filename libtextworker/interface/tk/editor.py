@@ -18,6 +18,7 @@ from libtextworker import EDITOR_DIR, THEMES_DIR
 from . import ColorManager
 from .. import stock_editor_configs
 from ...get_config import GetConfig
+from .miscs import CreateMenu
 
 
 class StyledTextControl(Text):
@@ -44,7 +45,7 @@ class StyledTextControl(Text):
         @param useScrollBars: Show scroll bars
         @param custom_config_path: Custom editor configs path (optional)
         @param custom_theme_path: Custom editor theme path (optional)
-        @param tabwidth: Tab (\t character) width (defaults to user setting else 4)
+        @param tabwidth: Tab (\\t character) width (defaults to user setting else 4)
         """
 
         self.cfger = GetConfig(stock_editor_configs, custom_config_path)
@@ -99,33 +100,38 @@ class StyledTextControl(Text):
 
     # Right click menu
     def _menu_init(self):
-        self.addMenucmd(
-            label=_("Cut"),
-            accelerator="Ctrl+X",
-            command=lambda: self.event_generate("<Control-x>"),
+        self.RMenu = CreateMenu(
+            [
+                {"label": _("Cut"), "accelerator": "Ctrl+X", "handler": lambda: self.event_generate("<Control-x>")}
+            ]
         )
-        self.addMenucmd(
-            label=_("Copy"),
-            accelerator="Ctrl+C",
-            command=lambda: self.event_generate("<Control-c>"),
-        )
-        self.addMenucmd(
-            label=_("Paste"),
-            accelerator="Ctrl+V",
-            command=lambda: self.event_generate("<Control-v>"),
-        )
-        if self.unRedo:
-            self.RMenu.add_separator()
-            self.addMenucmd(
-                label=_("Undo"),
-                accelerator="Ctrl+Z",
-                command=lambda: self.edit_undo(),
-            )
-            self.addMenucmd(
-                label=_("Redo"),
-                accelerator="Ctrl+Y",
-                command=lambda: self.edit_redo(),
-            )
+        # self.addMenucmd(
+        #     label=_("Cut"),
+        #     accelerator="Ctrl+X",
+        #     command=lambda: self.event_generate("<Control-x>"),
+        # )
+        # self.addMenucmd(
+        #     label=_("Copy"),
+        #     accelerator="Ctrl+C",
+        #     command=lambda: self.event_generate("<Control-c>"),
+        # )
+        # self.addMenucmd(
+        #     label=_("Paste"),
+        #     accelerator="Ctrl+V",
+        #     command=lambda: self.event_generate("<Control-v>"),
+        # )
+        # if self.unRedo:
+        #     self.RMenu.add_separator()
+        #     self.addMenucmd(
+        #         label=_("Undo"),
+        #         accelerator="Ctrl+Z",
+        #         command=lambda: self.edit_undo(),
+        #     )
+        #     self.addMenucmd(
+        #         label=_("Redo"),
+        #         accelerator="Ctrl+Y",
+        #         command=lambda: self.edit_redo(),
+        #     )
 
     def _open_menu(self, event):
         try:

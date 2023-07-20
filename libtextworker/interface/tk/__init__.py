@@ -3,7 +3,6 @@
 Contains class(es) and needed attributes for Tkinter.
 """
 import threading
-from tkinter import Menu
 import typing
 from ... import Importable
 from ..manager import ColorManager, AUTOCOLOR
@@ -15,19 +14,6 @@ else:
         "interface.tk is called but its dependencies are not installed.\n"
         "You'll need:\n- tkinter\n- darkdetect (optional)\n- sv-ttk (optional)\npackages."
     )
-
-try:
-    import sv_ttk
-except ImportError:
-    SVTTK_AVAILABLE = False
-else:
-    SVTTK_AVAILABLE = True
-
-if AUTOCOLOR:
-    import darkdetect
-else:
-    pass
-
 
 class ColorManager(ColorManager):
     recursive_configure: bool = True
@@ -65,8 +51,9 @@ class ColorManager(ColorManager):
 
         if "Menu" in widget.winfo_class():
             font_to_use.configure(size=10)
-            for i in range(0, int(widget.index("end"))):
-                widget.entryconfigure(i, background=back)
+            if widget.index("end"):
+                for i in range(0, int(widget.index("end"))):
+                    widget.entryconfigure(i, background=back)
 
         try:
             widget.configure(font=font_to_use)

@@ -118,37 +118,30 @@ class ColorManager(GetConfig):
 
         return size_, style, weight, family
 
-    @property
-    def GetColor(self) -> typing.Any:
+    def GetColor(self, color: typing.Literal["dark", "light"] | None = None) -> typing.Any:
         """
-        Property of ColorManager to call the color definitions.
-        When called, it returns the following:
-            background color, foreground color (in hex-rgb format)
+        Get the current foreground/background defined in the settings.
+        @since 0.1.4: Made to be a non-property item
+        @param color: "dark", "light", or None - color scheme. Will use "light"/darkdetect's output if None is specified.
+        @return tuple[str, str]
         """
-        return self._get_color()
 
-    @GetColor.setter
-    def GetColor(self, func: typing.Callable):
-        self._get_color = func
-
-    @GetColor.deleter
-    def GetColor(self):
-        self._get_color = print("ColorManager.GetColor | _get_color died")
-
-    def _get_color(self):
         # Deternmine if we can use darkdetect here
-        if AUTOCOLOR:
+        if AUTOCOLOR and color is None:
             currmode = darkdetect.theme().lower()
-        else:
+        elif not AUTOCOLOR and color is None:
             currmode = str(self.getkey("color", "background", restore=True)).lower()
+        else:
+            currmode = color
 
-        if not currmode in ["dark", "light"]:  # This for the value infile
+        if not currmode in ["dark", "light"]:
             raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
         test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
         # print(test_back, test_fore)
+        
         if test_back:
             back_ = test_back
         else:
