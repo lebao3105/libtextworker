@@ -3,6 +3,8 @@
 @brief Contains classes for generic INI files parsing
 @since 0.1.3: Use CommentedConfigParser, but don't replace ConfigParser with it.
 @since 0.1.4: Add json support; remake ConfigurationError class
+
+See the documentation in /usage/getconfig.
 """
 import json
 import os
@@ -122,6 +124,9 @@ class GetConfig(ConfigParser):
         @param path (str): Target backup file
         @param use_json (bool = False): Use the backup file in JSON format
         """
+        if path == self._file:
+            raise Exception("GetConfig.full_backup: filepath must be the loaded file!")
+        
         with open(path, "w") as f:
             if use_json:
                 json.dump(self, f)

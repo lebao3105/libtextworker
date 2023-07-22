@@ -34,12 +34,12 @@ class ColorManager(GetConfig):
     def __init__(
         self,
         default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str = "",
+        customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
     ):
         """
         Constructor of the class.
         @param default_configs (dict[str, Any]): Defaults to dev-premade configs
-        @param customfilepath (str): Custom file path. Set to "" (default) to disable it.
+        @param customfilepath (str): Custom file path. Disabled by default.
         """
         if customfilepath != "":
             self._file = os.path.abspath(customfilepath)
@@ -60,41 +60,18 @@ class ColorManager(GetConfig):
             "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead."
         )
 
-    def backup(self, file: str):
-        """
-        Backup a file to another file
-        @param file : str : Target backup file
-        """
-        if file == self._file:
-            raise libTewException(
-                "Unusable parameter value: file must not equal ColorManager._file"
-            )
-
-        with open(file, "w") as f:
-            self.write(f)
-
     # Configure widgets
     @property
-    def GetFont(self) -> typing.Any:
+    def GetFont(self) -> typing.Any | tuple[str, int, str, str, str]:
         """
-        Property of ColorManager to call the font definitions.
+        Call the font definitions.
         When called, this returns the following:
-            (font) size (int|str), style, weight, family
+            (font) size (int), style, weight, family
         The output will vary on different GUI toolkits:
         * wxPython: wx.Font object
         * Tkinter: tkinter.font.Font object
         """
-        return self._get_font()
 
-    @GetFont.setter
-    def GetFont(self, func: typing.Callable):
-        self._get_font = func
-
-    @GetFont.deleter
-    def GetFont(self):
-        self._get_font = print("ColorManager.GetFont | _get_font died")
-
-    def _get_font(self):
         if not self.has_section("font"):
             return 10, "system", "system", ""
 
@@ -118,37 +95,30 @@ class ColorManager(GetConfig):
 
         return size_, style, weight, family
 
-    @property
-    def GetColor(self) -> typing.Any:
+    def GetColor(self, color: typing.Literal["dark", "light"] | None = None) -> typing.Any:
         """
-        Property of ColorManager to call the color definitions.
-        When called, it returns the following:
-            background color, foreground color (in hex-rgb format)
+        Get the current foreground/background defined in the settings.
+        @since 0.1.4: Made to be a non-property item
+        @param color: "dark", "light", or None - color scheme. Will use "light"/darkdetect's output if None is specified.
+        @return tuple[str, str]
         """
-        return self._get_color()
 
-    @GetColor.setter
-    def GetColor(self, func: typing.Callable):
-        self._get_color = func
-
-    @GetColor.deleter
-    def GetColor(self):
-        self._get_color = print("ColorManager.GetColor | _get_color died")
-
-    def _get_color(self):
         # Deternmine if we can use darkdetect here
-        if AUTOCOLOR:
+        if AUTOCOLOR and color is None:
             currmode = darkdetect.theme().lower()
-        else:
+        elif not AUTOCOLOR and color is None:
             currmode = str(self.getkey("color", "background", restore=True)).lower()
+        else:
+            currmode = color
 
-        if not currmode in ["dark", "light"]:  # This for the value infile
+        if not currmode in ["dark", "light"]:
             raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
         test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
         # print(test_back, test_fore)
+        
         if test_back:
             back_ = test_back
         else:
