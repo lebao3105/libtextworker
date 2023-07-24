@@ -14,8 +14,10 @@ Both 2 platforms are powerful, one factor for this is how you use it.
 | wxPython | Get from Pypi - it may take you time installing dependencies + compiling | Win32 API, Cocoa, Gtk, Qt | People who want a more powerful application    | Takes time to install (not at all) + no theming support |
 
 Notes:
-* About Tk(inter)'s ugly UI: many people hate it - you can search the internet about it, and I don't know how to explain how and why. Additionally, you can get many modern themes around GitHub! Even a workaround for the native Gtk look for Tkinter/Tk has been started years ago. Only one word before we continue: use Tkinter.ttk as much as possible, because ttk widgets are "colored" - better than the default Tkinter one.
-* About wxPython installation: if Pypi can't find a wheel (it like .msi or .deb - something like that) for your machine, it will start building one. This is a normal behaviour, but we have to look for the dependencies wxPython needs.
+
+* About Tk(inter)'s ugly UI: many people hate it - you can search the internet about it, and I don't know how to explain how and why. Fortunately, you can get many modern themes around GitHub! Even a workaround for the native Gtk look for Tkinter/Tk has been started years ago. Only one word before we continue: use Tkinter.ttk as much as possible, because ttk widgets are "colored" - better than the default Tkinter one.
+
+* About wxPython installation: if Pypi can't find a wheel (it's something like .msi or .deb) for your machine, it will start building one. This is a normal behaviour, but we have to look for the dependencies wxPython needs.
 
 ## What about libtextworker?
 
@@ -25,7 +27,7 @@ For wxPython, it's ```libtextworker.interface.wx```.
 
 The support is not really equal for both GUIs.
 
-[TclSite]: tcl.tk
+[TclSite]: https://tcl.tk
 [TkinterSite]: https://docs.python.org/3/library/tk.html
-[wxPy]: wxpython.org
+[wxPy]: https://wxpython.org
 [wxSite]: https://wxwidgets.org

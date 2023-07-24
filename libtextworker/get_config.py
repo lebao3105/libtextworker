@@ -1,8 +1,6 @@
 """
 @package libtextworker.get_config
 @brief Contains classes for generic INI files parsing
-@since 0.1.3: Use CommentedConfigParser, but don't replace ConfigParser with it.
-@since 0.1.4: Add json support; remake ConfigurationError class
 
 See the documentation in /usage/getconfig.
 """
@@ -102,7 +100,7 @@ class GetConfig(ConfigParser):
         self.read(self._file)
 
     # Options
-    def backup(self, keys: dict, direct_to_keys: bool = False) -> dict:
+    def backup(self, keys: dict[str, str], direct_to_keys: bool = False) -> dict:
         """
         Backs up user data, specified by the keys parameter (dictionary).
         Returns the successfully *updated* dictionary (if direct_to_keys param is True),
@@ -112,10 +110,13 @@ class GetConfig(ConfigParser):
             for subelm in keys[key]:
                 if direct_to_keys == True:
                     keys[key][subelm] = self[key][subelm]
-                    return keys
                 else:
                     self.backups[key][subelm] = self[key][subelm]
-                    return self.backups
+        
+        if direct_to_keys:
+            return keys
+        else:
+            return self.backups
 
     def full_backup(self, path: str, use_json: bool = False):
         """
@@ -132,6 +133,27 @@ class GetConfig(ConfigParser):
                 json.dump(self, f)
             else:
                 self.write(f)
+    
+    def restore(self, keys: dict[str, str] | None, optional_path: str):
+        """
+        @since 0.1.4
+        Restore options.
+        @param keys (dict[str, str] or None): Keys + options to restore.
+            Optional but self.backups must not be empty.
+        @param optional_path (str): The name says it all. If specified,
+            both this path and self._file will be written.
+        You can also use move() function for a more complex method.
+        """
+
+        if not keys and self.backups: raise AttributeError("GetConfig.restore: self.backups and keys parameter are empty/died")
+        for key in keys:
+            for option in keys[key]:
+                self.set_and_update(key, option, keys[key][option])
+
+        if optional_path:
+            with open(optional_path, "w") as f:
+                self.write(f)
+
 
     def getkey(
         self,
