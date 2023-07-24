@@ -34,12 +34,12 @@ class ColorManager(GetConfig):
     def __init__(
         self,
         default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str = "",
+        customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
     ):
         """
         Constructor of the class.
         @param default_configs (dict[str, Any]): Defaults to dev-premade configs
-        @param customfilepath (str): Custom file path. Set to "" (default) to disable it.
+        @param customfilepath (str): Custom file path. Disabled by default.
         """
         if customfilepath != "":
             self._file = os.path.abspath(customfilepath)
@@ -60,41 +60,18 @@ class ColorManager(GetConfig):
             "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead."
         )
 
-    def backup(self, file: str):
-        """
-        Backup a file to another file
-        @param file : str : Target backup file
-        """
-        if file == self._file:
-            raise libTewException(
-                "Unusable parameter value: file must not equal ColorManager._file"
-            )
-
-        with open(file, "w") as f:
-            self.write(f)
-
     # Configure widgets
     @property
-    def GetFont(self) -> typing.Any:
+    def GetFont(self) -> typing.Any | tuple[str, int, str, str, str]:
         """
-        Property of ColorManager to call the font definitions.
+        Call the font definitions.
         When called, this returns the following:
-            (font) size (int|str), style, weight, family
+            (font) size (int), style, weight, family
         The output will vary on different GUI toolkits:
         * wxPython: wx.Font object
         * Tkinter: tkinter.font.Font object
         """
-        return self._get_font()
 
-    @GetFont.setter
-    def GetFont(self, func: typing.Callable):
-        self._get_font = func
-
-    @GetFont.deleter
-    def GetFont(self):
-        self._get_font = print("ColorManager.GetFont | _get_font died")
-
-    def _get_font(self):
         if not self.has_section("font"):
             return 10, "system", "system", ""
 
