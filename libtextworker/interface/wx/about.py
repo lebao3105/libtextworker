@@ -1,13 +1,11 @@
 import wx
 import wx.adv
 
-from typing import Any, final
+from typing import Any
 from ...general import CraftItems
 from .. import available_licenses
 from ... import LICENSES
 
-
-@final
 class AboutDialog:
     """
     About dialog built with wxPython.
