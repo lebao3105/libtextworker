@@ -58,7 +58,7 @@ class XMLBuilder:
     Use this class by call it as a varible, or make a sub-class.
     """
 
-    def __init__(self, Parent: wx.Window, FilePath: str, _=None):
+    def __init__(self, Parent: wx.Window | None, FilePath: str, _=None):
         """
         Constructor of the class.
         @param Parent: wx.Window object
@@ -71,7 +71,7 @@ class XMLBuilder:
             Changed self.Parent -> self.Master to avoid confusion when the class \
             is being subclassed with other wxPython classes
         """
-        self.Master: wx.Window = Parent
+        self.Master: wx.Window | None = Parent
         self._ = _
 
         # Setup translation
