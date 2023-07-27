@@ -61,7 +61,6 @@ class ColorManager(GetConfig):
         )
 
     # Configure widgets
-    @property
     def GetFont(self) -> typing.Any | tuple[str, int, str, str, str]:
         """
         Call the font definitions.
@@ -210,7 +209,7 @@ class ColorManager(GetConfig):
             logger.debug(f"Widget {widget} died, skip configuring.")
             return
 
-        color, fontcolor = self.GetColor
+        color, fontcolor = self.GetColor()
 
         for item in self.setfontfn:
             fn = self.setfontfn[item]["fn"]

@@ -108,7 +108,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         return True
 
     def SetupEditorColor(self):
-        bg, fg = self.clrmgr.GetColor
+        bg, fg = self.clrmgr.GetColor()
         # print(bg, fg)
         self.StyleClearAll()
         self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
