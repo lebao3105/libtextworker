@@ -7,6 +7,17 @@ from libtextworker.general import CraftItems
 
 # Referenced from https://python-forum.io/thread-8513.html
 class DirCtrl(wx.TreeCtrl):
+    """
+    A directory list made from wxTreeCtrl.
+    This is WIP, and lacks lots of features:
+    * Label editting
+    * Copy-paste + right-click menu
+    * Drag-n-drop
+    * Hidden files detect (quite hard, may need to use C/C++)
+    """
+
+    nodes: dict
+
     def __init__(self, *args, **kw):
         super().__init__(*args, **kw)
 
@@ -26,48 +37,52 @@ class DirCtrl(wx.TreeCtrl):
 
         self.AssignImageList(imgs)
 
-    def SetFolder(self, path: str, showhidden: bool = True):
-        if not os.path.isdir(path):
-            raise Exception("PatchedDirCtrl-Directory not found: " + path)
+    def SetFolder(self, path: str, newroot: bool = False):
+        """
+        Make DirCtrl to open (a) directory.
+        @param path (str): Target path
+        @param newroot (bool): Whatever to create a new root or not (incase we have >= premade root)
+        @since 0.1.4: Code description + new param (newroot)
+        """
 
-        if self.GetRootItem():
+        # "Lazy" expand
+        # Why "lazy" here? Because this is called when we click an expandable item,
+        # if it's not opened before, it will fill itself with new items.
+        # else it will just show its (already) finished work.
+
+        def Expand(evt=None):
+
+            path = self.GetSelection()
+            fullpath = os.path.abspath(self.GetFullPath(path))
+            self.SetItemImage(path, self.openfolder, wx.TreeItemIcon_Expanded)
+            
+            if len(os.listdir(fullpath)) == 0: self.SetItemHasChildren(path, False); return
+            # ^ blank folder? Get out eventually
+
+            for item in os.listdir(fullpath):
+                craftedpath = CraftItems(fullpath, item)
+                icon = self.folderidx if os.path.isdir(craftedpath) else self.fileidx
+
+                self.nodes[craftedpath] = self.AppendItem(path, item, icon)
+
+                if os.path.isdir(craftedpath):
+                    self.SetItemHasChildren(self.nodes[craftedpath])
+        
+        path = os.path.abspath(path)
+        if not os.path.isdir(path):
+            raise NotADirectoryError(f"Directory not found or is a file: {path}")
+
+        if self.GetRootItem() and not newroot:
             self.DeleteAllItems()
 
-        ids = {path: self.AddRoot(path, self.folderidx)}
-        self.SetItemHasChildren(ids[path])
-        self.Bind(
-            wx.EVT_TREE_ITEM_EXPANDED,
-            self.SetItemImage(ids[path], self.openfolder, wx.TreeItemIcon_Expanded),
-        )
+        self.nodes = {path: self.AddRoot(os.path.abspath(path), self.folderidx)}
+        self.SetItemHasChildren(self.nodes[path])
+        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, Expand)
 
-        for dirpath, dirnames, filenames in os.walk(path):
-            if not dirpath in ids:
-                break
-
-            # if not showhidden:
-            #     dirnames = [d for d in dirnames if not is_hidden(os.path.join(dirpath, d))]
-
-            # if showhidden == False and is_hidden(dirpath):
-            #     continue
-
-            for dirname in sorted(dirnames):
-                fullpath = os.path.join(dirpath, dirname)
-
-                ids[fullpath] = self.AppendItem(ids[dirpath], dirname, self.folderidx)
-                self.Bind(
-                    wx.EVT_TREE_ITEM_EXPANDED,
-                    self.SetItemImage(
-                        ids[fullpath], self.openfolder, wx.TreeItemIcon_Expanded
-                    ),
-                )
-
-            # if not showhidden:
-            #     filenames = [f for f in filenames if not is_hidden(os.path.join(dirpath, f))]
-
-            for filename in sorted(filenames):
-                self.AppendItem(ids[dirpath], filename, self.fileidx)
-
-    def GetFullPath(self, item: wx.TreeItemId | None = None):
+    def GetFullPath(self, item: wx.TreeItemId | None = None) -> str:
+        """
+        Get the full path of an item.
+        """
         if item == None:
             parent = self.GetSelection()
         else:
@@ -75,11 +90,18 @@ class DirCtrl(wx.TreeCtrl):
 
         result = []
 
-        while self.GetItemParent(parent):
+        if parent == self.GetRootItem():
+            return self.GetItemText(parent)
+
+        def getroot():
+            nonlocal parent
             text = self.GetItemText(parent)
             result.append(text)
-            parent = self.GetItemParent(parent)
+            if parent != self.GetRootItem():
+                parent = self.GetItemParent(parent)
+                getroot()
 
+        getroot()
         result.reverse()
 
         return CraftItems(*tuple(result))
