@@ -50,7 +50,7 @@ class DirCtrl(wx.TreeCtrl):
         # if it's not opened before, it will fill itself with new items.
         # else it will just show its (already) finished work.
 
-        def Expand(evt=None):
+        def Expand(evt):
 
             path = self.GetSelection()
             fullpath = os.path.abspath(self.GetFullPath(path))
@@ -68,16 +68,16 @@ class DirCtrl(wx.TreeCtrl):
                 if os.path.isdir(craftedpath):
                     self.SetItemHasChildren(self.nodes[craftedpath])
         
-        path = os.path.abspath(path)
+        path = os.path.normpath(path)
         if not os.path.isdir(path):
             raise NotADirectoryError(f"Directory not found or is a file: {path}")
 
         if self.GetRootItem() and not newroot:
             self.DeleteAllItems()
 
-        self.nodes = {path: self.AddRoot(os.path.abspath(path), self.folderidx)}
+        self.nodes = {path: self.AddRoot(path, self.folderidx)}
         self.SetItemHasChildren(self.nodes[path])
-        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, Expand)
+        self.Bind(wx.EVT_TREE_ITEM_EXPANDED, Expand)
 
     def GetFullPath(self, item: wx.TreeItemId | None = None) -> str:
         """

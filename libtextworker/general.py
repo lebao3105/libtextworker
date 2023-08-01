@@ -98,7 +98,10 @@ def CraftItems(*args: str | pathlib.Path) -> str:
     for i in range(1, len(args)):
         final /= str(args[i])
 
-    return os.path.abspath(final)
+    # Why I didn't know this earlier?
+    # os.path.abspath = os.path.join(os.getcwd() + path)
+    # Yeah
+    return os.path.normpath(final)
 
 
 def CreateDirectory(directory: str, childs: list[str] = []):

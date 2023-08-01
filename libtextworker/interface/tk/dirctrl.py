@@ -1,8 +1,15 @@
 import os
 import tkinter.ttk as ttk
 
+from libtextworker.general import CraftItems
+
 
 class DirCtrl(ttk.Treeview):
+    """
+    A ttkTreeview customized to show folder list using os.listdir.
+    Multiple roots is supported, but only adding new for now.
+    Lacks label editing, DND, right-click menu.
+    """
     nodes : dict
 
     def __init__(self, **kwds):
@@ -12,27 +19,41 @@ class DirCtrl(ttk.Treeview):
         ysb = ttk.Scrollbar(self._frame, orient='vertical', command=self.yview)
         xsb = ttk.Scrollbar(self._frame, orient='horizontal', command=self.xview)
         self.configure(yscroll=ysb.set, xscroll=xsb.set)
-        self.heading('#0', text='Project tree', anchor='w')
 
         ysb.pack(fill="y", expand=True)
         xsb.pack(fill="x", expand=True)
         self.pack(expand=True, fill="both")
 
-    def setpath(self, path: str):
-        abspath = os.path.abspath(path)
-        self.insert_node('', abspath, abspath)
-        self.bind('<<TreeviewOpen>>', self.open_node)
+    def SetFolder(self, path: str, newroot: bool = False):
+        """
+        Make DirCtrl to show a new folder tree.
+        @param path (str): Target path
+        @param newroot (bool): Whatever to create a new root or not (delete all previous roots if any)
+        """
 
-    def insert_node(self, parent, text, abspath):
-        node = self.insert(parent, 'end', text=text, open=False)
-        if os.path.isdir(abspath):
-            self.nodes[node] = abspath
-            self.insert(node, 'end')
+        # "Lazy" expand
+        # Only load the folder content when the user open
 
-    def open_node(self, event):
-        node = self.focus()
-        abspath = self.nodes.pop(node, None)
-        if abspath:
-            self.delete(self.get_children(node))
-            for p in os.listdir(abspath):
-                self.insert_node(node, p, os.path.join(abspath, p))
+        def Expand(evt):
+
+            path = self.focus()
+            fullpath = os.path.normpath(self.GetFullPath(path))
+    
+    def GetFullPath(self, item: str | None = None) -> str:
+        """
+        Get the full path of an item/current selected item if @item parameter is not specified.
+        """
+
+        # Like wx, ttkTreeView handles items by IDs
+        if not item:
+            item = self.selection()[0]
+            
+        parent = self.parent(item)
+        node = []
+        
+        while parent != '': # Jump upper one level until we can't (root)
+            node.append(self.item(parent)["text"])
+            parent = self.parent(parent)
+
+        node.reverse()
+        return CraftItems(*tuple(node), self.item(item, "text"))
