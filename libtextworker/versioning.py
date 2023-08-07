@@ -9,7 +9,7 @@ Projects called by functions under libtextworker.versioning.
 Requested = {}
 
 
-def parse_version(project: str):
+def parse_version(project: str) -> packaging.version.Version:
     """
     Try to import a project then parse its version with the ```packaging.version``` module.
     Parsed projects are stored in Requested (list).
@@ -60,7 +60,7 @@ def require(project: str, target_version: str):
 
     if currver < target:
         raise general.libTewException(
-            "Project %(project)s not available for version %(target_version)"
+            "Project %(project)s must be version >=%(target_version)s"
         )
 
 

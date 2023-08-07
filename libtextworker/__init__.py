@@ -22,8 +22,8 @@ Importable = _importer.Importable
 __version__ = "0.1.4"
 THEMES_DIR = rf'{os.path.expanduser("~/.config/textworker/themes/")}'
 EDITOR_DIR = rf'{os.path.expanduser("~/.config/textworker/editorconfigs/")}'
-LICENSES = rf'{os.path.abspath(CraftItems(GetCurrentDir(__file__), "licenses"))}'
+LICENSES = rf'{os.path.normpath(CraftItems(GetCurrentDir(__file__), "licenses"))}'
 
-WalkCreation(THEMES_DIR)
-WalkCreation(EDITOR_DIR)
+# WalkCreation(THEMES_DIR)
+# WalkCreation(EDITOR_DIR)
 WalkCreation(rf'{os.path.expanduser("~/.logs")}')
