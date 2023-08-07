@@ -95,3 +95,5 @@ clrcall.configure(mainFrame, True)
 
 app.MainLoop()
 ```
+
+Want to get widgets example? See the ```tests/``` foldder on our GitHub repo!
