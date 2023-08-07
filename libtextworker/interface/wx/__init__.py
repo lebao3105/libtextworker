@@ -8,7 +8,7 @@ wxPython must be installed first:
     
 Else libtextworker will refuse to use this package.
 """
-import typing
+
 from libtextworker import Importable
 from . import constants
 from ..manager import ColorManager
@@ -24,8 +24,8 @@ else:
 class ColorManager(ColorManager):
     recursive_configure: bool = True
 
-    def _get_font(self):
-        size, style, weight, family = super()._get_font()
+    def GetFont(self):
+        size, style, weight, family = super().GetFont()
 
         if style == "system":
             style = "normal"
@@ -41,14 +41,31 @@ class ColorManager(ColorManager):
             family,
         )
 
-    def configure(self, widget: typing.Any, childs_too: bool = False):
+    def configure(self, widget: wx.Control, childs_too: bool = recursive_configure):
         super().configure(widget)
 
-        if childs_too and hasattr(widget, "GetChildren"):
-            for child in widget.GetChildren():
-                self.configure(child, True)
-                # self.autocolor_run(child)
+        # fore&back
 
+        def hextorgb(value: str):
+            lv = len(value)
+            return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+        bg, fg = self.GetColor()
+        bg = wx.Colour(*hextorgb(bg))
+        fg = wx.Colour(*hextorgb(fg))
+
+        # font
+        font = self.GetFont()
+
+        ## will this work?
+        if childs_too and hasattr(widget, "GetChildren"):
+            widget.SetBackgroundColour(bg)
+            widget.SetForegroundColour(fg)
+            widget.SetFont(font)
+        else:
+            widget.SetOwnBackgroundColour(bg)
+            widget.SetOwnForegroundColour(fg)
+            widget.SetOwnFont(font)
 
 ## @deprecated On version 0.1.3
 clrmgr = None

@@ -4,23 +4,24 @@ Contains class(es) and needed attributes for Tkinter.
 """
 import threading
 import typing
+
 from ... import Importable
+from ...general import libTewException
 from ..manager import ColorManager, AUTOCOLOR
 
 if Importable["tkinter"] == True:
     from tkinter import TclError, font, Misc
 else:
-    raise Exception(
-        "interface.tk is called but its dependencies are not installed.\n"
-        "You'll need:\n- tkinter\n- darkdetect (optional)\n- sv-ttk (optional)\npackages."
+    raise libTewException()(
+        "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
     )
 
 class ColorManager(ColorManager):
     recursive_configure: bool = True
     is_shown: bool = False  # Messages
 
-    def _get_font(self):
-        size, style, weight, family = super()._get_font()
+    def GetFont(self):
+        size, style, weight, family = super().GetFont()
         font_families = font.families()
 
         if family == "default" or family not in font_families:
@@ -46,8 +47,8 @@ class ColorManager(ColorManager):
         raise NotImplementedError
 
     def configure(self, widget: Misc, childs_too: bool = recursive_configure):
-        back, fore = self.GetColor
-        font_to_use = self._get_font()
+        back, fore = self.GetColor()
+        font_to_use = self.GetFont()
 
         if "Menu" in widget.winfo_class():
             font_to_use.configure(size=10)

@@ -12,7 +12,7 @@ class AboutDialog:
     All self-set infomations are stored in the ```infos``` attribute.
     Just run ShowBox() to see your work.
     You can set the parent of the dialog if needed, use the Parent variable.
-    This class is not sub-class-able.
+    This class is ~~not~~ sub-class-able. (since 0.1.4)
     """
 
     infos = wx.adv.AboutDialogInfo()

@@ -6,7 +6,7 @@ import wx.xrc
 from typing import Callable
 
 
-def CreateMenu(parent, items: list) -> wx.Menu:
+def CreateMenu(parent, items: list[tuple[5]]) -> wx.Menu:
     """
     Create a new wx.Menu with a list of commands.
     Menu items use the following format:
@@ -46,11 +46,25 @@ def BindMenuEvents(obj: wx.Window, menu: wx.Menu, items: list[tuple[Callable, in
     Bind wxEVT_MENU events an easier way. Ideal for XRC menus.
     @param obj (wx.Window): Object to call Bind() from
     @param menu (wx.Menu): Target menu
-    @param items (list of tuple_s[Callable, int]): List of tuples, each tuple has a function + menu item index
+    @param items (list of tuples of [Callable, int]): List of tuples, each tuple has a function + menu item index.
     """
     for callback, pos in items:
         obj.Bind(wx.EVT_MENU, callback, menu.FindItemByPosition(pos))
 
+def BindEvents(obj: wx.Window, items: list[tuple[wx.PyEventBinder, Callable, int]]):
+    """
+    Bind events for a wxWindow.
+    @param obj (wx.Window): Object to call Bind() from
+    @param items (list of tuples of [Callable, int]): Events
+
+    Expaining "items" parameter:
+    * wx.PyEventBinder object: wx event (wx.EVT_*)
+    * Callable object: callback
+    * int object: position of the widget we will bind the event to. Find it by obj.GetChildren()[int].
+    """
+
+    for evt_type, callback, pos in items:
+        obj.Bind(evt_type, callback, obj.GetChildren()[pos])
 
 class XMLBuilder:
     """
@@ -58,12 +72,12 @@ class XMLBuilder:
     Use this class by call it as a varible, or make a sub-class.
     """
 
-    def __init__(self, Parent: wx.Window | None, FilePath: str, _=None):
+    def __init__(self, Parent: wx.Window | None, FilePath: str, _: Callable | None=None):
         """
         Constructor of the class.
         @param Parent: wx.Window object
         @param FilePath: XRC file to load
-        @param _: (initialized) gettext
+        @param _: (initialized,optional) gettext
         """
 
         """
@@ -81,14 +95,14 @@ class XMLBuilder:
             xrc_data = f.read()
 
         ## Replace texts with translated ones
-        xrc_data = re.sub("_\(['\"](.*?)['\"]\)", self.txtLocalize, xrc_data)
+        xrc_data = re.sub("_(['\"](.*?)['\"])", self.txtLocalize, xrc_data)
         xrc_data = xrc_data.encode("utf8")
 
         # Call out the resource file, with translated strings
         self.Res = wx.xrc.XmlResource()
         self.Res.LoadFromBuffer(xrc_data)
 
-    def txtLocalize(self, match_obj):
+    def txtLocalize(self, match_obj: re.Match[str]):
         if self._ == None:
             import gettext
 
@@ -98,9 +112,10 @@ class XMLBuilder:
     def loadObject(self, objectname, objecttype):
         """
         Load an XRC object.
-        This function not always works, you can get error "Object <name> class <name> not found" \
-            which means the load is failed. To address this, use wx.xrc.XRCCTRL or use the object's \
-            children relative functions (e.g GetChildren/GetMenu/(wxMenu)FindItemByPostion...)
-        However, this function is ideal to get the top-level objects;)
+        Mainly used for calling the top-level panel (e.g Frame, Dialog).
+        You may see "Object not found" message, especially when XRC does not store
+        element name.
+        Tip: to prevent this, use children-communicate functions such as
+            GetSizer, GetChilren, or even wx.FindWindowBy*.
         """
         return self.Res.LoadObject(self.Master, objectname, objecttype)

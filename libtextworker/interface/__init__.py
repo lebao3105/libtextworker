@@ -7,6 +7,7 @@ stock_ui_configs = {
         # New in 0.1.4:
         # background and foreground color specificially for light and dark mode,
         # suffixed by "-light" and/or "-dark"
+        # by default we won't leave it here, this is for the end-users
     },
     "font": {  # default value 'normal' now switched to 'system'
         "style": "system",

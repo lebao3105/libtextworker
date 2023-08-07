@@ -99,7 +99,7 @@ class ColorManager(GetConfig):
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-property item
         @param color: "dark", "light", or None - color scheme. Will use "light"/darkdetect's output if None is specified.
-        @return tuple[str, str]
+        @return tuple[str, str]: Background - Foreground color
         """
 
         # Deternmine if we can use darkdetect here
