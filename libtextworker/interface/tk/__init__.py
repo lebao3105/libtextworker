@@ -12,7 +12,7 @@ from ..manager import ColorManager, AUTOCOLOR
 if Importable["tkinter"] == True:
     from tkinter import TclError, font, Misc
 else:
-    raise libTewException()(
+    raise libTewException(
         "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
     )
 

@@ -19,9 +19,9 @@ stock_ui_configs = {
 
 """Default editor configs"""
 stock_editor_configs = {
-    "indentation": {"size": 4, "type": "tabs", "show_guide": "yes"},
+    "indentation": {"size": 4, "type": "tabs", "show_guide": "yes", "backspace_unindents": "yes"},
     "menu": {"enabled": "yes"},
-    "editor": {"line_count": "yes", "dnd_enabled": "yes", "wordwrap": "yes"},
+    "editor": {"line_count": "yes", "dnd_enabled": "yes", "wordwrap": "yes", "view_whitespaces": "yes"},
 }
 
 """

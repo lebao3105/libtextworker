@@ -1,6 +1,7 @@
-from tkinter import Toplevel, Misc, Text
+from tkinter import Toplevel, Misc
 from tkinter.ttk import Button, Frame, Label, Notebook
 from typing import AnyStr
+
 from . import editor
 from .. import available_licenses
 from ... import LICENSES
