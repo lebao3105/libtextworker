@@ -178,20 +178,20 @@ files = [
 
 [[package]]
 name = "sv-ttk"
-version = "2.4.3"
+version = "2.5.5"
 description = "A gorgeous theme for Tkinter, based on Windows 11's UI"
 optional = true
-python-versions = ">=3.4"
+python-versions = ">=3.7"
 files = [
-    {file = "sv_ttk-2.4.3-py3-none-any.whl", hash = "sha256:1b2c9a2b6a4129d01597302aa4ef9903a950bf9cac28ca0cbac0fb814c20a8fc"},
-    {file = "sv_ttk-2.4.3.tar.gz", hash = "sha256:6f8be148157274a204ae68a12fff71edde3565500107286c8772eb3e8f422a2d"},
+    {file = "sv_ttk-2.5.5-py3-none-any.whl", hash = "sha256:49d1cd03c032728c183d1fe2318f88cdb658ef3e87157e1ca3fcf6661054965b"},
+    {file = "sv_ttk-2.5.5.tar.gz", hash = "sha256:9bbfe2aba6cc6f9fdf70d79331046543c9666fcccc78bad5ff648a9987e3cedb"},
 ]
 
 [[package]]
 name = "tklinenums"
 version = "1.6.5"
 description = "A simple Tkinter widget for displaying line numbers"
-optional = false
+optional = true
 python-versions = "*"
 files = [
     {file = "tklinenums-1.6.5-py3-none-any.whl", hash = "sha256:c462707365d6767b278f5155cdf5034460e8ae161167b1daed1376b10d856544"},
@@ -238,10 +238,10 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [extras]
 all = ["commented-configparser", "darkdetect", "sv-ttk", "wxPython"]
 autocolor = ["darkdetect"]
-tkinter = ["sv-ttk"]
+tkinter = ["sv-ttk", "tklinenums"]
 wx = ["wxPython"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0630335ccd68676457fc26b196b83190806954db6fb2a76d36d084e10ed5d27f"
+content-hash = "b430b0cf63e48f0b4e65340f483814a2493f836a59a188696dc9eab0adbf8268"
