@@ -189,13 +189,13 @@ files = [
 
 [[package]]
 name = "tklinenums"
-version = "1.6.5"
+version = "1.7.0"
 description = "A simple Tkinter widget for displaying line numbers"
-optional = false
+optional = true
 python-versions = "*"
 files = [
-    {file = "tklinenums-1.6.5-py3-none-any.whl", hash = "sha256:c462707365d6767b278f5155cdf5034460e8ae161167b1daed1376b10d856544"},
-    {file = "tklinenums-1.6.5.tar.gz", hash = "sha256:ee4c26fc615e024578469d73942c0a1bb84f79365844316d75c49ad92a9ecc02"},
+    {file = "tklinenums-1.7.0-py3-none-any.whl", hash = "sha256:bce9ae1cec8c022e6880371df83270ada1b96df3b1059da792e1a7d4e0e2e927"},
+    {file = "tklinenums-1.7.0.tar.gz", hash = "sha256:97e90f3d6fc9438588117ec8d945ab0e6ace84a65fe1eeb22d7ac902bb2e0418"},
 ]
 
 [[package]]
@@ -238,10 +238,10 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [extras]
 all = ["commented-configparser", "darkdetect", "sv-ttk", "wxPython"]
 autocolor = ["darkdetect"]
-tkinter = ["sv-ttk"]
+tkinter = ["sv-ttk", "tklinenums"]
 wx = ["wxPython"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "0630335ccd68676457fc26b196b83190806954db6fb2a76d36d084e10ed5d27f"
+content-hash = "b430b0cf63e48f0b4e65340f483814a2493f836a59a188696dc9eab0adbf8268"
