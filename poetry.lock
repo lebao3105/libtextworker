@@ -189,13 +189,13 @@ files = [
 
 [[package]]
 name = "tklinenums"
-version = "1.6.5"
+version = "1.7.0"
 description = "A simple Tkinter widget for displaying line numbers"
 optional = true
 python-versions = "*"
 files = [
-    {file = "tklinenums-1.6.5-py3-none-any.whl", hash = "sha256:c462707365d6767b278f5155cdf5034460e8ae161167b1daed1376b10d856544"},
-    {file = "tklinenums-1.6.5.tar.gz", hash = "sha256:ee4c26fc615e024578469d73942c0a1bb84f79365844316d75c49ad92a9ecc02"},
+    {file = "tklinenums-1.7.0-py3-none-any.whl", hash = "sha256:bce9ae1cec8c022e6880371df83270ada1b96df3b1059da792e1a7d4e0e2e927"},
+    {file = "tklinenums-1.7.0.tar.gz", hash = "sha256:97e90f3d6fc9438588117ec8d945ab0e6ace84a65fe1eeb22d7ac902bb2e0418"},
 ]
 
 [[package]]
