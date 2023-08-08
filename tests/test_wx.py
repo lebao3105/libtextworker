@@ -5,6 +5,7 @@ import wx.stc
 from . import THEMEPATH, GITHUB_URL, API_URL
 from libtextworker import __version__ as ver
 from libtextworker import _importer
+
 _importer.test_import("wx")
 from libtextworker.interface.wx import ColorManager
 from libtextworker.interface.wx.about import AboutDialog
@@ -14,12 +15,12 @@ from libtextworker.interface.wx.miscs import CreateMenu
 
 clrmgr = ColorManager(customfilepath=THEMEPATH)
 
+
 def test_wx():
-    
     """
     Events
     """
-    
+
     # About dialog
     def aboutbox(evt):
         aboutdlg = AboutDialog()
@@ -33,22 +34,22 @@ def test_wx():
     # Check for autocolor support
     def checkautocolor(evt):
         from libtextworker.interface.manager import AUTOCOLOR
+
         if not AUTOCOLOR:
             wx.MessageBox(
                 "Auto color support requires darkdetect package to be installed on supported machines."
                 "Head over to https://pypi.org/project/darkdetect to see more info.",
-                style=wx.ICON_ERROR|wx.OK|wx.CENTRE,
-                parent=fm
+                style=wx.ICON_ERROR | wx.OK | wx.CENTRE,
+                parent=fm,
             )
         else:
             wx.MessageBox(
                 "You have it! Try toggling the OS color scheme to see the magic!"
                 "Note that not all of wx widgets are able to use this right now",
-                style=wx.ICON_INFORMATION|wx.OK|wx.CENTRE,
-                parent=fm
+                style=wx.ICON_INFORMATION | wx.OK | wx.CENTRE,
+                parent=fm,
             )
 
-    
     """
     Full wxApp setup
     """
@@ -69,14 +70,8 @@ def test_wx():
                 lambda evt: webbrowser.open(API_URL),
                 None,
             ),
-            (
-                wx.ID_ANY,
-                "Check for auto-color support",
-                None,
-                checkautocolor,
-                None
-            )
-        ]
+            (wx.ID_ANY, "Check for auto-color support", None, checkautocolor, None),
+        ],
     )
 
     menubar.Append(the_only_one, "The only one.")
@@ -100,11 +95,11 @@ def test_wx():
         _lol = ActionRow()
         _lol.SetParent(pn)
         _lol.PlaceObj(wx.StaticText, label=f"testtesttest{str(i)}")
-        _lol.PlaceObj(wx.CheckBox, style=wx.CHB_DEFAULT|wx.ALIGN_RIGHT)
+        _lol.PlaceObj(wx.CheckBox, style=wx.CHB_DEFAULT | wx.ALIGN_RIGHT)
         return _lol
 
     for i in range(0, 5):
-        sz.Add(newAR(i), 0, wx.ALL|wx.EXPAND, 5)
+        sz.Add(newAR(i), 0, wx.ALL | wx.EXPAND, 5)
 
     clrmgr.configure(fm, True)
 

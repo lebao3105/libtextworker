@@ -1,5 +1,6 @@
 import wx
 
+
 class ActionRow(wx.BoxSizer):
     """
     Inspired from libadwaita/Gtk's ActionRow class,
@@ -17,7 +18,7 @@ class ActionRow(wx.BoxSizer):
         The actual parent of this widget.
         """
         return self._Parent
-    
+
     @Parent.setter
     def Parent(self, obj: wx.Control):
         self._Parent = obj
@@ -47,5 +48,5 @@ class ActionRow(wx.BoxSizer):
         kwds["parent"] = self.Parent
         target = obj(*args, **kwds)
 
-        self.Add(target, stretch, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5)
+        self.Add(target, stretch, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         return target

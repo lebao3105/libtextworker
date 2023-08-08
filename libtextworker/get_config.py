@@ -112,7 +112,7 @@ class GetConfig(ConfigParser):
                     keys[key][subelm] = self[key][subelm]
                 else:
                     self.backups[key][subelm] = self[key][subelm]
-        
+
         if direct_to_keys:
             return keys
         else:
@@ -127,13 +127,13 @@ class GetConfig(ConfigParser):
         """
         if path == self._file:
             raise Exception("GetConfig.full_backup: filepath must be the loaded file!")
-        
+
         with open(path, "w") as f:
             if use_json:
                 json.dump(self, f)
             else:
                 self.write(f)
-    
+
     def restore(self, keys: dict[str, str] | None, optional_path: str):
         """
         @since 0.1.4
@@ -145,7 +145,10 @@ class GetConfig(ConfigParser):
         You can also use move() function for a more complex method.
         """
 
-        if not keys and self.backups: raise AttributeError("GetConfig.restore: self.backups and keys parameter are empty/died")
+        if not keys and self.backups:
+            raise AttributeError(
+                "GetConfig.restore: self.backups and keys parameter are empty/died"
+            )
         for key in keys:
             for option in keys[key]:
                 self.set_and_update(key, option, keys[key][option])
@@ -153,7 +156,6 @@ class GetConfig(ConfigParser):
         if optional_path:
             with open(optional_path, "w") as f:
                 self.write(f)
-
 
     def getkey(
         self,

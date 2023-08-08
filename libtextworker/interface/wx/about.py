@@ -6,6 +6,7 @@ from ...general import CraftItems
 from .. import available_licenses
 from ... import LICENSES
 
+
 class AboutDialog:
     """
     About dialog built with wxPython.

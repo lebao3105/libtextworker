@@ -6,11 +6,11 @@ def CreateMenu(
     items: list[tuple | dict[str]],
     parent: Misc | None = None,
     tearoff: Literal[0, 1] = 0,
-    title: str = ...
+    title: str = ...,
 ) -> Menu:
     """
     Make a Tkinter menu with commands inside.
-    
+
     Menu items list must follow the format below:
 
     ```python
@@ -40,9 +40,8 @@ def CreateMenu(
         else:
             return none_to_blank.get(item, item)
 
-    for item in items:    
+    for item in items:
         if any(isinstance(item, tuple) for item in items):
-
             for label, acc, handler, onvalue, offvalue, variable, state, kind in item:
                 label = convert(label, 1)
                 acc = convert(acc, 1)
@@ -55,7 +54,6 @@ def CreateMenu(
                 break
 
         elif any(isinstance(item, dict) for item in items):
-
             label = convert(item.get("label", None), 1)
             acc = convert(item.get("accelerator", None), 1)
             handler = convert(item.get("handler", None), 2)
@@ -65,12 +63,7 @@ def CreateMenu(
             state = item.get("state", "normal")
             kind = item.get("kind", "normal")
 
-    args = {
-        "accelerator": acc,
-        "command": handler,
-        "label": label,
-        "state": state
-    }
+    args = {"accelerator": acc, "command": handler, "label": label, "state": state}
 
     if kind == "normal":
         target.add_command(**args)
@@ -80,12 +73,13 @@ def CreateMenu(
             **args, onvalue=onvalue, offvalue=offvalue, variable=variable
         )
 
-    if kind == "separator": target.add_separator()
+    if kind == "separator":
+        target.add_separator()
 
     if kind == "option":
         target.add_radiobutton(
             **args,
             variable=variable,
         )
-        
+
     return target

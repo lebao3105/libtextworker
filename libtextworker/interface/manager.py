@@ -94,7 +94,9 @@ class ColorManager(GetConfig):
 
         return size_, style, weight, family
 
-    def GetColor(self, color: typing.Literal["dark", "light"] | None = None) -> typing.Any:
+    def GetColor(
+        self, color: typing.Literal["dark", "light"] | None = None
+    ) -> typing.Any:
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-property item
@@ -117,7 +119,7 @@ class ColorManager(GetConfig):
         test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
         test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
         # print(test_back, test_fore)
-        
+
         if test_back:
             back_ = test_back
         else:

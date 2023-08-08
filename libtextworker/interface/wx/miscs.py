@@ -51,6 +51,7 @@ def BindMenuEvents(obj: wx.Window, menu: wx.Menu, items: list[tuple[Callable, in
     for callback, pos in items:
         obj.Bind(wx.EVT_MENU, callback, menu.FindItemByPosition(pos))
 
+
 def BindEvents(obj: wx.Window, items: list[tuple[wx.PyEventBinder, Callable, int]]):
     """
     Bind events for a wxWindow.
@@ -66,13 +67,16 @@ def BindEvents(obj: wx.Window, items: list[tuple[wx.PyEventBinder, Callable, int
     for evt_type, callback, pos in items:
         obj.Bind(evt_type, callback, obj.GetChildren()[pos])
 
+
 class XMLBuilder:
     """
     Class to read and build interfaces from a XML file.
     Use this class by call it as a varible, or make a sub-class.
     """
 
-    def __init__(self, Parent: wx.Window | None, FilePath: str, _: Callable | None=None):
+    def __init__(
+        self, Parent: wx.Window | None, FilePath: str, _: Callable | None = None
+    ):
         """
         Constructor of the class.
         @param Parent: wx.Window object

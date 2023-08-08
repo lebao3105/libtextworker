@@ -16,6 +16,7 @@ else:
         "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
     )
 
+
 class ColorManager(ColorManager):
     recursive_configure: bool = True
     is_shown: bool = False  # Messages

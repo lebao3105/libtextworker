@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("../libtextworker")
 from libtextworker.general import CraftItems, GetCurrentDir
 

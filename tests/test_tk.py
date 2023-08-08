@@ -3,6 +3,7 @@ import tkinter.ttk as ttk
 
 from . import THEMEPATH
 from libtextworker import _importer, __version__ as libver
+
 _importer.test_import("tkinter")
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
@@ -14,7 +15,7 @@ clrmgr = ColorManager(customfilepath=THEMEPATH)
 def test_tk():
     app = tk.Tk()
     app.geometry("300x258")
-    
+
     fm = ttk.Frame(app)
     aboutdlg = AboutDialog()
     aboutdlg.SetProjectName("libtextworker")
@@ -25,11 +26,13 @@ def test_tk():
     aboutdlg.SetProjectLicense("GPL3_full")
 
     ttk.Label(fm, text="Hello world!").pack()
-    ttk.Button(fm, text="Try to click it;)!", command=lambda :(aboutdlg.ShowDialog(fm))).pack()
+    ttk.Button(
+        fm, text="Try to click it;)!", command=lambda: (aboutdlg.ShowDialog(fm))
+    ).pack()
     ttk.Checkbutton(fm, text="A checkbutton").pack()
 
     nb = ttk.Notebook(fm)
-    
+
     pb = ttk.Progressbar(nb, phase=8, value=0.0)
     pb.start()
 

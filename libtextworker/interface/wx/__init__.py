@@ -48,7 +48,7 @@ class ColorManager(ColorManager):
 
         def hextorgb(value: str):
             lv = len(value)
-            return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+            return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
         bg, fg = self.GetColor()
         bg = wx.Colour(*hextorgb(bg))
@@ -66,6 +66,7 @@ class ColorManager(ColorManager):
             widget.SetOwnBackgroundColour(bg)
             widget.SetOwnForegroundColour(fg)
             widget.SetOwnFont(font)
+
 
 ## @deprecated On version 0.1.3
 clrmgr = None

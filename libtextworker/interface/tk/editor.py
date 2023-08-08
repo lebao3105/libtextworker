@@ -102,7 +102,11 @@ class StyledTextControl(Text):
     def _menu_init(self):
         self.RMenu = CreateMenu(
             [
-                {"label": _("Cut"), "accelerator": "Ctrl+X", "handler": lambda: self.event_generate("<Control-x>")}
+                {
+                    "label": _("Cut"),
+                    "accelerator": "Ctrl+X",
+                    "handler": lambda: self.event_generate("<Control-x>"),
+                }
             ]
         )
         # self.addMenucmd(
