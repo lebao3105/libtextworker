@@ -1,7 +1,14 @@
+"""
+@package libtextworker.interface.base
+@brief The base of all GUIs in libtextworker
+"""
 from enum import Flag, auto
 from typing import Callable, Literal
 
 class DC_FLAGS(Flag):
+    """
+    Flags for DirCtrl.
+    """
     DC_ONEROOT = auto()
     DC_DIRONLY = auto()
     DC_RIGHTCL = auto()
@@ -28,10 +35,12 @@ class WidgetBase:
     
     def __init__(this, *args, **kwds):
         
-        if "dc_styles" in kwds:
-            this.Styles = kwds["dc_styles"]
-            kwds.pop("dc_styles")
+        # Get specific widget styles
+        if "w_styles" in kwds:
+            this.Styles = kwds["w_styles"]
+            kwds.pop("w_styles")
 
+        # Make sure we don't have 2 parents in __init__:)
         if not this.Parent_ArgName in kwds:
             temp = list(args)
             target_parent = temp[0]

@@ -1,3 +1,7 @@
+"""
+@package libtextworker.interface.wx.miscs
+@brief Misc stuffs for wxPython.
+"""
 import re
 import wx
 import wx.aui

@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 import tkinter.ttk as ttk
 
@@ -7,6 +8,7 @@ from libtextworker import _importer, __version__ as libver
 _importer.test_import("tkinter")
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
+from libtextworker.interface.tk.dirctrl import DirCtrl
 from libtextworker.interface.tk.editor import StyledTextControl
 
 clrmgr = ColorManager(customfilepath=THEMEPATH)
@@ -33,15 +35,15 @@ def test_tk():
 
     nb = ttk.Notebook(fm)
 
-    pb = ttk.Progressbar(nb, phase=8, value=0.0)
-    pb.start()
+    dc = DirCtrl(nb, show="tree")
+    dc.SetFolder(os.path.expanduser("~/Desktop"))
 
     te = StyledTextControl(nb)
-    te.EditorInit(custom_theme_path=THEMEPATH)
+    te.EditorInit()
     te.pack(expand=True, fill="both")
 
     nb.add(ttk.Combobox(nb, values=["one", "two", "three"]), text="Tab 1")
-    nb.add(pb, text="Tab 2")
+    nb.add(dc._Frame, text="Tab 2")
     nb.add(te._frame, text="Tab 3")
 
     clrmgr.configure(fm, True)

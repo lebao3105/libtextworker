@@ -1,3 +1,7 @@
+"""
+@package libtextworker.interface.wx.constants
+@brief Constants for wxPython.
+"""
 import wx
 
 # Font weight

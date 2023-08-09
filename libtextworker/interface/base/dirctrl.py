@@ -1,3 +1,7 @@
+"""
+@package libtextworker.interface.base.dirctrl
+@brief The base of DirCtrl - directory tree widget
+"""
 import os
 from typing import Callable
 from libtextworker.general import libTewException

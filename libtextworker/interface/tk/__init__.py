@@ -2,12 +2,11 @@
 @package libtextworker.interface.tk
 Contains class(es) and needed attributes for Tkinter.
 """
-import threading
 import typing
 
 from ... import Importable
 from ...general import libTewException
-from ..manager import ColorManager, AUTOCOLOR
+from ..manager import ColorManager
 
 if Importable["tkinter"] == True:
     from tkinter import TclError, font, Misc
@@ -15,7 +14,6 @@ else:
     raise libTewException(
         "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
     )
-
 
 class ColorManager(ColorManager):
     recursive_configure: bool = True
@@ -74,24 +72,3 @@ class ColorManager(ColorManager):
         if childs_too:
             for child in widget.winfo_children():
                 self.configure(child, True)
-
-    def autocolor_run(self, widget: typing.Any):
-        def _configure(theme: str = ""):
-            if not theme:
-                theme = self.getkey("color", "background", True, True, True)
-            if SVTTK_AVAILABLE:
-                sv_ttk.set_theme(theme.lower())
-            self.configure(widget)
-
-        if self.getkey("color", "auto") in self.yes_values:
-            threading.Thread(
-                target=darkdetect.listener, args=(_configure,), daemon=True
-            ).start()
-
-            if SVTTK_AVAILABLE:  # To avoid 'font already exists' error
-                if not AUTOCOLOR:
-                    sv_ttk.set_theme(
-                        self.getkey("color", "background", True, True, True)
-                    )
-                else:
-                    sv_ttk.set_theme(darkdetect.theme().lower())

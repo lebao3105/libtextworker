@@ -1,3 +1,7 @@
+"""
+@package libtextworker.interface.tk.dirctrl
+@brief Directory tree for Tkinter
+"""
 import os
 
 from tkinter import TclError, ttk
@@ -15,7 +19,7 @@ class DirCtrl(ttk.Treeview, DirCtrlBase):
         Multiple roots is supported, but only adding new for now.
         Lacks label editing, DND, right-click menu, item icon.
 
-        DirCtrl's custom styles can be defined via the "dc_styles" keyword.
+        DirCtrl's custom styles can be defined via the "w_styles" keyword.
         """
         args, kwds = DirCtrlBase.__init__(self, *args, **kwds)
         ttk.Treeview.__init__(self, self.Frame, *args, **kwds)
