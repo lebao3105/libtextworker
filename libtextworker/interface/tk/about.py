@@ -1,12 +1,19 @@
-from tkinter import Toplevel, Misc, Text
+"""
+@package libtextworker.interface.tk.about
+"""
+from tkinter import Toplevel, Misc
 from tkinter.ttk import Button, Frame, Label, Notebook
 from typing import AnyStr
+
 from . import editor
 from .. import available_licenses
 from ... import LICENSES
 
 
 class AboutDialog:
+    """
+    A custom About dialog for Tkinter.
+    """
     # Project credits
     ArtMakers: str = ""
     Developers: str = ""

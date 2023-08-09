@@ -4,6 +4,7 @@
 @since 0.1.4: TextWidget is now a StyledTextControl alias (will be removed in the future). Customizations in __init__() are now moved to EditorInit().
 """
 from tkinter import BooleanVar, Menu, Text, Misc, TclError
+from tkinter.font import Font
 from tkinter.ttk import Scrollbar, Frame
 
 try:
@@ -13,9 +14,8 @@ except:
 else:
     LINENUMS = True
 
-from libtextworker import EDITOR_DIR, THEMES_DIR
+from libtextworker import EDITOR_DIR
 
-from . import ColorManager
 from .. import stock_editor_configs
 from ...get_config import GetConfig
 from .miscs import CreateMenu
@@ -36,8 +36,7 @@ class StyledTextControl(Text):
         useMenu: bool = False,
         useScrollBars: bool = True,
         custom_config_path: str = EDITOR_DIR + "editor.ini",
-        custom_theme_path: str = THEMES_DIR + "default.ini",
-        tabwidth: int = 4,
+        tabwidth: int = 4
     ):
         """
         Initialize the editor, libtextworker's customize part.
@@ -49,7 +48,6 @@ class StyledTextControl(Text):
         """
 
         self.cfger = GetConfig(stock_editor_configs, custom_config_path)
-        self.clrmgr = ColorManager(customfilepath=custom_theme_path)
 
         self.unRedo = self["undo"]
         self.wrapbtn = BooleanVar(self)
@@ -86,9 +84,6 @@ class StyledTextControl(Text):
             self.bind(
                 "<<Modified>>", lambda evt: self._frame.after_idle(ln.redraw), add=True
             )
-
-        self.clrmgr.configure(self._frame, False)
-        self.configure(tabs=self.clrmgr.GetFont.measure(" " * tabwidth))
 
     # Place scrollbars
     def _place_scrollbar(self):

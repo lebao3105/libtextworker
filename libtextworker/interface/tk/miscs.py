@@ -1,3 +1,6 @@
+"""
+@package libtextworker.interface.tk.miscs
+"""
 from typing import Literal
 from tkinter import Menu, Misc
 

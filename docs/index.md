@@ -14,14 +14,10 @@ For the usage documentation for versions prior to ```0.1.4```, you should go to 
 * [Hello world!](usage/firstcode.md)
 
 ## GUIs
-* [The limitations](usage/limits.md)
 * [The (auto) color system](usage/autocolor.md)
-
-## Go further
-* [Implement your own widget](usage/makenew.md)
 * [New GUI support](usage/newgui.md)
-* [Make your own settings system with INI/JSON format](usage/getconfig.md)
 
 ## More
+* [Make your own settings system with INI/JSON format](usage/getconfig.md)
 * [Variable aliases](usage/aliases.md)
 * [Packaging libtextworker](usage/packaging.md)

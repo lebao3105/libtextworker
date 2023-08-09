@@ -1,3 +1,6 @@
+"""
+@package libtextworker.interface.wx.about
+"""
 import wx
 import wx.adv
 

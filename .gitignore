@@ -164,4 +164,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# builder.py translations
+# will remove this if I can use poetry well
 libtextworker/po/
+
+# run specific test easier (in order to capture every output)
+# it's fine if we also import argparse and make a runnable module here
+tests/__main__.py

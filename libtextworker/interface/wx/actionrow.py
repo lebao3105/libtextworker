@@ -1,3 +1,6 @@
+"""
+@package libtextworker.interface.wx.actionrow
+"""
 import wx
 
 

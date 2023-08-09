@@ -2,6 +2,7 @@ import os
 import wx
 
 from libtextworker.general import CraftItems
+from libtextworker.interface.base.dirctrl import DirCtrlBase
 
 
 imgs = wx.ImageList(16, 16)
@@ -23,7 +24,7 @@ openfolderidx = addImg("folder_open")
 # https://python-forum.io/thread-8513.html
 
 
-class DirCtrl(wx.TreeCtrl):
+class DirCtrl(wx.TreeCtrl, DirCtrlBase):
     """
     A directory list made from wxTreeCtrl.
     This is WIP, and lacks lots of features:
@@ -35,6 +36,7 @@ class DirCtrl(wx.TreeCtrl):
     """
 
     def __init__(this, *args, **kw):
+        args, kw = DirCtrlBase.__init__(this, *args, **kw)
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
 
@@ -53,7 +55,7 @@ class DirCtrl(wx.TreeCtrl):
 
         def Expand(evt):
             path = this.GetSelection()
-            fullpath = os.path.abspath(this.GetFullPath(path))
+            fullpath = os.path.normpath(this.GetFullPath(path))
             this.SetItemImage(path, this.openfolder, wx.TreeItemIcon_Expanded)
 
             if len(os.listdir(fullpath)) == 0:
@@ -70,14 +72,16 @@ class DirCtrl(wx.TreeCtrl):
                 if os.path.isdir(craftedpath):
                     this.SetItemHasChildren(newitem)
 
-        path = os.path.normpath(path)
-        if not os.path.isdir(path):
-            raise NotADirectoryError(f"Directory not found or is a file: {path}")
+        DirCtrlBase.SetFolder(this, path, newroot)
 
-        if this.GetRootItem() and not newroot:
+        kickstart = this.GetRootItem()
+
+        if kickstart and not newroot:
             this.DeleteAllItems()
 
-        kickstart = this.AddRoot(path, this.folderidx)
+        if this.GetItemText(kickstart) != path:
+            kickstart = this.AddRoot(path, this.folderidx)
+            
         this.SetItemHasChildren(kickstart)
         this.Bind(wx.EVT_TREE_ITEM_EXPANDED, Expand)
 

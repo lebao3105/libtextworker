@@ -1,10 +1,12 @@
+"""
+@package libtextworker.interface.wx.editor
+"""
 import wx
 import wx.stc
 
 from libtextworker import EDITOR_DIR
 from libtextworker.get_config import ConfigurationError, GetConfig
 
-from . import ColorManager
 from .miscs import CreateMenu
 from .. import stock_editor_configs
 
@@ -15,24 +17,22 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     @since version 0.1.3:
         Moved all customs from __init__ (derived) to EditorInit func()
         Auto-expand linenumber margin
+    @since version 0.1.4:
+        Removed all ColorManager usage.
+        More configs available.
     """
 
-    def EditorInit(self, config_path: str = "", color_config_path: str = ""):
+    def EditorInit(self, config_path: str = ""):
         """
         @since 0.1.3
         Initialize the editor, customized part.
         You can't ignore __init__() function;)
         @param config_path (str): Configuration path (optional - defaults to lib's path)
-        @param color_config_path (str): Configuration path for the color (optional)
         """
         if not config_path:
             config_path = EDITOR_DIR + "default.ini"
 
-        self.clrmgr = ColorManager(customfilepath=color_config_path)
         self.cfg = GetConfig(stock_editor_configs, config_path)
-
-        # Base editor color
-        self.SetupEditorColor()
 
         # Setup line numbers
         self.LineNumbers()
@@ -50,14 +50,6 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         # Word wrap
         self.SetWrapMode(bool(self.cfg.getkey("editor", "wordwrap")))
 
-        # Multiple-selection support.
-        # Since we can't make "Change all occurrences" features like VSCode
-        # which makes this feature really work, I disabled it now.
-
-        # self.SetMultipleSelection(True)
-        # self.SetAdditionalCaretsVisible(True)
-        # self.Bind(wx.EVT_LEFT_UP, self.MultiSelection)
-
     """
     Setup GUI elements.
     """
@@ -74,10 +66,12 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
         return True
 
-    def IndentationSet(self) -> bool:
+    def IndentationSet(self):
         size = int(self.cfg.getkey("indentation", "size", True, True))
         tp = self.cfg.getkey("indentation", "type", True, True)
         show_guide = self.cfg.getkey("indentation", "show_guide", True, True)
+        bk_unindent = self.cfg.getkey("indentation", "backspace_unindents", True, True)
+        view_ws = self.cfg.getkey("editor", "view_whitespaces", True, True)
 
         if not 8 >= size > 0:
             raise ConfigurationError(
@@ -89,6 +83,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
                 "indentation", "type", "Must be either 'tabs' or 'spaces'"
             )
 
+        self.SetUseTabs(True if tp == "tabs" else False)
+        self.SetBackSpaceUnIndents(True if bk_unindent in self.cfg.yes_values else False)
+        self.SetViewWhiteSpace(True if view_ws in self.cfg.yes_values else False)
         self.SetIndent(size)
 
         if show_guide == True or "yes":
@@ -107,48 +104,11 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
         return True
 
-    def SetupEditorColor(self):
-        bg, fg = self.clrmgr.GetColor()
-        # print(bg, fg)
-        self.StyleClearAll()
-        self.StyleSetSpec(0, "fore:{},back:{}".format(fg, bg))
-        self.StyleSetSpec(wx.stc.STC_STYLE_LINENUMBER, "fore:{},back:{}".format(fg, bg))
-
-        self.clrmgr.setcolorfunc(
-            "textw",
-            self.StyleSetBackground,
-            {"style": wx.stc.STC_STYLE_DEFAULT, "back": "%(color-rgb)"},
-        )
-        self.clrmgr.setfontcfunc(
-            "textw",
-            self.StyleSetForeground,
-            {"style": wx.stc.STC_STYLE_DEFAULT, "fore": "%(font-rgb)"},
-        )
-        self.clrmgr.configure(self, False)
-
-        self.Bind(wx.stc.EVT_STC_MODIFIED, self.OnSTCModify)
-        self.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUIUpdate)
-
     """
     Events.
     """
 
-    def OnSTCModify(self, event):
-        if event:
-            pos = event.GetPosition()
-            length = event.GetLength()
-        else:
-            pos = 0
-            length = self.GetLength()
-        self.StartStyling(pos)
-        self.SetStyling(length, 0)
-        event.Skip()
-
-    def OnUIUpdate(self, event):  # MS Bing helped me this
-        """
-        @since Version 0.1.3
-        Auto-expand linenumber margin.
-        """
+    def OnUIUpdate(self, event):  # MS Bing found this - thanks to the people who made it!
         line_count = self.GetLineCount()
         last_line_num = str(line_count)
 
@@ -195,16 +155,6 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
         self.PopupMenu(menu, pt)
         menu.Destroy()
-
-    # def MultiSelection(self, event: wx.MouseEvent):
-    #     kbs = wx.KeyboardState()
-    #     if event.ControlDown() and kbs.ControlDown():
-    #         currpos = self.GetCurrentPos()
-    #         wordstartpos = self.WordStartPosition(currpos, True)
-    #         wordendpos = self.WordEndPosition(wordstartpos, True)
-    #         self.AddSelection(wordstartpos, currpos)
-    #         self.AddSelection(currpos, wordendpos)
-    #     event.Skip()
 
 
 class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
