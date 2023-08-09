@@ -25,7 +25,7 @@ parser.add_argument(
 
 opts = parser.parse_args()
 if opts.install_req:
-    os.system('"{}" -m pip install -r requirements.txt'.format(sys.executable))
+    parser.exit(message="Look at the pyproject.toml file.")
 
 
 def make_trans():
