@@ -11,10 +11,6 @@ from typing import Literal
 # Available GUI toolkits that this library supports
 available_toolkits = Literal["tk", "wx"]
 
-LOG_PATH = os.path.expanduser("~/.logs/libtew.log")
-TOPLV_DIR = os.path.expanduser("~/.config/textworker")
-
-
 # Classes
 ## Logging
 class Logger(logging.Logger):
