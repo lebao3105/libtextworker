@@ -39,7 +39,7 @@ colors = {
     "light_green": "#20eaaa",
 }
 
-## Available pre-stored licenses
+"""Available pre-stored licenses"""
 available_licenses = [
     "AGPL_full",
     "AGPL_short",

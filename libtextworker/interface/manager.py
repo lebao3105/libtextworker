@@ -95,12 +95,12 @@ class ColorManager(GetConfig):
         return size_, style, weight, family
 
     def GetColor(
-        self, color: typing.Literal["dark", "light"] | None = None
+        self, color: str | None = None
     ) -> typing.Any:
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-property item
-        @param color: "dark", "light", or None - color scheme. Will use "light"/darkdetect's output if None is specified.
+        @param color (str | None = None): Defaults to darkdetect's output/current config.
         @return tuple[str, str]: Background - Foreground color
         """
 
@@ -112,8 +112,8 @@ class ColorManager(GetConfig):
         else:
             currmode = color
 
-        if not currmode in ["dark", "light"]:
-            raise ConfigurationError(self._file, "Invalid value", "color", "background")
+        # if not currmode in ["dark", "light"]:
+        #     raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
