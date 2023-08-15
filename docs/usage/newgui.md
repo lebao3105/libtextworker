@@ -21,13 +21,29 @@ Normally a GUI support in libtextworker has:
 
 ## Startup
 
-First, look for ```libtextworker.interface.base```. It may have the base class for the type of widget you want to make. You may also see classes with "_FLAGS" suffix, they contain flags for a specific object.
+Look for the ```libtextworker.interface.base``` module first, then your toolkit support in ```libtextworker.interface```. Can you see your idea there?
 
-If you see your widget type in the base module, derive it + suitable GUI object and start making your own. See the code below for more. If not, create one. Also a flags class if needed. Must be made under a module in ```libtextworker.interface.base```.
+Normally modules in ```libtextworker.interface.base``` are intended to be a skeleton for our existing widgets. Whatever it's optional, but recommended to know how your widget should work, for you and everyone else. Yeah, the **logic**.
 
-To make a new flags class: Import Flag, auto from ```enum``` module, create a Flag-derived _FLAGS class, with auto() instances named \<widget_shortname>_<widget_option>.
+The ```WidgetBase``` class is used as a base for every other GUI classes here, has the following:
 
-Create a new folder with your toolkit name (e.g pyqt5) in ```libtextworker.interface```. Don't forget to make \__init__.py!
+- \_\_init\_\_: Modify args and kwds to modify the parent option and take out the specific styles (w_styles keyword). Modify the "parent" option (specified by ```Parent_ArgName```) will lead to the actual widget to be placed in a frame/panel object (or whatever else), which is made as the Frame attribute. Returns the modified parementers.
+
+- Parent_ArgName (attribute): What to describe this? Read the \_\_init\_\_ function above.
+
+- Frame (attribute): See the \_\_init\_\_ function above.
+
+- _Frame (attribute): It's the class for the Frame attribute. Whatever a class or a function, but don't put () after it, okay? You should be laughed at if you do that. For example this is not valid: ```_Frame = something() << that "()"```
+
+- Styles (attribute): Widget's custom flags.
+
+> WidgetBase.\_\_init\_\_ is perfect now, you don't need to overwrite it.
+
+To make a new flags class: Import Flag, auto from ```enum``` module, create a Flag-derived \_FLAGS class, with auto() instances named \<widget_shortname>_<widget_option>.
+
+If you want to create a skeleton, it's fine. Please check out our skeletons to see what you need to do (at least).
+
+Create a new folder with your toolkit name (e.g pyqt5) in ```libtextworker.interface```. Don't forget to make \_\_init\_\_.py!
 
 This is the skeleton for a GUI class:
 
@@ -35,6 +51,9 @@ This is the skeleton for a GUI class:
 from enum import Flag, auto
 from libtextworker.interface.base import WidgetBase
 from <GUI> import <a fancy widget>, <frame>
+
+# Jump straight to AWonderfulIdea class if you don't want
+# to make any base classes
 
 class AW_FLAGS(Flag):
     AW_FLAGONE = auto()
@@ -71,3 +90,14 @@ In the code above, ```AW_FLAGS``` is an enum.Flag-derived class with ```AW_FLAG*
 AWonderfulThing: The base skeleton for a widget. Default styles and actions. Don't need to derive WidgetBase.\__init__.
 
 AWonderfulIdea: Derived from a GUI object and WidgetBase, when called it will ask WidgetBase to put itself in a frame, class defined by _Frame property. WidgetBase.\__init__ gets ``args`` and ``kwds``, get styles passed by the "w_styles" kwds keyword (default is the Styles attribute), put the widget in a frame (if appalicable), remove the parent widget option from args/kwds, and return modified items.
+
+## What else?
+
+Remember our flags? It's time to use them: all flags are stored in self.Styles, so just check if the desired flag is here:
+
+```python
+if AW_SOMETHING in self.Styles:
+    # Do stuff...
+```
+
+Even the widget you make has its flags inherited from its parent too, you can make equaliment to them by making a dictionary[your_flags, toolkit_flags], make a new ```styles``` keyword (that is an ```enum.auto``` object) by checking if any of ```your_flags``` is in self.Styles.

@@ -17,11 +17,11 @@ Use the following flag:
 
 Explain:
 
-* <absolute path to the library>: Where libtextworker is installed.
+* ```<absolute path to the library>```: Where libtextworker is installed.
 
-* <separator>: According to the PyInstaller document, you will use ; if you're on Windows, otherwise use :.
+* ```<separator>```: According to the PyInstaller document, you will use ; if you're on Windows, otherwise use :.
 
-* <where you want to place>: The location of the library when it is packed with PyInstaller.
+* ```<where you want to place>```: The location of the library when it is packed with PyInstaller.
 
 You can use this with other packages too.
 
