@@ -1,9 +1,9 @@
 import os
+import time
 import wx
 
 from libtextworker.general import CraftItems
 from libtextworker.interface.base.dirctrl import DirCtrlBase
-
 
 imgs = wx.ImageList(16, 16)
 
@@ -133,9 +133,9 @@ class DirList(wx.ListCtrl):
         kwds["style"] = wx.LC_AUTOARRANGE | wx.LC_EDIT_LABELS | wx.LC_REPORT
         wx.ListCtrl.__init__(this, *args, **kwds)
 
-        this.InsertColumn(0, _("Name"))
+        this.InsertColumn(0, _("Name"), width=246)
         this.InsertColumn(1, _("Item type"))
-        this.InsertColumn(2, _("Last modified"))
+        this.InsertColumn(2, _("Last modified"), width=110)
         this.InsertColumn(3, _("Size"))
 
         this.AssignImageList(imgs, wx.IMAGE_LIST_SMALL)
@@ -147,6 +147,16 @@ class DirList(wx.ListCtrl):
         Fill the list control with items;)
         """
 
+        # By default os.path.getsize/os.stat.st_size output will return a value in bytes
+        # So this is how we convert it to other units
+        # *from SO: a/1094933*
+        def sizeof_fmt(num, suffix="B"):
+            for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
+                if abs(num) < 1024.0:
+                    return f"{num:3.1f}{unit}{suffix}"
+                num /= 1024.0
+            return f"{num:.1f}Yi{suffix}"
+
         this.DeleteAllItems()
 
         if not os.path.isdir(path):
@@ -154,12 +164,28 @@ class DirList(wx.ListCtrl):
         this.CurrPath = path
 
         for item in os.listdir(path):
-            if os.path.isdir(os.path.join(path, item)):
+            crafted = os.path.join(path, item)
+            statinfo = os.stat(crafted)
+            it_size = 0
+
+            if os.path.isdir(crafted):
+                it_size = ""
                 this.InsertItem(0, item, folderidx)
                 this.SetItem(0, 1, _("Folder"))
             else:
+                it_size = statinfo.st_size
                 this.InsertItem(0, item, fileidx)
                 this.SetItem(0, 1, _("File"))
+            
+            m_time = statinfo.st_mtime
+            lastmod = time.strftime("%d %b %Y, %H:%M:%S", time.localtime(m_time))
+
+            this.SetItem(0, 2, lastmod)
+
+            if isinstance(it_size, int):
+                it_size = sizeof_fmt(it_size)
+        
+            this.SetItem(0, 3, str(it_size))
 
     def GoDir(this, evt=None, path: str = ""):
         if evt and not path:
@@ -172,7 +198,7 @@ class DirList(wx.ListCtrl):
         else:
             if not path:
                 raise Exception(
-                    "Who the hell tell DirList.GoDir with no directory to go???"
+                    "Who the hell call DirList.GoDir with no directory to go???"
                 )
             this.DrawItems(path)
 

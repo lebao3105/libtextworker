@@ -2,13 +2,14 @@
 @package libtextworker.interface.wx.miscs
 @brief Misc stuffs for wxPython.
 """
+import os
 import re
 import wx
 import wx.aui
 import wx.xrc
 
 from typing import Callable
-
+from wx.lib.agw.scrolledthumbnail import NativeImageHandler
 
 def CreateMenu(parent, items: list[tuple[5]]) -> wx.Menu:
     """

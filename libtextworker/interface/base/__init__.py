@@ -30,7 +30,8 @@ class WidgetBase:
 
     Parent_ArgName: Literal["master", "parent", "Parent", "Master"] | str
     Styles: auto
-    _Frame, Frame: Callable | None = None
+    Frame: Callable | None = None
+    _Frame: Callable | None = None
 
     
     def __init__(this, *args, **kwds):
