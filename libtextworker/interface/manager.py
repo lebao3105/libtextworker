@@ -57,7 +57,8 @@ class ColorManager(GetConfig):
         This is blocked as it can make conflicts with other instances of the class - unless you shutdown the app immediately..
         """
         raise NotImplementedError(
-            "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead."
+            "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead.\n"
+            "However, I'm thinking about opening it back;-;"
         )
 
     # Configure widgets
@@ -99,7 +100,7 @@ class ColorManager(GetConfig):
     ) -> typing.Any:
         """
         Get the current foreground/background defined in the settings.
-        @since 0.1.4: Made to be a non-property item
+        @since 0.1.4: Made to be a non-@property item
         @param color (str | None = None): Defaults to darkdetect's output/current config.
         @return tuple[str, str]: Background - Foreground color
         """
@@ -108,7 +109,7 @@ class ColorManager(GetConfig):
         if AUTOCOLOR and color is None:
             currmode = darkdetect.theme().lower()
         elif not AUTOCOLOR and color is None:
-            currmode = str(self.getkey("color", "background", restore=True)).lower()
+            currmode = str(self.getkey("color", "background", needed=True, make=True)).lower()
         else:
             currmode = color
 
@@ -116,35 +117,39 @@ class ColorManager(GetConfig):
         #     raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
-        test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
-        test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
+        try:
+            test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
+            test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
         # print(test_back, test_fore)
 
-        if test_back:
-            back_ = test_back
-        else:
-            back_ = colors[currmode]
+            if test_back:
+                back_ = test_back
+            else:
+                back_ = colors[currmode]
 
-        fore_ = self.getkey("color", "foreground", restore=True)
-        if fore_ == "default":
-            fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
+            fore_ = self.getkey("color", "foreground", make=True)
+            if fore_ == "default":
+                fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
+            
+            if test_fore:
+                fore_ = test_fore
 
-        if test_fore:
-            fore_ = test_fore
+            elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
+                pass
 
-        elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
+            elif fore_ in colors:
+                fore_ = colors[fore_]
+
+            elif test_fore in colors:
+                fore_ = colors[test_fore]
+
+            else:
+                raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
+
+            return back_, fore_
+        except KeyError or ConfigurationError:
             pass
 
-        elif fore_ in colors:
-            fore_ = colors[fore_]
-
-        elif test_fore in colors:
-            fore_ = colors[test_fore]
-
-        else:
-            raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
-
-        return back_, fore_
 
     def setcolorfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
         """
