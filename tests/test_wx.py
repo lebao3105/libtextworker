@@ -3,10 +3,8 @@ import wx
 import wx.stc
 
 from . import THEMEPATH, GITHUB_URL, API_URL
-from libtextworker import __version__ as ver
-from libtextworker import _importer
-
-_importer.test_import("wx")
+from libtextworker import __version__ as ver, general
+general.test_import("wx")
 from libtextworker.interface.wx import ColorManager
 from libtextworker.interface.wx.about import AboutDialog
 from libtextworker.interface.wx.actionrow import ActionRow
@@ -82,7 +80,7 @@ def test_wx():
 
     # Add a text editor
     te = StyledTextControl(nb)
-    te.EditorInit(color_config_path=THEMEPATH)
+    te.EditorInit()
     nb.AddPage(te, "StyledTextControl")
 
     # ActionRows

@@ -1,11 +1,15 @@
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
 
 from . import THEMEPATH
-from libtextworker import _importer, __version__ as libver
-
-_importer.test_import("tkinter")
+from libtextworker import __version__ as libver, general
+general.test_import("tkinter")
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
 from libtextworker.interface.tk.dirctrl import DirCtrl
@@ -43,7 +47,7 @@ def test_tk():
     te.pack(expand=True, fill="both")
 
     nb.add(ttk.Combobox(nb, values=["one", "two", "three"]), text="Tab 1")
-    nb.add(dc._Frame, text="Tab 2")
+    nb.add(dc.Frame, text="Tab 2")
     nb.add(te._frame, text="Tab 3")
 
     clrmgr.configure(fm, True)
