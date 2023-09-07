@@ -4,12 +4,17 @@ import os
 import pathlib
 import shutil
 import sys
+import warnings
 
+from importlib import import_module
 from typing import Literal
 
 # @since version 0.1.3
 # Available GUI toolkits that this library supports
 available_toolkits = Literal["tk", "wx"]
+
+Importable = {}
+TOPLV_DIR = os.path.expanduser("~/.config/textworker")
 
 # Classes
 ## Logging
@@ -157,3 +162,14 @@ def ResetEveryConfig():
         shutil.rmtree(TOPLV_DIR)
     CreateDirectory(TOPLV_DIR)
     sys.exit()
+
+def test_import(pkgname: str) -> bool:
+    try:
+        import_module(pkgname)
+    except ImportError:
+        Importable[pkgname] = False
+        warnings.warn("%s not found" % pkgname)
+        return False
+    else:
+        Importable[pkgname] = True
+        return True
