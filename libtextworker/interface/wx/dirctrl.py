@@ -1,9 +1,16 @@
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import os
 import time
 import wx
 
+from enum import auto
 from libtextworker.general import CraftItems
-from libtextworker.interface.base.dirctrl import DirCtrlBase
+from libtextworker.interface.base.dirctrl import *
+from typing import Callable, final
 
 imgs = wx.ImageList(16, 16)
 
@@ -35,10 +42,39 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
     * Directory only
     """
 
+    Parent_ArgName = "parent"
+
     def __init__(this, *args, **kw):
         args, kw = DirCtrlBase.__init__(this, *args, **kw)
+        
+        # Process custom styles
+        if not "style" in kw:
+            # wx doc about wxTR_DEFAULT_STYLE:
+            # set flags that are closet to the native system's defaults.
+            if not len(args) >= 5: styles = wx.TR_DEFAULT_STYLE
+            else: styles = args[4]; use_args = True
+        else:
+            styles = kw["style"]
+            use_args = False
+        
+        if DC_EDIT in this.Styles:
+            styles |= wx.TR_EDIT_LABELS
+        
+        if DC_HIDEROOT in this.Styles:
+            styles |= wx.TR_HIDE_ROOT
+        
+        if DC_MULTIPLE in this.Styles:
+            styles |= wx.TR_MULTIPLE
+        
+        if use_args: args[4] = styles
+        else: kw["styles"] = styles
+
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
+    
+    def __del__(this):
+        this.DeleteAllItems()
+        this.Destroy()
 
     def SetFolder(this, path: str, newroot: bool = False):
         """
@@ -65,6 +101,7 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
 
             for item in os.listdir(fullpath):
                 craftedpath = CraftItems(fullpath, item)
+                if os.path.isfile(craftedpath) and DC_DIRONLY in this.Styles: continue
                 icon = folderidx if os.path.isdir(craftedpath) else fileidx
 
                 newitem = this.AppendItem(path, item, icon)
@@ -79,7 +116,7 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
         if kickstart and not newroot:
             this.DeleteAllItems()
 
-        if this.GetItemText(kickstart) != path:
+        elif this.GetItemText(kickstart) != path:
             kickstart = this.AddRoot(path, this.folderidx)
             
         this.SetItemHasChildren(kickstart)
@@ -119,50 +156,59 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
 PatchedDirCtrl = DirCtrl
 
 
-class DirList(wx.ListCtrl):
+class DirList(wx.ListCtrl, DirCtrlBase):
     """
     Unlike wxDirCtrl, wxDirList lists not only files + folders, but also their
     last modified and item type, size. You will see it most in your file explorer,
     the main pane.
+    Of couse this is wxLC_REPORT will be used.
     This comes with check buttons, which is optional.
+
+    libtextworker flags to be ignored:
+    * DC_HIDEROOT (where's the root node in this list control?)
+    * DC_ONEROOT (one root by default so this is useless)
     """
 
-    CurrPath: str
+    currpath: str
+    Styles = DC_DYNAMIC | DC_USEICON
+    History: list = []
 
-    def __init__(this, *args, **kwds):
-        kwds["style"] = wx.LC_AUTOARRANGE | wx.LC_EDIT_LABELS | wx.LC_REPORT
-        wx.ListCtrl.__init__(this, *args, **kwds)
+    def __init__(
+        this, parent: wx.Window, id = wx.ID_ANY, pos = wx.DefaultPosition,
+        size = wx.DefaultSize, style = wx.LC_REPORT, validator = wx.DefaultValidator,
+        name = wx.ListCtrlNameStr, w_styles: auto = DC_DYNAMIC | DC_USEICON
+    ):
+
+        if DC_EDIT in w_styles:
+            style |= wx.LC_EDIT_LABELS
+        
+        for i in [wx.LC_ICON, wx.LC_SMALL_ICON, wx.LC_LIST]:
+            if style & i: style /= i
+
+        DirCtrlBase.__init__(this)
+        wx.ListCtrl.__init__(this, parent, id, pos, size, style, validator, name)
 
         this.InsertColumn(0, _("Name"), width=246)
         this.InsertColumn(1, _("Item type"))
-        this.InsertColumn(2, _("Last modified"), width=110)
+        this.InsertColumn(2, _("Last modified"), width=150)
         this.InsertColumn(3, _("Size"))
 
         this.AssignImageList(imgs, wx.IMAGE_LIST_SMALL)
 
-        this.Bind(wx.EVT_LIST_ITEM_ACTIVATED, this.GoDir)
+        this.Bind(wx.EVT_LIST_ITEM_ACTIVATED, this.SetFolder)
+    
+    @final
+    def __del__(this):
+        this.DeleteAllItems()
+        this.DeleteAllColumns()
+        this.Destroy()
 
     def DrawItems(this, path: str = os.path.expanduser("~/")):
         """
         Fill the list control with items;)
         """
 
-        # By default os.path.getsize/os.stat.st_size output will return a value in bytes
-        # So this is how we convert it to other units
-        # *from SO: a/1094933*
-        def sizeof_fmt(num, suffix="B"):
-            for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
-                if abs(num) < 1024.0:
-                    return f"{num:3.1f}{unit}{suffix}"
-                num /= 1024.0
-            return f"{num:.1f}Yi{suffix}"
-
         this.DeleteAllItems()
-
-        if not os.path.isdir(path):
-            raise NotADirectoryError(path)
-        this.CurrPath = path
-
         for item in os.listdir(path):
             crafted = os.path.join(path, item)
             statinfo = os.stat(crafted)
@@ -172,7 +218,7 @@ class DirList(wx.ListCtrl):
                 it_size = ""
                 this.InsertItem(0, item, folderidx)
                 this.SetItem(0, 1, _("Folder"))
-            else:
+            elif DC_DIRONLY not in this.Styles:
                 it_size = statinfo.st_size
                 this.InsertItem(0, item, fileidx)
                 this.SetItem(0, 1, _("File"))
@@ -183,24 +229,37 @@ class DirList(wx.ListCtrl):
             this.SetItem(0, 2, lastmod)
 
             if isinstance(it_size, int):
-                it_size = sizeof_fmt(it_size)
+                it_size = this.sizeof_fmt(it_size)
         
             this.SetItem(0, 3, str(it_size))
 
-    def GoDir(this, evt=None, path: str = ""):
+    def SetFolder(this, evt=None, path: str = ""):
+        """
+        Make this control show the content of a folder.
+        @param evt = None: wxListCtrl event
+        @param path (str): Target path (if not specified but evt will use the current item instead)
+        """
         if evt and not path:
             pos = evt.Index
             name = this.GetItemText(pos)
             item_type = this.GetItemText(pos, 1)
 
             if item_type == _("Folder"):
-                this.DrawItems(os.path.join(this.CurrPath, name))
-        else:
-            if not path:
-                raise Exception(
-                    "Who the hell call DirList.GoDir with no directory to go???"
-                )
-            this.DrawItems(path)
+                path = os.path.join(this.currpath, name)
+        elif not path:
+            raise Exception(
+                "Who the hell call DirList.GoDir with no directory to go???"
+            )
+        DirCtrlBase.SetFolder(this, path, False)
+        this.DrawItems(path)
+        this.PostSetDir(path, "go")
 
     def GoUp(this, evt):
-        this.DrawItems(os.path.dirname(this.CurrPath))
+        this.SetFolder(path=os.path.dirname(this.currpath))
+
+    def GetFullPath(this, item: str | Callable | None = None, event: Callable | None = None):
+        """
+        Never be implemented.
+        Find the way yourself.
+        """
+        raise NotImplementedError("Why do you calling this? Don't be too lazy!")
