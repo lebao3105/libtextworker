@@ -54,19 +54,20 @@ class WidgetBase:
             if "w_styles" in kwds:
                 this.Styles = kwds["w_styles"]
                 kwds.pop("w_styles")
-            
-            # Make sure we don't have 2 parents in __init__:)
-            if not this.Parent_ArgName in kwds:
-                temp = list(args)
-                target_parent = temp[0]
-                temp.pop()
-                args = tuple(temp)
-            else:
-                target_parent = kwds[this.Parent_ArgName]
-                kwds.pop(this.Parent_ArgName)
 
             # Try to place the actual widget into a frame
             if this._Frame:
+                
+                # Get the target parent widget
+                if not this.Parent_ArgName in kwds:
+                    temp = list(args)
+                    target_parent = temp[0]
+                    temp.pop()
+                    args = tuple(temp)
+                else:
+                    target_parent = kwds[this.Parent_ArgName]
+                    kwds.pop(this.Parent_ArgName)
+
                 this.Frame = this._Frame(**{this.Parent_ArgName: target_parent})
 
             return args, kwds
