@@ -10,7 +10,7 @@ import wx
 from enum import auto
 from libtextworker.general import CraftItems
 from libtextworker.interface.base.dirctrl import *
-from typing import Callable, final
+from typing import Callable
 
 imgs = wx.ImageList(16, 16)
 
@@ -51,7 +51,7 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
         if not "style" in kw:
             # wx doc about wxTR_DEFAULT_STYLE:
             # set flags that are closet to the native system's defaults.
-            if not len(args) >= 5: styles = wx.TR_DEFAULT_STYLE
+            if not len(args) >= 5: styles = wx.TR_DEFAULT_STYLE; use_args = False
             else: styles = args[4]; use_args = True
         else:
             styles = kw["style"]
@@ -67,14 +67,10 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
             styles |= wx.TR_MULTIPLE
         
         if use_args: args[4] = styles
-        else: kw["styles"] = styles
+        else: kw["style"] = styles
 
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
-    
-    def __del__(this):
-        this.DeleteAllItems()
-        this.Destroy()
 
     def SetFolder(this, path: str, newroot: bool = False):
         """
@@ -196,12 +192,6 @@ class DirList(wx.ListCtrl, DirCtrlBase):
         this.AssignImageList(imgs, wx.IMAGE_LIST_SMALL)
 
         this.Bind(wx.EVT_LIST_ITEM_ACTIVATED, this.SetFolder)
-    
-    @final
-    def __del__(this):
-        this.DeleteAllItems()
-        this.DeleteAllColumns()
-        this.Destroy()
 
     def DrawItems(this, path: str = os.path.expanduser("~/")):
         """
