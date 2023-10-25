@@ -14,7 +14,7 @@ from typing import Literal
 available_toolkits = Literal["tk", "wx"]
 
 Importable = {}
-TOPLV_DIR = os.path.expanduser("~/.config/textworker")
+TOPLV_DIR = ""
 
 # Classes
 ## Logging
@@ -100,7 +100,7 @@ def CraftItems(*args: str | pathlib.Path) -> str:
         final /= str(args[i])
 
     # Why I didn't know this earlier?
-    # os.path.abspath = os.path.join(os.getcwd() + path)
+    # os.path.abspath(path) = os.path.normpath(os.path.join(os.getcwd() + path))
     # Yeah
     return os.path.normpath(final)
 
