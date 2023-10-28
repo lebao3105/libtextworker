@@ -11,7 +11,7 @@ Else libtextworker will refuse to use this package.
 
 from libtextworker import Importable
 from . import constants
-from ..manager import ColorManager
+from ..manager import ColorManager, hextorgb
 
 if Importable["wx"] == True:
     import wx
@@ -27,10 +27,9 @@ class ColorManager(ColorManager):
     def GetFont(self):
         size, style, weight, family = super().GetFont()
 
-        if style == "system":
-            style = "normal"
-        if weight == "system":
-            weight = "normal"
+        _dict = {"system": "normal"}
+        weight = _dict.get(weight, weight)
+        style = _dict.get(style, style)
 
         return wx.Font(
             size,
@@ -45,12 +44,6 @@ class ColorManager(ColorManager):
         super().configure(widget)
 
         # fore&back
-
-        def hextorgb(value: str):
-            value = value.lstrip("#")
-            lv = len(value)
-            return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
-
         bg, fg = self.GetColor()
         bg = wx.Colour(*hextorgb(bg))
         fg = wx.Colour(*hextorgb(fg))

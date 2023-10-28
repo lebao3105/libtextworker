@@ -14,19 +14,12 @@ from .. import stock_editor_configs
 class StyledTextControl(wx.stc.StyledTextCtrl):
     """
     A better styled wxStyledTextCtrl.
-    @since version 0.1.3:
-        Moved all customs from __init__ (derived) to EditorInit func()
-        Auto-expand linenumber margin
-    @since version 0.1.4:
-        Removed all ColorManager usage.
-        More configs available.
     """
 
     def EditorInit(self, config_path: str = ""):
         """
         @since 0.1.3
         Initialize the editor, customized part.
-        You can't ignore __init__() function;)
         @param config_path (str): Configuration path (optional - defaults to lib's path)
         """
         if not config_path:
@@ -48,7 +41,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
         # Word wrap
-        self.SetWrapMode(bool(self.cfg.getkey("editor", "wordwrap")))
+        self.SetWrapMode(bool(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values))
 
     """
     Setup GUI elements.

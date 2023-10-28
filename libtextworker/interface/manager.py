@@ -14,13 +14,17 @@ else:
         AUTOCOLOR = True
 
 from .. import THEMES_DIR
-from ..general import logger, libTewException, CraftItems, logger
+from ..general import logger, CraftItems, logger
 from ..get_config import ConfigurationError, GetConfig
 from ..interface import stock_ui_configs, colors
 
 if AUTOCOLOR is False:
     logger.warning("GUI auto-color is not usable")
 
+def hextorgb(value: str):
+    value = value.lstrip("#")
+    lv = len(value)
+    return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
 class ColorManager(GetConfig):
     """
@@ -42,7 +46,7 @@ class ColorManager(GetConfig):
         @param customfilepath (str): Custom file path. Disabled by default.
         """
         if customfilepath != "":
-            self._file = os.path.abspath(customfilepath)
+            self._file = os.path.normpath(customfilepath)
         else:
             self._file = CraftItems(THEMES_DIR, "default.ini")
 
@@ -97,7 +101,7 @@ class ColorManager(GetConfig):
 
     def GetColor(
         self, color: str | None = None
-    ) -> typing.Any:
+    ) -> tuple[str, str]:
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-@property item
@@ -231,9 +235,7 @@ class ColorManager(GetConfig):
                 if not args:
                     args = runfn(
                         args=self.setfontfn[item]["params"],
-                        extra=tuple(
-                            int(fontcolor.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
-                        ),
+                        extra=hextorgb(fontcolor),
                         extra_alias="%(font-rgb)",
                     )
                 runfn(fn=fn, args=args)
@@ -251,9 +253,7 @@ class ColorManager(GetConfig):
                 if not args:
                     args = runfn(
                         args=self.setcolorfn[item]["params"],
-                        extra=tuple(
-                            int(color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)
-                        ),
+                        extra=hextorgb(color),
                         extra_alias="%(color-rgb)",
                     )
                 runfn(fn=fn, args=args)

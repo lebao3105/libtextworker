@@ -21,7 +21,7 @@ stock_ui_configs = {
 stock_editor_configs = {
     "indentation": {"size": 4, "type": "tabs", "show_guide": "yes", "backspace_unindents": "yes"},
     "menu": {"enabled": "yes"},
-    "editor": {"line_count": "yes", "dnd_enabled": "yes", "wordwrap": "yes", "view_whitespaces": "yes"},
+    "editor": {"line_count": "yes", "dnd_enabled": "yes", "wordwrap": "yes", "view_whitespaces": "yes", "viewEOL": "no"},
 }
 
 """
@@ -39,7 +39,10 @@ colors = {
     "light_green": "#20eaaa",
 }
 
-"""Available pre-stored licenses"""
+"""
+Available pre-stored licenses
+:fr:
+"""
 available_licenses = [
     "AGPL_full",
     "AGPL_short",
