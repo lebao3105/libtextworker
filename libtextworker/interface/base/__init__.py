@@ -1,7 +1,7 @@
-#	A cross-platform library for Python apps.
-#	Copyright (C) 2023 Le Bao Nguyen and contributors.
-#	This is a part of the libtextworker project.
-#	Licensed under the GNU General Public License version 3.0 or later.
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
 
 """
 @package libtextworker.interface.base
@@ -10,18 +10,21 @@
 from enum import Flag, auto
 from typing import Callable, Literal
 
+
 class DC_FLAGS(Flag):
     """
     Flags for DirCtrl.
     """
-    DC_ONEROOT = auto() # Only one root to be allowed
-    DC_EDIT = auto() # Editable labels
-    DC_HIDEROOT = auto() # Hide root nodes
-    DC_MULTIPLE = auto() # Multiple selections
-    DC_DIRONLY = auto() # Show only directories
-    DC_RIGHTCL = auto() # Right click menu
-    DC_DYNAMIC = auto() # Watch for changes then refresh the widget itself
-    DC_USEICON = auto() # Use icons
+
+    DC_ONEROOT = auto()  # Only one root to be allowed
+    DC_EDIT = auto()  # Editable labels
+    DC_HIDEROOT = auto()  # Hide root nodes
+    DC_MULTIPLE = auto()  # Multiple selections
+    DC_DIRONLY = auto()  # Show only directories
+    DC_RIGHTCL = auto()  # Right click menu
+    DC_DYNAMIC = auto()  # Watch for changes then refresh the widget itself
+    DC_USEICON = auto()  # Use icons
+
 
 class WidgetBase:
     """
@@ -40,7 +43,6 @@ class WidgetBase:
     Frame: Callable | None = None
     _Frame: Callable | None = None
 
-    
     def __init__(this, *args, **kwds):
         """
         Usually this is called in WidgetBase-derived classes in order to modify
@@ -57,7 +59,6 @@ class WidgetBase:
 
             # Try to place the actual widget into a frame
             if this._Frame:
-                
                 # Get the target parent widget
                 if not this.Parent_ArgName in kwds:
                     temp = list(args)
@@ -71,6 +72,6 @@ class WidgetBase:
                 this.Frame = this._Frame(**{this.Parent_ArgName: target_parent})
 
             return args, kwds
-        
+
         except:
             return None

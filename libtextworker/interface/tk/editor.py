@@ -1,7 +1,7 @@
-#	A cross-platform library for Python apps.
-#	Copyright (C) 2023 Le Bao Nguyen and contributors.
-#	This is a part of the libtextworker project.
-#	Licensed under the GNU General Public License version 3.0 or later.
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
 
 """
 @package libtextworker.interface.tk.editor
@@ -41,7 +41,7 @@ class StyledTextControl(Text):
         useMenu: bool = False,
         useScrollBars: bool = True,
         custom_config_path: str = EDITOR_DIR + "editor.ini",
-        tabwidth: int = 4
+        tabwidth: int = 4,
     ):
         """
         Initialize the editor, libtextworker's customize part.
@@ -110,13 +110,13 @@ class StyledTextControl(Text):
                 {
                     "label": _("Copy"),
                     "accelerator": "Ctrl+C",
-                    "handler": lambda: this.event_generate("<Control-c>")
+                    "handler": lambda: this.event_generate("<Control-c>"),
                 },
                 {
                     "label": _("Paste"),
                     "accelerator": "Ctrl+V",
-                    "handler": lambda: this.event_generate("<Control-v>")
-                }
+                    "handler": lambda: this.event_generate("<Control-v>"),
+                },
             ]
         )
         if this.unRedo:

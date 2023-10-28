@@ -1,7 +1,7 @@
-#	A cross-platform library for Python apps.
-#	Copyright (C) 2023 Le Bao Nguyen and contributors.
-#	This is a part of the libtextworker project.
-#	Licensed under the GNU General Public License version 3.0 or later.
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
 
 """
 @package libtextworker.interface.base.dirctrl
@@ -22,6 +22,7 @@ DC_RIGHTCL = DC_FLAGS.DC_RIGHTCL
 DC_DYNAMIC = DC_FLAGS.DC_DYNAMIC
 DC_USEICON = DC_FLAGS.DC_USEICON
 
+
 class DirCtrlBase(WidgetBase):
     """
     A directory tree.
@@ -36,12 +37,12 @@ class DirCtrlBase(WidgetBase):
     The actual tree, also scrollbars if enabled - must be placed in a frame (named Frame).
     Custom flags (styles above) should be checked & implemented manually.
     """
-    
+
     currpath: str
     Styles = DC_DYNAMIC | DC_EDIT | DC_USEICON
     History: dict[Any, list[str]]
     HistoryIdx: int = 0
-    
+
     def SetFolder(this, path: str, newroot: bool):
         """
         Make DirCtrl to show a directory tree.
@@ -49,7 +50,7 @@ class DirCtrlBase(WidgetBase):
         @param path (str): Target folder
         @param newroot (bool): Multiple root? Depends on DC_ONEROOT flag not to be included.
         """
-        
+
         path = os.path.normpath(path)
         if not os.path.isdir(path):
             raise NotADirectoryError(path)
@@ -62,21 +63,24 @@ class DirCtrlBase(WidgetBase):
                 "DC_ONEROOT style is enabled, which blocks that behaviour."
                 "Report this to the developer."
             )
-        
-    def GetFullPath(this, item: str | Callable | None = None, event: Callable | None = None) -> str:
+
+    def GetFullPath(
+        this, item: str | Callable | None = None, event: Callable | None = None
+    ) -> str:
         """
         Get the full path of an item if specified, else the path of the curernt selection.
         @param event (Callable | None): GUI toolkit's event. Optional.
         @param item (str | Callable | None). Item to use.
         @returns str
         """
-    
+
     def GoForward(this):
         print(this.History)
         if this.History and this.HistoryIdx < len(this.History):
             this.SetFolder(this.History[this.HistoryIdx + 1])
             this.HistoryIdx = this.HistoryIdx + 1
-        else: return
+        else:
+            return
         this.PostSetDir(this.History[this.HistoryIdx], "forward")
 
     def GoBack(this):
@@ -84,17 +88,23 @@ class DirCtrlBase(WidgetBase):
         if this.History and this.HistoryIdx > 0:
             this.SetFolder(this.History[this.HistoryIdx - 1])
             this.HistoryIdx = this.HistoryIdx - 1
-        else: return
+        else:
+            return
         this.PostSetDir(this.History[this.HistoryIdx], "back")
-    
+
     def PostSetDir(this, path, mode: Literal["forward", "back", "go"]) -> bool:
-        if not this.History or this.HistoryIdx: return False
+        if not this.History or this.HistoryIdx:
+            return False
         if mode == "forward":
-            if this.HistoryIdx == len(this.History): return False # Can't go forward
-            else: this.HistoryIdx = this.HistoryIdx + 1
+            if this.HistoryIdx == len(this.History):
+                return False  # Can't go forward
+            else:
+                this.HistoryIdx = this.HistoryIdx + 1
         if mode == "back":
-            if this.HistoryIdx == 0: return False # Can't go back
-            else: this.HistoryIdx = this.HistoryIdx - 1
+            if this.HistoryIdx == 0:
+                return False  # Can't go back
+            else:
+                this.HistoryIdx = this.HistoryIdx - 1
         if mode == "go":
             if this.HistoryIdx not in [0, len(this.History)]:
                 for i in range(this.HistoryIdx, len(this.History)):

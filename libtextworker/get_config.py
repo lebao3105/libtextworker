@@ -186,19 +186,22 @@ class GetConfig(ConfigParser):
             if make:
                 if not target:
                     target = this.cfg
-                if not target[section]: raise ConfigurationError(
+                if not target[section]:
+                    raise ConfigurationError(
                         this._file,
                         "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
                         section,
-                        option
-                )
-                if not target[section][option]: raise ConfigurationError(
+                        option,
+                    )
+                if not target[section][option]:
+                    raise ConfigurationError(
                         this._file,
                         "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
                         section,
-                        option
-                )
-                if not section in this.sections(): this.add_section(section)
+                        option,
+                    )
+                if not section in this.sections():
+                    this.add_section(section)
                 value_ = target[section][option]
                 if needed:
                     this.set_and_update(section, option, value_)
@@ -211,7 +214,8 @@ class GetConfig(ConfigParser):
         except:
             if noraiseexp:
                 value = bringitback()
-                if not value: return None
+                if not value:
+                    return None
             else:
                 raise ConfigurationError(
                     this._file, "Section or option not found", section, option

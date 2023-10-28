@@ -16,6 +16,7 @@ available_toolkits = Literal["tk", "wx"]
 Importable = {}
 TOPLV_DIR = ""
 
+
 # Classes
 ## Logging
 class Logger(logging.Logger):
@@ -163,6 +164,7 @@ def ResetEveryConfig():
         shutil.rmtree(TOPLV_DIR)
     CreateDirectory(TOPLV_DIR)
     sys.exit()
+
 
 def test_import(pkgname: str) -> bool:
     try:

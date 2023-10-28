@@ -21,10 +21,12 @@ from ..interface import stock_ui_configs, colors
 if AUTOCOLOR is False:
     logger.warning("GUI auto-color is not usable")
 
+
 def hextorgb(value: str):
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
 
 class ColorManager(GetConfig):
     """
@@ -99,9 +101,7 @@ class ColorManager(GetConfig):
 
         return size_, style, weight, family
 
-    def GetColor(
-        self, color: str | None = None
-    ) -> tuple[str, str]:
+    def GetColor(self, color: str | None = None) -> tuple[str, str]:
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-@property item
@@ -113,7 +113,9 @@ class ColorManager(GetConfig):
         if AUTOCOLOR and color is None:
             currmode = darkdetect.theme().lower()
         elif not AUTOCOLOR and color is None:
-            currmode = str(self.getkey("color", "background", needed=True, make=True)).lower()
+            currmode = str(
+                self.getkey("color", "background", needed=True, make=True)
+            ).lower()
         else:
             currmode = color
 
@@ -122,9 +124,13 @@ class ColorManager(GetConfig):
 
         # Prefer color for specific modes first
         try:
-            test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
-            test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
-        # print(test_back, test_fore)
+            test_back = self.getkey(
+                "color", "background-%s" % currmode, noraiseexp=True
+            )
+            test_fore = self.getkey(
+                "color", "foreground-%s" % currmode, noraiseexp=True
+            )
+            # print(test_back, test_fore)
 
             if test_back:
                 back_ = test_back
@@ -134,7 +140,7 @@ class ColorManager(GetConfig):
             fore_ = self.getkey("color", "foreground", make=True)
             if fore_ == "default":
                 fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
-            
+
             if test_fore:
                 fore_ = test_fore
 
@@ -148,12 +154,13 @@ class ColorManager(GetConfig):
                 fore_ = colors[test_fore]
 
             else:
-                raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
+                raise ConfigurationError(
+                    self._file, "Invalid value", "color", "foreground"
+                )
 
             return back_, fore_
         except KeyError or ConfigurationError:
             pass
-
 
     def setcolorfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
         """

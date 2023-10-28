@@ -1,7 +1,7 @@
-#	A cross-platform library for Python apps.
-#	Copyright (C) 2023 Le Bao Nguyen and contributors.
-#	This is a part of the libtextworker project.
-#	Licensed under the GNU General Public License version 3.0 or later.
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
 
 import os
 import tkinter as tk
@@ -9,6 +9,7 @@ import tkinter.ttk as ttk
 
 from . import THEMEPATH
 from libtextworker import __version__ as libver, general
+
 general.test_import("tkinter")
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog

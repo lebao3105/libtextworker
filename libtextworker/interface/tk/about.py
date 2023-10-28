@@ -14,6 +14,7 @@ class AboutDialog:
     """
     A custom About dialog for Tkinter.
     """
+
     # Project credits
     ArtMakers: str = ""
     Developers: str = ""

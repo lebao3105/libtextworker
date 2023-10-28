@@ -41,7 +41,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
         # Word wrap
-        self.SetWrapMode(bool(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values))
+        self.SetWrapMode(
+            bool(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values)
+        )
 
     """
     Setup GUI elements.
@@ -77,7 +79,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             )
 
         self.SetUseTabs(True if tp == "tabs" else False)
-        self.SetBackSpaceUnIndents(True if bk_unindent in self.cfg.yes_values else False)
+        self.SetBackSpaceUnIndents(
+            True if bk_unindent in self.cfg.yes_values else False
+        )
         self.SetViewWhiteSpace(True if view_ws in self.cfg.yes_values else False)
         self.SetIndent(size)
 
@@ -101,7 +105,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     Events.
     """
 
-    def OnUIUpdate(self, event):  # MS Bing found this - thanks to the people who made it!
+    def OnUIUpdate(
+        self, event
+    ):  # MS Bing found this - thanks to the people who made it!
         line_count = self.GetLineCount()
         last_line_num = str(line_count)
 

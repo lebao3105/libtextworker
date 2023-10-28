@@ -5,12 +5,11 @@ from .general import WalkCreation, GetCurrentDir, CraftItems, Importable, TOPLV_
 
 __all__ = (
     "__version__",
-    "EDITOR_DIR"
-    "Importable",
+    "EDITOR_DIR" "Importable",
     "LICENSES",
     "LOG_PATH",
     "THEMES_DIR",
-    "TOPLV_DIR"
+    "TOPLV_DIR",
 )
 
 # Setup translations

@@ -4,6 +4,7 @@ import wx.stc
 
 from . import THEMEPATH, GITHUB_URL, API_URL
 from libtextworker import __version__ as ver, general
+
 general.test_import("wx")
 from libtextworker.interface.wx import ColorManager
 from libtextworker.interface.wx.about import AboutDialog
