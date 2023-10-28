@@ -70,6 +70,7 @@ class Logger(logging.Logger):
 
 
 logger = Logger("textworker")
+logger.setLevel(logging.DEBUG)
 
 
 ## Base Exception class
