@@ -12,7 +12,7 @@ from libtextworker.general import CraftItems
 from libtextworker.interface.base.dirctrl import *
 from typing import Callable
 
-imgs = wx.ImageList(16, 16)
+imgs = wx.ImageList(16, 16) # TODO
 
 
 def addImg(name: str) -> int:
@@ -39,7 +39,17 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
     * Copy-paste + right-click menu
     * Drag-n-drop
     * Hidden files detect (quite hard, may need to use C/C++)
-    * Directory only
+    * Sorting items
+
+    Flags available:
+    * DC_EDIT = wx.TR_EDIT_LABELS
+    * DC_HIDEROOT = hide the root node
+    * DC_ONEROOT: only use one root node
+    * DC_MULTIPLE = wx.TR_MULTIPLE (multiple selections)
+    * No flag at all = wx.TR_DEFAULT_STYLE
+
+    If you want to add more than one folder to this control,
+    use DC_HIDEROOT and disable DC_ONEROOT (default).
     """
 
     Parent_ArgName = "parent"
@@ -52,7 +62,7 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
             # wx doc about wxTR_DEFAULT_STYLE:
             # set flags that are closet to the native system's defaults.
             if not len(args) >= 5:
-                styles = wx.TR_DEFAULT_STYLE
+                styles = wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT
                 use_args = False
             else:
                 styles = args[4]
@@ -65,7 +75,11 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
             styles |= wx.TR_EDIT_LABELS
 
         if DC_HIDEROOT in this.Styles:
-            styles |= wx.TR_HIDE_ROOT
+            if not DC_ONEROOT in this.Styles: # = use multiple folders
+                styles |= wx.TR_HIDE_ROOT
+                this.AddRoot("If you see this, tell the app developer")
+            # else:
+                # should throw a warning here, but iamlazy rn
 
         if DC_MULTIPLE in this.Styles:
             styles |= wx.TR_MULTIPLE
@@ -78,12 +92,12 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
 
-    def SetFolder(this, path: str, newroot: bool = False):
+    def SetFolder(this, path: str):
         """
         Make DirCtrl to open (a) directory.
         @param path (str): Target path
         @param newroot (bool): Whatever to create a new root or not (incase we have >= premade root)
-        @since 0.1.4: Code description + new param (newroot)
+        @since 0.1.4: Code description
         """
 
         # "Lazy" expand
@@ -112,15 +126,29 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
                 if os.path.isdir(craftedpath):
                     this.SetItemHasChildren(newitem)
 
-        DirCtrlBase.SetFolder(this, path, newroot)
+        DirCtrlBase.SetFolder(this, path, False)
 
-        kickstart = this.GetRootItem()
+        if not DC_ONEROOT in this.Styles and DC_HIDEROOT in this.Styles:
+            root = this.GetRootItem()
 
-        if kickstart and not newroot:
+            # From SO - legit
+            def iterate_root():
+                item, cookie = this.GetFirstChild(root)
+                while item.IsOk():
+                    if this.GetItemText(item) == path:
+                        return item
+                    item, cookie = this.GetNextChild(root, cookie)
+            
+            kickstart = iterate_root()
+            if not kickstart: kickstart = this.AppendItem(this.GetRootItem(), path)
+
+        elif DC_ONEROOT in this.Styles:
             this.DeleteAllItems()
-
-        elif this.GetItemText(kickstart) != path:
-            kickstart = this.AddRoot(path, this.folderidx)
+            kickstart = this.AddRoot(path)
+        else:
+            raise libTewException("The tree cannot determine whether to delete everything"
+                                  " and start from scratch or just add a new one while keeping"
+                                  " the old root node. Ask the app developer for this.")
 
         this.SetItemHasChildren(kickstart)
         this.Bind(wx.EVT_TREE_ITEM_EXPANDED, Expand)
@@ -132,6 +160,8 @@ class DirCtrl(wx.TreeCtrl, DirCtrlBase):
         """
         if item == None:
             parent = this.GetSelection()
+        elif this.GetRootItem() == item and DC_HIDEROOT:
+            return this.GetItemText(item)
         else:
             parent = item
 

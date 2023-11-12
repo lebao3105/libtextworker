@@ -75,7 +75,7 @@ class DirCtrlBase(WidgetBase):
         """
 
     def GoForward(this):
-        print(this.History)
+        # print(this.History)
         if this.History and this.HistoryIdx < len(this.History):
             this.SetFolder(this.History[this.HistoryIdx + 1])
             this.HistoryIdx = this.HistoryIdx + 1
@@ -84,7 +84,7 @@ class DirCtrlBase(WidgetBase):
         this.PostSetDir(this.History[this.HistoryIdx], "forward")
 
     def GoBack(this):
-        print(this.History)
+        # print(this.History)
         if this.History and this.HistoryIdx > 0:
             this.SetFolder(this.History[this.HistoryIdx - 1])
             this.HistoryIdx = this.HistoryIdx - 1
