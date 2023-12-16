@@ -171,3 +171,6 @@ libtextworker/po/
 # run specific test easier (in order to capture every output)
 # it's fine if we also import argparse and make a runnable module here
 tests/__main__.py
+
+# StyledTextControl's settings
+tests/default.ini

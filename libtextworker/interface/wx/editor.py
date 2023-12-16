@@ -5,6 +5,7 @@ import wx
 import wx.stc
 
 from libtextworker import EDITOR_DIR
+from libtextworker.general import CraftItems
 from libtextworker.get_config import ConfigurationError, GetConfig
 
 from .miscs import CreateMenu
@@ -23,7 +24,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         @param config_path (str): Configuration path (optional - defaults to lib's path)
         """
         if not config_path:
-            config_path = EDITOR_DIR + "default.ini"
+            config_path = CraftItems(EDITOR_DIR, "default.ini")
 
         self.cfg = GetConfig(stock_editor_configs, config_path)
 
