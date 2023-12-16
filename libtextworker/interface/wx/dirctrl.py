@@ -184,10 +184,11 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         # this.Bind(EVT_FILE_CREATED, this.AppendItem())
     
     def Destroy(this):
-        for item in this.Observers:
-            this.Observers[item].stop()
-            this.Observers[item].join()
-        del this.Observers
+        if this.Observers:
+            for item in this.Observers:
+                this.Observers[item].stop()
+                this.Observers[item].join()
+            del this.Observers
         return wx.TreeCtrl.Destroy(this)
 
     def __del__(this): return this.Destroy()
