@@ -1,27 +1,27 @@
-#: libtextworker/interface/tk/editor.py:57
+#: libtextworker/interface/tk/editor.py:106
 msgid "Cut"
 msgstr ""
 
-#: libtextworker/interface/tk/editor.py:62
+#: libtextworker/interface/tk/editor.py:111
 msgid "Copy"
 msgstr ""
 
-#: libtextworker/interface/tk/editor.py:67
+#: libtextworker/interface/tk/editor.py:116
 msgid "Paste"
 msgstr ""
 
-#: libtextworker/interface/tk/editor.py:74
+#: libtextworker/interface/tk/editor.py:125
 msgid "Undo"
 msgstr ""
 
-#: libtextworker/interface/tk/editor.py:79
+#: libtextworker/interface/tk/editor.py:130
 msgid "Redo"
 msgstr ""
 
-#: libtextworker/interface/wx/editor.py:166
+#: libtextworker/interface/wx/editor.py:145
 msgid "Read only"
 msgstr ""
 
-#: libtextworker/interface/wx/editor.py:167
+#: libtextworker/interface/wx/editor.py:146
 msgid "Set the text to be read-only"
 msgstr ""

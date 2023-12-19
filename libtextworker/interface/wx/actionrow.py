@@ -2,7 +2,7 @@
 @package libtextworker.interface.wx.actionrow
 """
 import wx
-
+from typing import overload
 
 class ActionRow(wx.BoxSizer):
     """
@@ -53,3 +53,9 @@ class ActionRow(wx.BoxSizer):
 
         self.Add(target, stretch, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         return target
+
+    # @overload
+    # def PlaceObj(self, obj: wx.Control, stretch: int = 1) -> wx.Control:
+    #     """
+    #     Place a widget
+    #     """

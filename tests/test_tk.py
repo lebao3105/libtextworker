@@ -6,6 +6,7 @@
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.messagebox as mgb
 
 from . import THEMEPATH
 from libtextworker import __version__ as libver, general
@@ -13,7 +14,7 @@ from libtextworker import __version__ as libver, general
 general.test_import("tkinter")
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
-from libtextworker.interface.tk.dirctrl import DirCtrl
+from libtextworker.interface.tk.dirctrl import *
 from libtextworker.interface.tk.editor import StyledTextControl
 
 clrmgr = ColorManager(customfilepath=THEMEPATH)
@@ -42,6 +43,10 @@ def test_tk():
 
     dc = DirCtrl(nb, show="tree")
     dc.SetFolder(os.path.expanduser("~/Desktop"))
+    dc.bind(FileCreatedEvent, lambda evt: mgb.showinfo("New created file", f"Created {evt.path}"))
+    dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.path}"))
+    dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.path}"))
+    dc.bind(FileOpenedEvent, lambda evt: mgb.showinfo("File opened", f"Opened {evt.path}"))
 
     te = StyledTextControl(nb)
     te.EditorInit()

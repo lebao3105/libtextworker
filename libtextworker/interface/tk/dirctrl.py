@@ -10,13 +10,89 @@
 import os
 import time
 
-from tkinter import TclError, ttk
+from tkinter import TclError, ttk, Misc
 from libtextworker.general import CraftItems
-from libtextworker.interface.base.dirctrl import DC_DIRONLY, DirCtrlBase
+from libtextworker.interface.base.dirctrl import *
+from watchdog.events import FileSystemEvent, FileSystemEventHandler
+from watchdog.observers import Observer
 
+# File system events
+# I leave them here and you just do what you want
+FileEditedEvent = "<<FileEdited>>"
+FileCreatedEvent = "<<FileCreated>>"
+FileDeletedEvent = "<<FileDeleted>>"
+FileOpenedEvent = "<<FileOpened>>"
+FileClosedEvent = "<<FileClosed>>"
+FileMovedEvent = "<<FileMoved>>"
 
-class DirCtrl(ttk.Treeview, DirCtrlBase):
+DirEditedEvent = "<<DirEdited>>"
+DirCreatedEvent = "<<DirCreated>>"
+DirMovedEvent = "<<DirMoved>>"
+DirDeletedEvent = "<<DirDeleted>>"
+
+class FSEventHandler(FileSystemEventHandler):
+    """
+    A file system events handler derived from watchdog's FileSystemEventHandler.
+
+    On both wx and Tk, a new event will be generated.
+    Set the Target attribute which the handler sends the event to.
+
+    On Tk, since a new event is just a new event: no custom value allowed. However
+    you can do a bind_class to connect the event to all widgets with your specified
+    class:
+    
+        ```python
+        # Binds FileDeletedEvent to all StyledTextControl instances
+        root.bind_class('StyledTextControl', FileDeletedEvent, callback)
+        ```
+
+    Or, if you use this for your own widget, derive this class like any other classes
+    you use for that widget, and set TargetIsSelf = True instead of Target.
+    This class does not use __init__.
+
+    Currently only one target is supported. You need to do something else to handle the
+    events generated here.
+    """
+
+    Target: Misc
+    TargetIsSelf: bool
+
+    def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
+    def getTarget(this): return this.Target if not this.TargetIsSelf else this
+
+    # It sucks when I can't use __dict__ (module variable) to access
+    # class easier (= less code used)
+
+    def on_moved(this, event: FileSystemEvent):
+        if this.evtIsDir(event) == "Dir": what_to_use = DirMovedEvent
+        else: what_to_use = FileMovedEvent
+        this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+    def on_created(this, event: FileSystemEvent): 
+        if this.evtIsDir(event) == "Dir": what_to_use = DirCreatedEvent
+        else: what_to_use = FileCreatedEvent
+        this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+    def on_deleted(this, event: FileSystemEvent):
+        if this.evtIsDir(event) == "Dir": what_to_use = DirDeletedEvent
+        else: what_to_use = FileDeletedEvent
+        this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+    def on_modified(this, event: FileSystemEvent): 
+        if this.evtIsDir(event) == "Dir": what_to_use = DirEditedEvent
+        else: what_to_use = FileEditedEvent
+        this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+    def on_closed(this, event: FileSystemEvent): 
+        this.getTarget().event_generate(FileClosedEvent, path=event.src_path)
+
+    def on_opened(this, event: FileSystemEvent): 
+        this.getTarget().event_generate(FileOpenedEvent, path=event.src_path)
+
+class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
     Parent_ArgName = "master"
+    TargetIsSelf = True
+    Observers: dict[str, Observer] = {}
     _Frame = ttk.Frame
 
     def __init__(this, *args, **kwds):
@@ -41,6 +117,14 @@ class DirCtrl(ttk.Treeview, DirCtrlBase):
         this.grid(column=0, row=0)
         ysb.grid(column=1, row=0, sticky="ns")
         xsb.grid(column=0, row=1, sticky="ew")
+
+    def destroy(this):
+        if this.Observers:
+            for key in this.Observers:
+                this.Observers[key].stop()
+                this.Observers[key].join()
+            del this.Observers
+        ttk.Treeview.destroy(this)
 
     def SetFolder(this, path: str, newroot: bool = False):
         def insert_node(node: str, folderpath: str):
@@ -72,6 +156,10 @@ class DirCtrl(ttk.Treeview, DirCtrlBase):
 
         first = this.insert("", "end", text=path)
         insert_node(first, path)
+
+        this.Observers[path] = Observer()
+        this.Observers[path].schedule(this, path, recursive=True)
+        this.Observers[path].start()
 
         this.bind("<<TreeviewOpen>>", Expand)
 

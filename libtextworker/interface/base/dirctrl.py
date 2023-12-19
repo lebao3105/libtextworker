@@ -13,13 +13,23 @@ from libtextworker.general import libTewException
 from typing import Callable, Literal, Any
 from . import DC_FLAGS, WidgetBase
 
+__all__ = (
+    "DC_ONEROOT",
+    "DC_EDIT",
+    "DC_HIDEROOT",
+    "DC_MULTIPLE",
+    "DC_DIRONLY",
+    "DC_RIGHTCL",
+    "DC_USEICON",
+    "DirCtrlBase"
+)
+
 DC_ONEROOT = DC_FLAGS.DC_ONEROOT
 DC_EDIT = DC_FLAGS.DC_EDIT
 DC_HIDEROOT = DC_FLAGS.DC_HIDEROOT
 DC_MULTIPLE = DC_FLAGS.DC_MULTIPLE
 DC_DIRONLY = DC_FLAGS.DC_DIRONLY
 DC_RIGHTCL = DC_FLAGS.DC_RIGHTCL
-DC_DYNAMIC = DC_FLAGS.DC_DYNAMIC
 DC_USEICON = DC_FLAGS.DC_USEICON
 
 
@@ -29,7 +39,6 @@ class DirCtrlBase(WidgetBase):
     Styles are defined in ..DC_FLAGS class and called in this module.
 
     Enabled by default:
-    * DC_DYNAMIC (feature not implemented)
     * DC_EDIT (toolkit-specific)
     * DC_USEICON (toolkit-specific)
 
@@ -39,7 +48,7 @@ class DirCtrlBase(WidgetBase):
     """
 
     currpath: str
-    Styles = DC_DYNAMIC | DC_EDIT | DC_USEICON
+    Styles = DC_EDIT | DC_USEICON
     History: dict[Any, list[str]]
     HistoryIdx: int = 0
 

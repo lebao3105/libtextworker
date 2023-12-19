@@ -40,7 +40,7 @@ class StyledTextControl(Text):
         this,
         useMenu: bool = False,
         useScrollBars: bool = True,
-        custom_config_path: str = EDITOR_DIR + "editor.ini",
+        custom_config_path: str = EDITOR_DIR + "/editor.ini",
         tabwidth: int = 4,
     ):
         """
@@ -89,6 +89,9 @@ class StyledTextControl(Text):
             this.bind(
                 "<<Modified>>", lambda evt: this._frame.after_idle(ln.redraw), add=True
             )
+
+        # Tab size
+        this.config(tabs=Font(font=this['font']).measure('  '*tabwidth))
 
     # Place scrollbars
     def _place_scrollbar(this):

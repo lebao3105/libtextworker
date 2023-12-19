@@ -14,7 +14,7 @@ from libtextworker.interface.wx.about import AboutDialog
 from libtextworker.interface.wx.actionrow import ActionRow
 from libtextworker.interface.wx.editor import StyledTextControl
 from libtextworker.interface.wx.miscs import CreateMenu
-from watchdog.observers import Observer
+
 clrmgr = ColorManager(customfilepath=THEMEPATH)
 
 def test_wx():
@@ -56,8 +56,7 @@ def test_wx():
     """
 
     app = wx.App(0)
-    fm = wx.Frame(None, title="libtextworker wxPython test")
-    logwind = wx.LogWindow(fm, "Logs", False)
+    fm = wx.Frame(None, title="libtextworker wxPython demo")
 
     # Setup the menu bar
     menubar = wx.MenuBar()
@@ -72,8 +71,7 @@ def test_wx():
                 lambda evt: webbrowser.open(API_URL),
                 None,
             ),
-            (wx.ID_ANY, "Check for auto-color support", None, checkautocolor, None),
-            (wx.ID_ANY, "Show logs", None, lambda evt: logwind.Show(), None)
+            (wx.ID_ANY, "Check for auto-color support", None, checkautocolor, None)
         ],
     )
 
@@ -110,20 +108,25 @@ def test_wx():
     dirctrl2 = DirCtrl(nb, w_styles=DC_ONEROOT)
 
     dirctrl.SetFolder("./po")
-    dirctrl.SetFolder(os.path.expanduser("./tests"))
+    dirctrl.SetFolder("./tests")
 
     dirctrl2.SetFolder(os.path.expanduser("./libtextworker"))
 
     for ctrl in [dirctrl, dirctrl2]:
-        ctrl.Bind(EVT_FILE_CREATED, lambda evt: wx.LogInfo(f"Created file {evt.path}"))
-        ctrl.Bind(EVT_FILE_CLOSED, lambda evt: wx.LogInfo(f"Closed file {evt.path}"))
-        ctrl.Bind(EVT_FILE_DELETED, lambda evt: wx.LogInfo(f"Deleted file {evt.path}"))
-        # I'm too lazy to add
+        ctrl.Bind(EVT_FILE_CREATED, lambda evt: wx.LogMessage(f"Created file {evt.path} {evt}"))
+        ctrl.Bind(EVT_FILE_CLOSED, lambda evt: wx.LogMessage(f"Closed file {evt.path}"))
+        ctrl.Bind(EVT_FILE_DELETED, lambda evt: wx.LogMessage(f"Deleted file {evt.path}"))
+        # I'm too lazy to add more
 
     nb.AddPage(dirctrl, "DirCtrl (multiple root nodes)")
     nb.AddPage(dirctrl2, "DirCtrl (one root node)")
 
+    # Log
+    log = wx.TextCtrl(nb, style=wx.TE_READONLY|wx.TE_MULTILINE|wx.HSCROLL)
+    nb.AddPage(log, "Logs")
+
     clrmgr.configure(fm, True)
 
+    wx.Log.SetActiveTarget(wx.LogTextCtrl(log))
     fm.Show()
     app.MainLoop()

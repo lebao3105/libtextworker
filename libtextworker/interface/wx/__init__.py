@@ -55,11 +55,10 @@ class ColorManager(ColorManager):
         if childs_too and hasattr(widget, "GetChildren"):
             widget.SetBackgroundColour(bg)
             widget.SetForegroundColour(fg)
-            widget.SetFont(font)
         else:
             widget.SetOwnBackgroundColour(bg)
             widget.SetOwnForegroundColour(fg)
-            widget.SetOwnFont(font)
+        widget.SetFont(font)
 
 
 ## @deprecated On version 0.1.3

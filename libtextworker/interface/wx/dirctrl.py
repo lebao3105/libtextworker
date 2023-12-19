@@ -9,8 +9,9 @@ import wx
 import wx.lib.newevent
 
 from enum import auto
-from libtextworker.general import CraftItems
+from libtextworker.general import CraftItems, libTewException
 from libtextworker.interface.base.dirctrl import *
+from typing import Callable
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -49,7 +50,7 @@ class FSEventHandler(FileSystemEventHandler):
     """
     A file system event handler derived from watchdog's FileSystemEventHandler.
 
-    On both wx and Tk (maybe), a new event will be generated.
+    On both wx and Tk, a new event will be generated.
     Set the Target attribute which the handler sends the event to.
 
     Or, if you use this for your own widget, derive this class like any other classes
@@ -181,7 +182,22 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
-        # this.Bind(EVT_FILE_CREATED, this.AppendItem())
+        this.Bind(wx.EVT_TREE_SEL_CHANGED, this.LazyExpand)
+
+        def AddItem(evt: FileCreatedEvent | DirCreatedEvent):
+            this.AppendItem(this.MatchItem(os.path.dirname(evt.path)),
+                            os.path.basename(evt.path),
+                            fileidx if isinstance(evt, FileCreatedEvent) else folderidx)
+            evt.Skip()
+        
+        def DeleteItem(evt: FileDeletedEvent | DirDeletedEvent):
+            wx.TreeCtrl.Delete(this, this.MatchItem(evt.path))
+            evt.Skip()
+
+        this.Bind(EVT_FILE_CREATED, AddItem)
+        this.Bind(EVT_DIR_CREATED, AddItem)
+        this.Bind(EVT_FILE_DELETED, DeleteItem)
+        this.Bind(EVT_DIR_DELETED, DeleteItem)
     
     def Destroy(this):
         if this.Observers:
@@ -193,42 +209,45 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
     def __del__(this): return this.Destroy()
 
+    def LazyExpand(this, what: wx.PyEvent | wx.TreeItemId):
+        """
+        Expand the given/currently selected item.
+
+        Explain: if the target item has childs inside, that means
+        the item has been opened before. This can be done by checking
+        whether the item full path is a directory and has items inside.
+        """
+        if isinstance(what, wx.TreeItemId):
+            path = what
+        else:
+            path = this.GetSelection()
+
+        fullpath = os.path.normpath(this.GetFullPath(path))
+
+        if os.path.isdir(fullpath) and this.ItemHasChildren(path):
+            wx.TreeCtrl.DeleteChildren(this, path)
+            this.SetItemImage(path, openfolderidx, wx.TreeItemIcon_Expanded)
+            ls = os.listdir(fullpath)
+            for item in ls:
+                craftedpath = CraftItems(fullpath, item)
+                if os.path.isfile(craftedpath) and DC_DIRONLY in this.Styles:
+                    continue
+                icon = folderidx if os.path.isdir(craftedpath) else fileidx
+
+                newitem = this.AppendItem(path, item, icon)
+
+                if os.path.isdir(craftedpath) and len(os.listdir(craftedpath) >= 1):
+                    this.SetItemHasChildren(newitem)
+        
+        if isinstance(what, wx.PyEvent):
+            what.Skip()
+
     def SetFolder(this, path: str):
         """
         Make DirCtrl to open (a) directory.
         @param path (str): Target path
         @since 0.1.4: Code description
         """
-
-        # @param newroot (bool): Whatever to create a new root or not (incase we have >= premade root)
-        
-        # "Lazy" expand
-        # Why "lazy" here? Because this is called when we click an expandable item,
-        # if it's not opened before, it will fill itself with new items.
-        # else it will just show its (already) finished work.
-
-        def Expand(evt):
-            path = this.GetSelection()
-            fullpath = os.path.normpath(this.GetFullPath(path))
-            if os.path.isdir(fullpath):
-                this.SetItemImage(path, openfolderidx, wx.TreeItemIcon_Expanded)
-                ls = os.listdir(fullpath)
-                if len(ls) == 0:
-                    this.SetItemHasChildren(path, False)
-                    return
-                # ^ blank folder? Get out eventually
-
-                for item in ls:
-                    craftedpath = CraftItems(fullpath, item)
-                    if os.path.isfile(craftedpath) and DC_DIRONLY in this.Styles:
-                        continue
-                    icon = folderidx if os.path.isdir(craftedpath) else fileidx
-
-                    newitem = this.AppendItem(path, item, icon)
-
-                    if os.path.isdir(craftedpath):
-                        this.SetItemHasChildren(newitem)
-            evt.Skip()
 
         DirCtrlBase.SetFolder(this, path, False)
 
@@ -257,7 +276,6 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
                                   " the old root node. Ask the app developer for this.")
 
         this.SetItemHasChildren(kickstart)
-        this.Bind(wx.EVT_TREE_ITEM_ACTIVATED, Expand)
         this.Observers[path] = Observer()
         this.Observers[path].schedule(this, path, recursive=True)
         this.Observers[path].start()
@@ -266,7 +284,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
     # help of Google Bard (and I found the problem myself,
     # Bard just use one more while loop and that's all, 
     # cannot go deeper of the tree)
-    def MatchItem(this, path: str, start: wx.TreeItemId | None = None):
+    def MatchItem(this, path: str, start: wx.TreeItemId | None = None) -> wx.TreeItemId:
         """
         Find for an item in the tree by the specified path.
         "Item" here is a wx.TreeItemId object.
@@ -301,6 +319,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         """
         Delete the specified item, but also delete the item on the
         file system.
+        wx.TreeCtrl.Delete() exists (original method, use with care).
         """
         fullpath = this.GetFullPath(item)
         if os.path.isdir(fullpath) and fullpath in this.Observers:
@@ -316,6 +335,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         """
         Remove all subitems of the specified item, except the item itself.
         Also remove them from the file system.
+        wx.TreeCtrl.DeleteChildren() exists (original method, use with care).
         """
         if not this.ItemHasChildren(item): return
         for child in this.GetNodeChildren(item):
@@ -372,7 +392,7 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
     """
 
     currpath: str
-    Styles = DC_DYNAMIC | DC_USEICON
+    Styles = DC_USEICON
     History: list = []
     TargetIsSelf = True
     Watcher: Observer
@@ -386,7 +406,7 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
         style=wx.LC_REPORT,
         validator=wx.DefaultValidator,
         name=wx.ListCtrlNameStr,
-        w_styles: auto = DC_DYNAMIC | DC_USEICON,
+        w_styles: auto = DC_USEICON,
     ):
         if DC_EDIT in w_styles:
             style |= wx.LC_EDIT_LABELS
