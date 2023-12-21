@@ -6,8 +6,8 @@
 """
 @package libtextworker.interface.tk.editor
 @brief Home of Tkinter(Ttk) text editors.
-@since 0.1.4: TextWidget is now a StyledTextControl alias (will be removed in the future). Customizations in __init__() are now moved to EditorInit().
 """
+from hashlib import md5
 from tkinter import BooleanVar, Menu, Text, Misc, TclError
 from tkinter.font import Font
 from tkinter.ttk import Scrollbar, Frame
@@ -29,8 +29,11 @@ from .miscs import CreateMenu
 class StyledTextControl(Text):
     """
     Customized Tkinter Text widget with some extra features.
-    Note: When placing this widget, not only the editor itself, please also place the _frame object as the real editor's parent.
+    Note: Use StyledTextControl._frame as the real StyledTextControl's parent.
     """
+
+    FileLoaded: str = ""
+    Hash: str = md5("".encode("utf-8"))
 
     def __init__(this, master: Misc | None = None, **kwds):
         this._frame = Frame(master)
@@ -141,6 +144,19 @@ class StyledTextControl(Text):
         finally:
             this.RMenu.grab_release()
 
+    # File load / save
+    def LoadFile(this, path: str):
+        content = open(path, "r").read()
+        this.insert(1.0, content)
+        this.FileLoaded = path
+        this.Hash = md5(content.encode("utf-8"))
+    
+    def SaveFile(this, path: str):
+        content = this.get(1.0, "end")
+        open(path, "w").write(content)
+        this.Hash = md5(content.encode("utf-8"))
+        this.Modified = False
+
     # Wrap mode
     def wrapmode(this, event=None) -> bool:
         """
@@ -158,12 +174,18 @@ class StyledTextControl(Text):
 
     # Undo/redo forks
     def edit_undo(this) -> None:
+        """
+        Undoes the last edit option, if able to.
+        """
         try:
             super().edit_undo()
         except TclError:
             pass
 
     def edit_redo(this) -> None:
+        """
+        Redoes the last undone edit option, if able to.
+        """
         try:
             super().edit_redo()
         except TclError:
