@@ -63,9 +63,11 @@ class AboutDialog:
         Here goes the real About dialog.
         If you don't like my style, just derive this function and
             start making your own.
+        TODO: Modifyable UI without remaking from scratch.
         """
         dlg = Toplevel(master)
         dlg.wm_title(_("About this project"))
+        dlg.grab_set()
         dlg.geometry("350x450")  # legit?
 
         project_infos = _(
@@ -98,12 +100,13 @@ class AboutDialog:
         nb.pack(fill="both", expand=True)
 
         # Make tabs
-        license_te = editor.StyledTextControl(dlg, state="disabled", wrap="word")
+        license_te = editor.StyledTextControl(dlg, wrap="word")
         license_te.insert(1.0, project_license)
-        license_te.pack(expand=True, fill="both")
+        license_te.configure(state="disabled")
+        license_te.pack(expand=True, fill="both", anchor="nw")
 
-        nb.add(Label(dlg, text=project_infos), text=_("This software"))
-        nb.add(Label(dlg, text=project_credits), text=_("Contributors"))
+        nb.add(Label(dlg, text=project_infos, anchor="nw"), text=_("This software"))
+        nb.add(Label(dlg, text=project_credits, anchor="nw"), text=_("Contributors"))
         nb.add(license_te._frame, text=_("License"))
 
         # Bottom frame, containing a "OK" button
