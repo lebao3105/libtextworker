@@ -11,6 +11,7 @@ from hashlib import md5
 from tkinter import BooleanVar, Menu, Text, Misc, TclError
 from tkinter.font import Font
 from tkinter.ttk import Scrollbar, Frame
+from typing import overload
 
 try:
     from tklinenums import TkLineNumbers
@@ -33,7 +34,7 @@ class StyledTextControl(Text):
     """
 
     FileLoaded: str = ""
-    Hash: str = md5("".encode("utf-8"))
+    Hash = md5("".encode("utf-8"))
 
     def __init__(this, master: Misc | None = None, **kwds):
         this._frame = Frame(master)
@@ -145,17 +146,45 @@ class StyledTextControl(Text):
             this.RMenu.grab_release()
 
     # File load / save
+    @property
+    def IsModified(this) -> bool:
+        """
+        Probably this will let you know if the editor content has been cooked or not.
+        """
+        if not this.FileLoaded: return this.get(1.0, "end") == ""
+        return this.Hash.digest() == md5(open(this.FileLoaded, "r").read().encode("utf-8")).digest()
+
     def LoadFile(this, path: str):
+        """
+        Load a file.
+        Warning: the path must exists on the file system, else
+         an exception will be raised (no handle from us).
+        Also this will OVERWRITE existing editor CONTENT, so make
+         sure you have your backup way.
+        """
         content = open(path, "r").read()
         this.insert(1.0, content)
         this.FileLoaded = path
         this.Hash = md5(content.encode("utf-8"))
     
+    @overload
     def SaveFile(this, path: str):
+        """
+        Write the current editor contents into a file.
+        """
         content = this.get(1.0, "end")
         open(path, "w").write(content)
         this.Hash = md5(content.encode("utf-8"))
         this.Modified = False
+    
+    @overload
+    def SaveFile(this):
+        """
+        Write the current editor contents into the loaded file, if any.
+        If not able to, return None.
+        """
+        if not this.FileLoaded: return None
+        else: this.SaveFile(this.FileLoaded)
 
     # Wrap mode
     def wrapmode(this, event=None) -> bool:
@@ -163,14 +192,10 @@ class StyledTextControl(Text):
         Toggle editor word wrap mode.
         Only use with TextWidget.wrapbtn BooleanVar.
         """
-        if this.wrapbtn.get() == True:
-            this.configure(wrap="none")
-            this.wrapbtn.set(False)
-            return False
-        else:
-            this.configure(wrap="word")
-            this.wrapbtn.set(True)
-            return True
+        value = this.wrapbtn.get()
+        this.configure(wrap="none" if value else "word")
+        this.wrapbtn.set(not value)
+        return not value
 
     # Undo/redo forks
     def edit_undo(this) -> None:
