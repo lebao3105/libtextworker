@@ -18,17 +18,16 @@ packaging = "^23.0"
 importlib-metadata = "^6.1.0"
 
 wxPython = {version = "^4.0.0", optional = true}
-sv-ttk = {version = "^2.4.3", optional = true}
 darkdetect = {version = "^0.8.0", optional = true}
 commented-configparser = {version = "^1.0.0", optional = true}
 tklinenums = {version = "^1.6.5", optional = true}
-watchdog = "^3.0.0"
+watchdog = {version = "^3.0.0", optional = true}
 
 [tool.poetry.extras]
-wx = ["wxPython"]
-tkinter = ["sv-ttk", "tklinenums"]
+wx = ["wxPython", "watchdog"]
+tkinter = ["tklinenums", "watchdog"]
 autocolor = ["darkdetect"]
-all = ["darkdetect", "wxPython", "sv-ttk", "commented-configparser"]
+all = ["darkdetect", "wxPython", "commented-configparser", "tklinenums", "watchdog"]
 
 [tool.black]
 line-length = 88
