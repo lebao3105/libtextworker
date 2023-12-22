@@ -173,4 +173,5 @@ libtextworker/po/
 tests/__main__.py
 
 # StyledTextControl's settings
-tests/default.ini
+tests/*.ini
+!tests/custom_theme.ini

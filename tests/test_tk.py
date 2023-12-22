@@ -4,11 +4,12 @@
 # 	Licensed under the GNU General Public License version 3.0 or later.
 
 import os
+import platform
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mgb
 
-from . import THEMEPATH
+from . import THEMEPATH, GITHUB_URL
 from libtextworker import __version__ as libver, general
 
 general.test_import("tkinter")
@@ -29,13 +30,17 @@ def test_tk():
     aboutdlg.SetProjectName("libtextworker")
     aboutdlg.SetProjectVersion(libver)
     aboutdlg.SetProjectDescription("A Python library made for GUI apps.")
+    aboutdlg.SetProjectSite(GITHUB_URL)
     aboutdlg.SetAppTesters(["Le Bao Nguyen"])
     aboutdlg.SetDevelopers(["Le bao Nguyen"])
     aboutdlg.SetProjectLicense("GPL3_full")
 
+    if platform.system() == "Darwin":
+        app.createcommand("tkAboutDialog", lambda: aboutdlg.ShowDialog(fm))
+
     ttk.Label(fm, text="Hello world!").pack()
     ttk.Button(
-        fm, text="Try to click it;)!", command=lambda: (aboutdlg.ShowDialog(fm))
+        fm, text="Click it!", command=lambda: (aboutdlg.ShowDialog(fm))
     ).pack()
     ttk.Checkbutton(fm, text="A checkbutton").pack()
 

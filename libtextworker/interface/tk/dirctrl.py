@@ -125,7 +125,7 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
             for key in this.Observers:
                 this.Observers[key].stop()
                 this.Observers[key].join()
-            del this.Observers
+            this.Observers.clear()
         ttk.Treeview.destroy(this)
 
     def SetFolder(this, path: str, newroot: bool = False):
