@@ -36,7 +36,7 @@ The top-level module has some useful attributes:
 
 * THEMES_DIR (str): Defaults to ```~/.configs/textworker/themes```; where all themes for GUIs are placed
 * EDITOR_DIR (str): Defauls to ```~/.configs/textworker/editorconfigs/```; default configs directory for GUI editors
-* Importable (dict): Actually it's ```_importer.Importable```, contains check results for Python modules.
+* Importable (dict): Actually it's ```general.Importable```, contains check results for Python modules.
 
 In libtextworker.general module we have a variable called available_toolkits (since 0.1.3), indicates supported GUI toolkits. Only wxPython and Tkinter are supported. Also we have LOG_PATH shows us where the log file is located, TOPLV_DIR for the top-level settings path.
 
@@ -65,10 +65,14 @@ Head over to this [page](packaging.md).
 ## Bonus: A basic example about using libtextworker GUI work (skeleton base for all supported toolkits)
 
 ```python
-from libtextworker.interface.<available_toolkit> import ColorManager
-from libtextworker.interface.<available_toolkit>.miscs import CreateMenu
+from libtextworker.general import test_import
+from libtextworker.interface.available_toolkit import ColorManager
+from libtextworker.interface.available_toolkit.miscs import CreateMenu
 # Here we use App, Button, CheckButton, Frame classes
-from <your_preferred_gui> import App, Button, CheckButton, Frame
+from your_preferred_gui import App, Button, CheckButton, Frame
+
+if not test_import("your_tookit_here"):
+    ... # Check if you can use your preferred tookit here
 
 app = App()
 mainFrame = Frame(parent=None, title="libtextworker example")
@@ -82,6 +86,7 @@ menu1 = CreateMenu(mainFrame,
                 ("Hello world", lambda evt: print("hello!"), None, None, None),
                 ...
         ]
+)
 menuBar.Append(menu1, "Testtesttest")
 
 # Add some objects.

@@ -44,6 +44,8 @@ class FSEventHandler(FileSystemEventHandler):
         ```python
         # Binds FileDeletedEvent to all StyledTextControl instances
         root.bind_class('StyledTextControl', FileDeletedEvent, callback)
+        # Or this (add=True won't replace the current callback if any)
+        widget.bind(FileDeletedEvent, callback, add=True)
         ```
 
     Or, if you use this for your own widget, derive this class like any other classes

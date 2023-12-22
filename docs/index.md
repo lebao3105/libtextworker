@@ -21,3 +21,11 @@ For the usage documentation for versions prior to ```0.1.4```, you should go to 
 * [Make your own settings system with INI/JSON format](usage/getconfig.md)
 * [Variable aliases](usage/aliases.md)
 * [Packaging libtextworker](usage/packaging.md)
+
+<div class="section_buttons">
+
+| Previous                   |                       Next |
+|:---------------------------|---------------------------:|
+| /dev/null                  | [Installation](usage/install.md) |
+
+</div>

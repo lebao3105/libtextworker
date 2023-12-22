@@ -18,8 +18,6 @@ auto = yes
 
 Nothing to explain here.
 
-From version 0.1.4, I've added new configs called background-{variant} and foreground-{variant} as a part of the more dynamic color switch: custom colors for every mode.
-
 ### Color->Background
 
 Type: string
@@ -46,7 +44,7 @@ Defaults to "yes" (enabled).
 
 ### Color->foreground/background-{variant}
 
-> {variant} is either "dark" or "light"
+> `{variant}` is either "dark" or "light"
 
 Optional.
 
@@ -54,7 +52,7 @@ Type: string.
 
 First debut: 0.1.4
 
-No default value. Check for the foreground section above.
+No default value. Check for options above.
 
 ## Implementation for GUIs
 
