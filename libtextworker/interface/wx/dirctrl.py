@@ -204,10 +204,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
             for item in this.Observers:
                 this.Observers[item].stop()
                 this.Observers[item].join()
-            del this.Observers
         return wx.TreeCtrl.Destroy(this)
-
-    def __del__(this): return this.Destroy()
 
     def LazyExpand(this, what: wx.PyEvent | wx.TreeItemId):
         """
@@ -236,7 +233,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
                 newitem = this.AppendItem(path, item, icon)
 
-                if os.path.isdir(craftedpath) and len(os.listdir(craftedpath) >= 1):
+                if os.path.isdir(craftedpath) and len(os.listdir(craftedpath)) >= 1:
                     this.SetItemHasChildren(newitem)
         
         if isinstance(what, wx.PyEvent):
@@ -432,8 +429,6 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
         this.Watcher.join()
         del this.Watcher
         wx.ListCtrl.Destroy(this)
-    
-    def __del__(this): return this.Destroy()
 
     def DrawItems(this, path: str = os.path.expanduser("~/")):
         """

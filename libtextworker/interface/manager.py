@@ -8,10 +8,7 @@ try:
 except ImportError:
     AUTOCOLOR = False
 else:
-    if darkdetect.theme() is None:  # Unsupported OS
-        AUTOCOLOR = False
-    else:
-        AUTOCOLOR = True
+    AUTOCOLOR = bool(darkdetect.theme())
 
 from .. import THEMES_DIR
 from ..general import logger, CraftItems, logger

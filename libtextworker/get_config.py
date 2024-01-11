@@ -5,7 +5,6 @@
 See the documentation in /usage/getconfig.
 """
 import json
-from math import exp
 import os
 import typing
 

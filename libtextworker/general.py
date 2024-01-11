@@ -20,11 +20,20 @@ TOPLV_DIR = ""
 # Classes
 ## Logging
 class Logger(logging.Logger):
+    """
+    A logging class for GUIs.
+    Available toolkits can be checked/set by the UseToolKit attribute.
+    """
+
     UseToolKit: available_toolkits | bool = False
 
     def UseGUIToolKit(
         self, toolkit: available_toolkits
-    ):  # Currently no Tkinter support
+    ):
+        """
+        Set's the GUI toolkit to use.
+        Currently there is no support for Tkinter yet.
+        """
         self.UseToolKit = toolkit
 
     def CallGUILog(
@@ -35,12 +44,14 @@ class Logger(logging.Logger):
     ):
         """
         Call GUI toolkit logging function.
+        Do nothing if not able to.
         """
+        if not self.UseToolKit: return
         try:
             do = importlib.import_module(
                 f"interface.{self.UseToolKit}.constants", "libtextworker"
             )
-        except ImportError or ModuleNotFoundError:
+        except:
             return
         else:
             getattr(do, "LOG_" + name)(msg, args)
@@ -167,6 +178,11 @@ def ResetEveryConfig():
 
 
 def test_import(pkgname: str) -> bool:
+    """
+    Tests if the specified module name is importable.
+    Results is stored in Importable (dict[str, bool]).
+    @see Importable
+    """
     try:
         import_module(pkgname)
     except ImportError:
