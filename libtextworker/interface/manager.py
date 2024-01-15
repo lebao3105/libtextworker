@@ -11,7 +11,7 @@ else:
     AUTOCOLOR = bool(darkdetect.theme())
 
 from .. import THEMES_DIR
-from ..general import logger, CraftItems, logger
+from ..general import logger, CraftItems
 from ..get_config import ConfigurationError, GetConfig
 from ..interface import stock_ui_configs, colors
 
@@ -159,29 +159,29 @@ class ColorManager(GetConfig):
         except KeyError or ConfigurationError:
             pass
 
-    def setcolorfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
+    def setcolorfunc(self, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
         """
         Set GUI widget background color-set function.
-        @param objname (str): Object name (for easier access)
-        @param func (callable): Target function (no arg)
-        @param params: Parameters to pass to
+        @param obj (type | object): Object (variable or type reference)
+        @param func (callable | str): Target function (no arg)
+        @param params (tuple | dict): Parameters to pass to func
 
         Function paramers must have %(color) in order to
             pass color value. Use %(color-rgb) if you want RGB value.
         """
-        self.setcolorfn[objname] = {"fn": func, "params": params}
+        self.setcolorfn[obj] = {"fn": func, "params": params}
 
-    def setfontcfunc(self, objname: str, func: typing.Callable, params: dict | tuple):
+    def setfontcfunc(self, obj: type | object, func: typing.Callable, params: dict | tuple | None = None):
         """
         Set GUI widget font color-set function.
-        @param objname (str): Object name (for easier access)
-        @param func (callable): Function to set the font style (no arg)
-        @param params: Parameters to pass to func
+        @param obj (type | object): Object (variable or type reference)
+        @param func (callable | str): Function to set the font style (no arg)
+        @param params (tuple | dict): Parameters to pass to func
 
         Function paramers must have %(font) in order to
             pass color value. Use %(font-rgb) if you want RGB value.
         """
-        self.setfontfn[objname] = {"fn": func, "params": params}
+        self.setfontfn[obj] = {"fn": func, "params": params}
 
     def configure(self, widget: typing.Any):
         """
@@ -193,74 +193,41 @@ class ColorManager(GetConfig):
         @see setfontcfunc
         """
 
-        def runfn(
-            args: tuple | dict,
-            extra: str = "",
-            extra_alias: str = "",
-            fn: typing.Callable | None = None,
-        ) -> dict | tuple | None:
-            FOUND: bool = False
+        def runfn(func: typing.Callable, args: dict|tuple, extra: str, extra_alias: str):
 
-            if isinstance(args, tuple):
-                if fn:
-                    return fn(*args)
-                for item in args:
-                    if isinstance(item, str) and item == extra_alias:
-                        FOUND = True
-                        args[args.index(item)] = extra
-
-            elif isinstance(args, dict):
-                if fn:
-                    return fn(**args)
-
-                for item in args:
-                    if isinstance(args[item], str) and args[item] == extra_alias:
-                        FOUND = True
-                        args[item] = extra
-
-            return args if FOUND else None
+            if isinstance(args, dict):
+                for key in args:
+                    if isinstance(args[key], str):
+                        args[key] = args[key].replace(extra_alias, extra)
+                return func(**args)
+            
+            elif isinstance(args, tuple):
+                temp = list(args)
+                for arg in temp:
+                    if isinstance(arg, str):
+                        arg = arg.replace(extra_alias, extra)
+                args = tuple(temp)
+                return func(*args)
+        
 
         if not widget:
             logger.debug(f"Widget {widget} died, skip configuring.")
             return
 
         color, fontcolor = self.GetColor()
+        
+        def runloop(attr: typing.Literal["color", "font"]):
+            for item in getattr(self, f"set{attr}fn"):
+                if isinstance(item, type):
+                    if not isinstance(widget, item): continue
+                elif item != widget: continue
+                fn = getattr(self, f"set{attr}fn")[item]["fn"]
+                if isinstance(fn, str): fn = getattr(widget, fn)
+                runfn(fn, getattr(self, f"set{attr}fn")[item]["params"],
+                      fontcolor if attr == "font" else color, f"%({attr})")
 
-        for item in self.setfontfn:
-            fn = self.setfontfn[item]["fn"]
-            if not self.setfontfn[item]["params"]:
-                fn(fontcolor)
-            else:
-                args = runfn(
-                    args=self.setfontfn[item]["params"],
-                    extra=fontcolor,
-                    extra_alias="%(font)",
-                )
-                if not args:
-                    args = runfn(
-                        args=self.setfontfn[item]["params"],
-                        extra=hextorgb(fontcolor),
-                        extra_alias="%(font-rgb)",
-                    )
-                runfn(fn=fn, args=args)
-
-        for item in self.setcolorfn:
-            fn = self.setcolorfn[item]["fn"]
-            if not self.setcolorfn[item]["params"]:
-                fn(color)
-            else:
-                args = runfn(
-                    args=self.setcolorfn[item]["params"],
-                    extra=color,
-                    extra_alias="%(color)",
-                )
-                if not args:
-                    args = runfn(
-                        args=self.setcolorfn[item]["params"],
-                        extra=hextorgb(color),
-                        extra_alias="%(color-rgb)",
-                    )
-                runfn(fn=fn, args=args)
+        runloop("color")
+        runloop("font")
 
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "auto")

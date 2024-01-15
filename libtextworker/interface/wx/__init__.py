@@ -51,10 +51,11 @@ class ColorManager(ColorManager):
         # font
         font = self.GetFont()
 
-        ## will this work?
         if childs_too and hasattr(widget, "GetChildren"):
             widget.SetBackgroundColour(bg)
             widget.SetForegroundColour(fg)
+            for children in widget.GetChildren():
+                self.configure(children, True)
         else:
             widget.SetOwnBackgroundColour(bg)
             widget.SetOwnForegroundColour(fg)

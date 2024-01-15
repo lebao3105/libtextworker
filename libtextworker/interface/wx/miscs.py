@@ -9,7 +9,6 @@ import wx.aui
 import wx.xrc
 
 from typing import Callable
-from wx.lib.agw.scrolledthumbnail import NativeImageHandler
 
 
 def CreateMenu(parent, items: list[tuple[5]]) -> wx.Menu:

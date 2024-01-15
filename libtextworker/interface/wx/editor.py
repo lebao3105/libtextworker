@@ -10,11 +10,18 @@ from libtextworker.get_config import ConfigurationError, GetConfig
 
 from .miscs import CreateMenu
 from .. import stock_editor_configs
+from ... import _
 
 
 class StyledTextControl(wx.stc.StyledTextCtrl):
     """
     A better styled wxStyledTextCtrl.
+    Color wxStyledTextCtrl these ways:
+    * StyleSetSpace = StyleSetBackground + StyleSetForeground + StyleSetFont ...
+    * ColorManager.set*func then ColorManager.configure
+    The default style is wx.stc.STC_STYLE_DEFAULT.
+    You can make ColorManager do the coloring work for you for mixing the 2 ways above together.
+    Else you will want to handle system color changes yourself as well.
     """
 
     def EditorInit(self, config_path: str = ""):
@@ -43,7 +50,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
         # Word wrap
         self.SetWrapMode(
-            bool(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values)
+            self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values
         )
 
     """

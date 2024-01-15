@@ -9,7 +9,7 @@ from ...general import libTewException
 from ..manager import ColorManager
 
 if Importable["tkinter"] == True:
-    from tkinter import TclError, font, Misc
+    from tkinter import TclError, font, Misc, Menu, Label
 else:
     raise libTewException(
         "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
@@ -50,7 +50,7 @@ class ColorManager(ColorManager):
         back, fore = self.GetColor()
         font_to_use = self.GetFont()
 
-        if "Menu" in widget.winfo_class():
+        if isinstance(widget, Menu):
             font_to_use.configure(size=10)
             if widget.index("end"):
                 for i in range(0, int(widget.index("end"))):
@@ -58,7 +58,7 @@ class ColorManager(ColorManager):
 
         try:
             widget.configure(font=font_to_use)
-        except TclError:
+        except:
             pass
 
         # Why this catch?
@@ -66,8 +66,12 @@ class ColorManager(ColorManager):
         # but use foreground and background instead.
         try:
             widget.configure(fg=fore, bg=back)
-            widget.configure(foreground=fore, background=back)
-        except TclError:
+        except:
+            pass
+
+        try:
+            widget.configure(background=back, foreground=fore)
+        except:
             pass
 
         if childs_too:

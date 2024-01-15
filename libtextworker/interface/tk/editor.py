@@ -94,6 +94,11 @@ class StyledTextControl(Text):
                 "<<Modified>>", lambda evt: this._frame.after_idle(ln.redraw), add=True
             )
 
+        # On editor modify
+        def OnEditorModify(evt):
+            this.Hash = md5(this.get(1.0, "end").encode("utf-8"))
+        this.bind("<<Modified>>", OnEditorModify, add=True)
+
         # Tab size
         this.config(tabs=Font(font=this['font']).measure('  '*tabwidth))
 
@@ -151,8 +156,9 @@ class StyledTextControl(Text):
         """
         Probably this will let you know if the editor content has been cooked or not.
         """
-        if not this.FileLoaded: return this.get(1.0, "end") == ""
-        return this.Hash.digest() == md5(open(this.FileLoaded, "r").read().encode("utf-8")).digest()
+        def checkhash(target): return not this.Hash.digest() == md5(target.encode("utf-8")).digest()
+        if not this.FileLoaded: return checkhash("") # Currently can't use .get for no reason
+        return checkhash(open(this.FileLoaded, "r").read())
 
     def LoadFile(this, path: str):
         """
@@ -175,16 +181,14 @@ class StyledTextControl(Text):
         content = this.get(1.0, "end")
         open(path, "w").write(content)
         this.Hash = md5(content.encode("utf-8"))
-        this.Modified = False
     
     @overload
     def SaveFile(this):
         """
         Write the current editor contents into the loaded file, if any.
-        If not able to, return None.
+        If not able to, do nothing.
         """
-        if not this.FileLoaded: return None
-        else: this.SaveFile(this.FileLoaded)
+        if this.FileLoaded: return this.SaveFile(this.FileLoaded)
 
     # Wrap mode
     def wrapmode(this, event=None) -> bool:

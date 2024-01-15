@@ -29,5 +29,5 @@ LOG_CRITICAL = wx.LogFatalError
 LOG_DEBUG = wx.LogDebug
 LOG_ERROR = wx.LogError
 LOG_EXCEPTION = wx.LogError
-LOG_NORMAL = wx.LogGeneric
+LOG_NORMAL = wx.LogMessage
 LOG_WARNING = wx.LogWarning
