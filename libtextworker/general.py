@@ -16,8 +16,8 @@ available_toolkits = Literal["tk", "wx"]
 Importable = {}
 TOPLV_DIR = ""
 
-
 # Classes
+
 ## Logging
 class Logger(logging.Logger):
     """
@@ -49,41 +49,52 @@ class Logger(logging.Logger):
         if not self.UseToolKit: return
         try:
             do = importlib.import_module(
-                f"interface.{self.UseToolKit}.constants", "libtextworker"
+                f"libtextworker.interface.{self.UseToolKit}.constants"
             )
         except:
-            return
+            raise
         else:
-            getattr(do, "LOG_" + name)(msg, args)
+            if args: msg = msg % args
+            getattr(do, "LOG_" + name)(msg)
 
     def critical(self, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
-        self.CallGUILog("CRITICAL", msg, args)
+        self.CallGUILog("CRITICAL", msg, *args)
 
     def debug(self, msg: object, *args: object, **kwds):
         super().debug(msg, *args, **kwds)
-        self.CallGUILog("DEBUG", msg, args)
+        self.CallGUILog("DEBUG", msg, *args)
 
     def error(self, msg: object, *args: object, **kwds):
         super().error(msg, *args, **kwds)
-        self.CallGUILog("ERROR", msg, args)
+        self.CallGUILog("ERROR", msg, *args)
 
     def exception(self, msg: object, *args: object, **kwds):
         super().exception(msg, *args, **kwds)
-        self.CallGUILog("EXCEPTION", msg, args)
+        self.CallGUILog("EXCEPTION", msg, *args)
 
     def log(self, level: int, msg: object, *args: object, **kwds):
         super().log(level, msg, *args, **kwds)
-        self.CallGUILog("NORMAL", msg, args)
+        self.CallGUILog("NORMAL", msg, *args)
 
     def warning(self, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
-        self.CallGUILog("WARNING", msg, args)
+        self.CallGUILog("WARNING", msg, *args)
 
+## Logging setup
+## Only for libtextworker!
+logger = Logger("libtextworker", logging.INFO)
+logging.captureWarnings(True)
+formatter = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s",
+                              "%Y-%m-%d %H:%M:%S")
 
-logger = Logger("textworker")
-logger.setLevel(logging.DEBUG)
+### Log to stream (sys.stdout/stderr)
+### Probably we don't know if we need to make a
+### handler for writing to file too
+strhdlr = logging.StreamHandler()
+strhdlr.setFormatter(formatter)
 
+logger.addHandler(strhdlr)
 
 ## Base Exception class
 class libTewException(Exception):
