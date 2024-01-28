@@ -1,3 +1,13 @@
+"""
+@package libtextworker.versioning
+@brief Utilities for version control management.
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import importlib
 import packaging.version
 

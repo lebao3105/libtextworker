@@ -1,3 +1,7 @@
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
 import os.path
 from libtextworker.general import *
 from libtextworker.get_config import GetConfig
@@ -40,8 +44,6 @@ def test_mkconfig():
         True,
     )
 
-    assert (
-        cfgs.getkey("section_one", "option1") == "value_changed"
-    )  # 28/06/2023: This should be fixed before ("section_one" instead of "section1")
+    assert cfgs.getkey("section_one", "option1") == "value_changed"
     cfgs.readf("helloworld/one/configs/new.ini")
     assert cfgs.getkey("test_move", "section2_opt1") in cfgs.yes_values

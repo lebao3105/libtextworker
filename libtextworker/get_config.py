@@ -1,9 +1,16 @@
+
 """
 @package libtextworker.get_config
 @brief Contains classes for generic INI files parsing
 
 See the documentation in /usage/getconfig.
 """
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import json
 import os
 import typing

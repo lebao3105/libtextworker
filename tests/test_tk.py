@@ -1,5 +1,5 @@
 # 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
 # 	This is a part of the libtextworker project.
 # 	Licensed under the GNU General Public License version 3.0 or later.
 

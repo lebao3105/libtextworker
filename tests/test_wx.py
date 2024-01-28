@@ -1,3 +1,7 @@
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
 import os
 import webbrowser
 import wx
@@ -125,7 +129,7 @@ def test_wx():
     log = wx.TextCtrl(nb, style=wx.TE_READONLY|wx.TE_MULTILINE|wx.HSCROLL)
     nb.AddPage(log, "Logs")
 
-    clrmgr.configure(fm, True)
+    clrmgr.configure(nb, True)
 
     wx.Log.SetActiveTarget(wx.LogTextCtrl(log))
     fm.Show()

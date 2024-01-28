@@ -1,4 +1,13 @@
-import importlib
+"""
+@package libtextworker.general
+@brief Utilities (unable to describe)
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import logging
 import os
 import pathlib
@@ -48,7 +57,7 @@ class Logger(logging.Logger):
         """
         if not self.UseToolKit: return
         try:
-            do = importlib.import_module(
+            do = import_module(
                 f"libtextworker.interface.{self.UseToolKit}.constants"
             )
         except:
@@ -102,9 +111,9 @@ class libTewException(Exception):
     Common exception class for libtextworker
     """
 
-    def __init__(self, msg: str):
+    def __init__(this, msg: str):
         logger.error(msg, exc_info=1)
-        super().__init__(msg)
+        Exception.__init__(this, msg)
 
 
 # Functions
