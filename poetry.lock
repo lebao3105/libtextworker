@@ -4,7 +4,7 @@
 name = "commented-configparser"
 version = "1.0.0"
 description = "Custom ConfigParser class that preserves comments in file when writing"
-optional = true
+optional = false
 python-versions = ">=3.7"
 files = [
     {file = "commented-configparser-1.0.0.tar.gz", hash = "sha256:f568158442f0c71e345e736b3adf097f42a2568f03bdb3b31132cb31c1b7e851"},
@@ -100,7 +100,7 @@ files = [
 name = "pillow"
 version = "10.2.0"
 description = "Python Imaging Library (Fork)"
-optional = false
+optional = true
 python-versions = ">=3.8"
 files = [
     {file = "pillow-10.2.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:7823bdd049099efa16e4246bdf15e5a13dbb18a51b68fa06d6c1d4d8b99a796e"},
@@ -296,4 +296,4 @@ wx = ["watchdog", "wxPython"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "7ba6d6749b266e0d191aa1aabc819512d2d825acb538da93520d90335e583501"
+content-hash = "4f08c6efeb3e70ed129f977f18daf9552c9592a32b745dac5d68653941da6543"
