@@ -12,21 +12,10 @@ parser = argparse.ArgumentParser(
     usage="'install' for install the project, 'build' to build, 'maketrans' to create translations (gettext required).\nThat's all.",
 )
 parser.add_argument(
-    "--install-req",
-    "-r",
-    const="False",
-    nargs="?",
-    choices=["True", "False"],
-    help="Install requirements",
-)
-parser.add_argument(
     "action", nargs="*", help="Action to run (install, build, maketrans)"
 )
 
 opts = parser.parse_args()
-if opts.install_req:
-    parser.exit(message="Look at the pyproject.toml file.")
-
 
 def make_trans():
     msgfmt = shutil.which("msgfmt")
@@ -98,18 +87,13 @@ def clean():
     except FileNotFoundError:
         pass
 
-
+clean()
 if "maketrans" in opts.action:
-    clean()
     make_trans()
 elif "build" in opts.action:
-    clean()
     build()
 elif "install" in opts.action:
-    clean()
     install()
-elif "clean" in opts.action:
-    clean()
 else:
     parser.print_help()
     parser.error("No argument provided/invalid argument")
