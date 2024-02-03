@@ -175,3 +175,4 @@ tests/__main__.py
 # StyledTextControl's settings
 tests/*.ini
 !tests/custom_theme.ini
+tests/*/*.ini

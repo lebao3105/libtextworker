@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "libtextworker"
 version = "0.1.4"
-description = "App library for textworker"
+description = "An universal library for Python projects"
 authors = ["lebao3105 <bao12345yocoo@gmail.com>"]
 license = "GPL-3.0-or-later"
 readme = "README.md"
@@ -28,11 +28,6 @@ wx = ["wxPython", "watchdog"]
 tkinter = ["tklinenums", "watchdog"]
 autocolor = ["darkdetect"]
 all = ["darkdetect", "wxPython", "commented-configparser", "tklinenums", "watchdog"]
-
-[tool.black]
-line-length = 88
-target-version = ['py310']
-include = '\.pyi?$'
 
 [build-system]
 requires = ["poetry-core"]
