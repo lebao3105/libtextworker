@@ -4,6 +4,7 @@
 import wx
 import wx.stc
 
+from hashlib import md5
 from libtextworker import EDITOR_DIR
 from libtextworker.general import CraftItems
 from libtextworker.get_config import ConfigurationError, GetConfig
@@ -23,6 +24,9 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     You can make ColorManager do the coloring work for you for mixing the 2 ways above together.
     Else you will want to handle system color changes yourself as well.
     """
+
+    FileLoaded: str = ""
+    Hash = md5("".encode("utf-8"))
 
     def EditorInit(self, config_path: str = ""):
         """
@@ -49,19 +53,23 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
 
         # Word wrap
-        self.SetWrapMode(
-            self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values
-        )
+        self.SetWrapMode(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values)
+
+        # Editor modifications
+        def OnEditorModify(evt):
+            self.Hash = md5(self.GetText().encode("utf-8"))
+            evt.Skip()
+        
+        self.Bind(wx.stc.EVT_STC_MODIFIED, OnEditorModify)
 
     """
     Setup GUI elements.
     """
 
     def DNDSupport(self) -> bool:
-        if (
-            self.cfg.getkey("editor", "dnd_enabled", True, True)
-            not in self.cfg.yes_values
-        ):
+        """Meh DND does not mean do not disturb."""
+        if self.cfg.getkey("editor", "dnd_enabled", True, True) \
+           not in self.cfg.yes_values:
             return False
 
         dt = DragNDropTarget(self)
@@ -86,28 +94,58 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
                 "indentation", "type", "Must be either 'tabs' or 'spaces'"
             )
 
-        self.SetUseTabs(True if tp == "tabs" else False)
-        self.SetBackSpaceUnIndents(
-            True if bk_unindent in self.cfg.yes_values else False
-        )
-        self.SetViewWhiteSpace(True if view_ws in self.cfg.yes_values else False)
+        self.SetUseTabs(tp == "tabs")
+        self.SetBackSpaceUnIndents(bk_unindent in self.cfg.yes_values)
+        self.SetViewWhiteSpace(view_ws in self.cfg.yes_values)
         self.SetIndent(size)
-
-        if show_guide == True or "yes":
-            self.SetIndentationGuides(True)
-        else:
-            self.SetIndentationGuides(False)
+        self.SetIndentationGuides(show_guide in self.cfg.yes_values)
 
     def LineNumbers(self) -> bool:
+        """
+        Setup line numbers margin for the editor.
+        The margin's default width is 20px.
+        """
         state = self.cfg.getkey("editor", "line_count", True, True)
+
         if state in self.cfg.no_values:
             self.SetMarginWidth(0, 0)
             return False
 
+        self.SetMarginWidth(0, 20)
         self.SetMarginType(0, wx.stc.STC_MARGIN_NUMBER)
         self.SetMarginMask(0, 0)
+        self.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUIUpdate)
 
         return True
+
+    """
+    File-related things
+    """
+
+    def LoadFile(self, path: str):
+        """
+        Loads the content of a file into the editor.
+        No check for contents already inside the editor!
+        """
+        wx.stc.StyledTextCtrl.LoadFile(self, path)
+        self.FileLoaded = path
+
+    @property
+    def IsModified(self):
+        """
+        Show if the editor has been modified or not.
+        Works exactly the same way + implementation as Tkinter's one.
+        """
+        def checkhash(target): return not self.Hash.digest() == md5(target.encode("utf-8")).digest()
+        if not self.FileLoaded: return checkhash("")
+        return checkhash(open(self.FileLoaded, "r").read())
+
+    def SetModified(self, state: bool):
+        """
+        Marks this editor as modified or not.
+        wxStyledTextControl seems can't use this.
+        """
+        raise NotImplementedError
 
     """
     Events.
