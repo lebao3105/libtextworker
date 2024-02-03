@@ -1,3 +1,15 @@
+"""
+@package libtextworker.interface.tk.actionrow
+ActionRow class for Tkinter.
+ActionRow is a vertical (layout) tkinter.Frame that is used for a specific action.
+Useful for creating Settings pages.
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import tkinter
 import tkinter.ttk
 
@@ -11,10 +23,8 @@ class ActionRow(tkinter.Frame):
 
     _curr_col: int = 0
 
-    def PlaceObj(this, obj: tkinter.Misc,
-                 column: int | str = -1,
-                 sticky: str = "e",
-                 *args, **kwds):
+    def PlaceObj(this, obj: tkinter.Misc, column: int | str = -1,
+                 sticky: str = "e", *args, **kwds):
         """
         Place a widget using grid method.
         @param obj (tkinter.Misc): What widget to place (class/function reference, NOT an instance)
