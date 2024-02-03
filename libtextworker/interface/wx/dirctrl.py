@@ -1,5 +1,9 @@
+"""
+@package libtextworker.interface.wx.dirctrl
+"""
+
 # 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
 # 	This is a part of the libtextworker project.
 # 	Licensed under the GNU General Public License version 3.0 or later.
 
@@ -8,9 +12,11 @@ import time
 import wx
 import wx.lib.newevent
 
-from enum import auto
+from libtextworker import _
 from libtextworker.general import CraftItems, libTewException
 from libtextworker.interface.base.dirctrl import *
+
+from enum import auto
 from typing import Callable
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -122,31 +128,31 @@ class FSEventHandler(FileSystemEventHandler):
 # https://python-forum.io/thread-8513.html
 
 class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
-    """
-    A directory list made from wxTreeCtrl.
-    This is WIP, and lacks lots of features:
-    * Label editting
-    * Copy-paste + right-click menu
-    * Drag-n-drop
-    * Hidden files detect (quite hard, may need to use C/C++)
-    * Sorting items
-
-    Flags available:
-    * DC_EDIT = wx.TR_EDIT_LABELS
-    * DC_HIDEROOT = hide the root node
-    * DC_ONEROOT: only use one root node
-    * DC_MULTIPLE = wx.TR_MULTIPLE (multiple selections)
-    * No flag at all = wx.TR_DEFAULT_STYLE
-
-    If you want to add more than one folder to this control,
-    use DC_HIDEROOT and disable DC_ONEROOT (default).
-    """
 
     Parent_ArgName = "parent"
     TargetIsSelf = True
     Observers: dict[str] = {}
 
     def __init__(this, *args, **kw):
+        """
+        A directory list made from wxTreeCtrl.
+        This is WIP, and lacks lots of features:
+        * Label editting
+        * Copy-paste + right-click menu
+        * Drag-n-drop
+        * Hidden files detect (quite hard, may need to use C/C++)
+        * Sorting items
+
+        Flags available:
+        * DC_EDIT = wx.TR_EDIT_LABELS
+        * DC_HIDEROOT = hide the root node
+        * DC_ONEROOT: only use one root node
+        * DC_MULTIPLE = wx.TR_MULTIPLE (multiple selections)
+        * No flag at all = wx.TR_DEFAULT_STYLE
+
+        If you want to add more than one folder to this control,
+        use DC_HIDEROOT and disable DC_ONEROOT (default).
+        """
         args, kw = DirCtrlBase.__init__(this, *args, **kw)
 
         # Process custom styles
@@ -182,6 +188,8 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
         wx.TreeCtrl.__init__(this, *args, **kw)
         this.AssignImageList(imgs)
+
+        this.Bind(wx.EVT_TREE_ITEM_EXPANDED, this.LazyExpand)
         this.Bind(wx.EVT_TREE_SEL_CHANGED, this.LazyExpand)
 
         def AddItem(evt: FileCreatedEvent | DirCreatedEvent):
@@ -250,18 +258,12 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
         if not DC_ONEROOT in this.Styles and DC_HIDEROOT in this.Styles:
             root = this.GetRootItem()
-            if not root: root = this.AddRoot("Hidden root"); kickstart = None
+            kickstart = None
+            if not root: root = this.AddRoot("Hidden root")
             else:
-                # From SO - legit
-                # Check if there was a "child" node for the target directory
-                def iterate_root():
-                    item, cookie = this.GetFirstChild(root)
-                    while item.IsOk():
-                        if this.GetItemText(item) == path:
-                            return item
-                        item, cookie = this.GetNextChild(root, cookie)
-        
-                kickstart = iterate_root()
+                for x in this.GetNodeChildren(root):
+                    if this.GetItemText(x) == path:
+                        kickstart = x
             if not kickstart: kickstart = this.AppendItem(root, path)
 
         elif DC_ONEROOT in this.Styles:
@@ -273,12 +275,14 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
                                   " the old root node. Ask the app developer for this.")
 
         this.SetItemHasChildren(kickstart)
+        this.SetItemImage(kickstart, folderidx)
+
         this.Observers[path] = Observer()
         this.Observers[path].schedule(this, path, recursive=True)
         this.Observers[path].start()
 
     # From SO (that iterate_root function above) and the
-    # help of Google Bard (and I found the problem myself,
+    # useless help of Google Bard (and I found the problem myself,
     # Bard just use one more while loop and that's all, 
     # cannot go deeper of the tree)
     def MatchItem(this, path: str, start: wx.TreeItemId | None = None) -> wx.TreeItemId:
@@ -318,11 +322,13 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         file system.
         wx.TreeCtrl.Delete() exists (original method, use with care).
         """
+        
         fullpath = this.GetFullPath(item)
         if os.path.isdir(fullpath) and fullpath in this.Observers:
             this.Observers[fullpath].stop()
             this.Observers[fullpath].join()
             this.Observers.pop(fullpath)
+
         import shutil
         if os.path.isdir(fullpath): shutil.rmtree(fullpath)
         else: os.remove(fullpath)
@@ -358,7 +364,8 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
             text = this.GetItemText(parent)
             result.insert(0, text)
             if parent != this.GetRootItem():
-                if DC_HIDEROOT in this.Styles and DC_ONEROOT not in this.Styles and parent in this.GetNodeChildren(this.GetRootItem()): return
+                if DC_HIDEROOT in this.Styles and DC_ONEROOT not in this.Styles \
+                    and parent in this.GetNodeChildren(this.GetRootItem()): return
                 parent = this.GetItemParent(parent)
                 getroot()
 
@@ -474,10 +481,10 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
 
             if item_type == _("Folder"):
                 path = os.path.join(this.currpath, name)
+
         elif not path:
-            raise Exception(
-                "Who the hell call DirList.GoDir with no directory to go???"
-            )
+            raise Exception("Who the hell call DirList.SetFolder with no directory to go???")
+        
         DirCtrlBase.SetFolder(this, path, False)
         this.DrawItems(path)
         this.Watcher = Observer()
