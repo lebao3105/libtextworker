@@ -1,3 +1,13 @@
+"""
+@package libtextworker.interface
+@brief GUI widgets and functions from libtextworker.
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 """Default UI settings"""
 stock_ui_configs = {
     "color": {
@@ -49,16 +59,3 @@ colors = {
     "light_pink": "#ffd1d6",
     "light_green": "#20eaaa",
 }
-
-"""
-Available pre-stored licenses
-:fr:
-"""
-available_licenses = [
-    "AGPL_full",
-    "AGPL_short",
-    "GPL3_full",
-    "GPL3_short",
-    "LGPL_3",
-    "MIT",
-]
