@@ -1,12 +1,13 @@
-# 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
-# 	This is a part of the libtextworker project.
-# 	Licensed under the GNU General Public License version 3.0 or later.
-
 """
 @package libtextworker.interface.tk.dirctrl
 @brief Directory tree for Tkinter
 """
+
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
+
 import os
 import time
 
@@ -195,15 +196,21 @@ class DirList(ttk.Treeview, DirCtrlBase):
     _Frame = ttk.Frame
 
     def __init__(this, *args, **kwds):
+        """
+        A directory items list.
+        By default contains these columns:
+        * Name
+        * Item type (file, folder)
+        * Last modified time
+        * Item size
+        Navigate history support. Not much customizable for now.
+        No libtextworker custom style support for now.
+        """
+
         args, kwds = DirCtrlBase.__init__(this, *args, **kwds)
-        ttk.Treeview.__init__(
-            this,
-            this.Frame,
-            columns=[_("Name"), _("Item type"), _("Last modified"), _("Size")],
-            show="headings",
-            *args,
-            **kwds,
-        )
+        ttk.Treeview.__init__(this, this.Frame, show="headings",
+                              columns=[_("Name"), _("Item type"), _("Last modified"), _("Size")],
+                              *args, **kwds)
 
         ysb = ttk.Scrollbar(this.Frame, orient="vertical", command=this.yview)
         xsb = ttk.Scrollbar(this.Frame, orient="horizontal", command=this.xview)
@@ -218,6 +225,9 @@ class DirList(ttk.Treeview, DirCtrlBase):
         xsb.grid(column=0, row=1, sticky="ews")
 
     def SetFolder(this, path: str):
+        """
+        Navigate to the specified folder.
+        """
         DirCtrlBase.SetFolder(this, path, False)
         this.delete(*this.get_children())
 

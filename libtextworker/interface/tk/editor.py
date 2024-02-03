@@ -1,12 +1,13 @@
-# 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
-# 	This is a part of the libtextworker project.
-# 	Licensed under the GNU General Public License version 3.0 or later.
-
 """
 @package libtextworker.interface.tk.editor
 @brief Home of Tkinter(Ttk) text editors.
 """
+
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
+
 from hashlib import md5
 from tkinter import BooleanVar, Menu, Text, Misc, TclError
 from tkinter.font import Font
@@ -83,16 +84,11 @@ class StyledTextControl(Text):
             this._place_scrollbar()
 
         # Place the line-numbers margin
-        if (
-            LINENUMS
-            and this.cfger.getkey("editor", "line_count", noraiseexp=True)
-            in this.cfger.yes_values
-        ):
+        if LINENUMS and this.cfger.getkey("editor", "line_count", noraiseexp=True) \
+                        in this.cfger.yes_values: # Bad
             ln = TkLineNumbers(this._frame, this, "center")
             ln.pack(fill="y", side="left")
-            this.bind(
-                "<<Modified>>", lambda evt: this._frame.after_idle(ln.redraw), add=True
-            )
+            this.bind("<<Modified>>", lambda evt: this._frame.after_idle(ln.redraw), add=True)
 
         # On editor modify
         def OnEditorModify(evt):
