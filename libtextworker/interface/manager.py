@@ -1,23 +1,29 @@
+"""
+@package libtextworker.interface.manager
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import json
 import os
 import typing
 import threading
-
-try:
-    import darkdetect
-except ImportError:
-    AUTOCOLOR = False
-else:
-    AUTOCOLOR = bool(darkdetect.theme())
 
 from .. import THEMES_DIR
 from ..general import logger, CraftItems
 from ..get_config import ConfigurationError, GetConfig
 from ..interface import stock_ui_configs, colors
 
-if AUTOCOLOR is False:
-    logger.warning("GUI auto-color is not usable")
-
+try:
+    import darkdetect
+except ImportError as e:
+    logger.exception(e.msg)
+    AUTOCOLOR = False
+else:
+    AUTOCOLOR = bool(darkdetect.theme())
 
 def hextorgb(value: str):
     value = value.lstrip("#")
@@ -31,17 +37,15 @@ class ColorManager(GetConfig):
     ColorManager can be used for multiple GUI widgets with only one call
     """
 
-    setcolorfn = {}
-    setfontfn = {}
+    setcolorfn: dict[object | type, list] = {}
+    setfontfn: dict[object | type, list] = {}
+    setfcfn: dict[object | type, list] = {}
 
-    def __init__(
-        self,
-        default_configs: dict[str, typing.Any] = stock_ui_configs,
-        customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
-    ):
+    def __init__(self, default_configs: dict[str, typing.Any] = stock_ui_configs,
+                 customfilepath: str = CraftItems(THEMES_DIR, "default.ini")):
         """
         Constructor of the class.
-        @param default_configs (dict[str, Any]): Defaults to dev-premade configs
+        @param default_configs (dict[str]): Defaults to dev-premade configs
         @param customfilepath (str): Custom file path. Disabled by default.
         """
         if customfilepath != "":
@@ -49,7 +53,7 @@ class ColorManager(GetConfig):
         else:
             self._file = CraftItems(THEMES_DIR, "default.ini")
 
-        super().__init__(default_configs, self._file)
+        GetConfig.__init__(self, default_configs, self._file)
 
         if os.path.exists("mergelist.json"):
             self.move(json.loads(open("mergelist.json", "r").read()))
@@ -61,7 +65,6 @@ class ColorManager(GetConfig):
         """
         raise NotImplementedError(
             "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead.\n"
-            "However, I'm thinking about opening it back;-;"
         )
 
     # Configure widgets
@@ -102,8 +105,8 @@ class ColorManager(GetConfig):
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-@property item
-        @param color (str | None = None): Defaults to darkdetect's output/current config.
-        @return tuple[str, str]: Background - Foreground color
+        @param color (str | None = None): Defaults to darkdetect's output/current setting.
+        @return tuple[str, str]: Background - Foreground colors
         """
 
         # Deternmine if we can use darkdetect here
@@ -121,18 +124,11 @@ class ColorManager(GetConfig):
 
         # Prefer color for specific modes first
         try:
-            test_back = self.getkey(
-                "color", "background-%s" % currmode, noraiseexp=True
-            )
-            test_fore = self.getkey(
-                "color", "foreground-%s" % currmode, noraiseexp=True
-            )
+            test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
+            test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
             # print(test_back, test_fore)
 
-            if test_back:
-                back_ = test_back
-            else:
-                back_ = colors[currmode]
+            back_ = test_back if test_back else colors[currmode]
 
             fore_ = self.getkey("color", "foreground", make=True)
             if fore_ == "default":
@@ -151,9 +147,7 @@ class ColorManager(GetConfig):
                 fore_ = colors[test_fore]
 
             else:
-                raise ConfigurationError(
-                    self._file, "Invalid value", "color", "foreground"
-                )
+                raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
 
             return back_, fore_
         except KeyError or ConfigurationError:
@@ -169,7 +163,8 @@ class ColorManager(GetConfig):
         Function paramers must have %(color) in order to
             pass color value. Use %(color-rgb) if you want RGB value.
         """
-        self.setcolorfn[obj] = {"fn": func, "params": params}
+        if not obj in self.setcolorfn: self.setcolorfn[obj] = []
+        self.setcolorfn[obj].append({"fn": func, "params": params})
 
     def setfontcfunc(self, obj: type | object, func: typing.Callable, params: dict | tuple | None = None):
         """
@@ -181,7 +176,18 @@ class ColorManager(GetConfig):
         Function paramers must have %(font) in order to
             pass color value. Use %(font-rgb) if you want RGB value.
         """
-        self.setfontfn[obj] = {"fn": func, "params": params}
+        if not obj in self.setfontfn: self.setfontfn[obj] = []
+        self.setfontfn[obj].append({"fn": func, "params": params})
+
+    def setfontandcolorfunc(self, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
+        """
+        Add a function that sets both the background and font color.
+        @param obj (type | object): Object (variable or type reference)
+        @param func (typing.Callable | str): Function to use (Reference)
+        @param params (typle | dict): Function parameters
+        """
+        if not obj in self.setfcfn: self.setfcfn[obj] = []
+        self.setfcfn[obj].append({"fn": func, "params": params})
 
     def configure(self, widget: typing.Any):
         """
@@ -193,48 +199,64 @@ class ColorManager(GetConfig):
         @see setfontcfunc
         """
 
-        def runfn(func: typing.Callable, args: dict|tuple, extra: str, extra_alias: str):
-
-            if isinstance(args, dict):
-                for key in args:
-                    if isinstance(args[key], str):
-                        args[key] = args[key].replace(extra_alias, extra)
-                return func(**args)
-            
-            elif isinstance(args, tuple):
-                temp = list(args)
-                for arg in temp:
-                    if isinstance(arg, str):
-                        arg = arg.replace(extra_alias, extra)
-                args = tuple(temp)
-                return func(*args)
-        
-
         if not widget:
             logger.debug(f"Widget {widget} died, skip configuring.")
             return
 
         color, fontcolor = self.GetColor()
+
+        def runfn(func: typing.Callable, args: dict|tuple):
+            extra_aliases = {
+                "%(color)": color,
+                "%(font)": fontcolor
+            }
+
+            def replacetext(target: str):
+                for key in extra_aliases:
+                    target = target.replace(key, extra_aliases[key])
+                print(target)
+                return target
+
+            if isinstance(args, dict):
+                for key in args:
+                    if isinstance(args[key], str):
+                        args[key] = replacetext(args[key])
+                return func(**args)
+            
+            elif isinstance(args, tuple):
+                # BUG: Not working? (tested on wx)
+                temp = list(args)
+                for arg in temp:
+                    if isinstance(arg, str):
+                        arg = replacetext(arg)
+                args = tuple(temp)
+                return func(*args)
         
-        def runloop(attr: typing.Literal["color", "font"]):
+        def runloop(attr: typing.Literal["color", "font", "fc"]):
+
             for item in getattr(self, f"set{attr}fn"):
                 if isinstance(item, type):
                     if not isinstance(widget, item): continue
                 elif item != widget: continue
-                fn = getattr(self, f"set{attr}fn")[item]["fn"]
-                if isinstance(fn, str): fn = getattr(widget, fn)
-                runfn(fn, getattr(self, f"set{attr}fn")[item]["params"],
-                      fontcolor if attr == "font" else color, f"%({attr})")
+
+                dictionary = getattr(self, f"set{attr}fn")[item]
+
+                for i in range(len(dictionary)):
+                    fn = getattr(self, f"set{attr}fn")[item][i]["fn"]
+                    if isinstance(fn, str): fn = getattr(widget, fn)
+
+                    runfn(fn, dictionary[i]["params"])
 
         runloop("color")
         runloop("font")
+        runloop("fc")
 
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "auto")
-        if not AUTOCOLOR:
-            logger.info(
+        if (not AUTOCOLOR) or (autocolor in self.no_values):
+            logger.warning(
                 "ColorManager.autocolor_run() called when auto-color system is not usable. Skipping."
             )
+            return
 
-        if autocolor in self.yes_values:
-            threading.Thread(args=self.configure(widget), daemon=True).start()
+        threading.Thread(args=self.configure(widget), daemon=True).start()
