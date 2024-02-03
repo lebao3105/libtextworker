@@ -1,18 +1,18 @@
+"""
+@package libtextworker.interface.tk.about
+@brief About dialog for Tkinter projects
+"""
+
 #	A cross-platform library for Python apps.
 #	Copyright (C) 2023 Le Bao Nguyen and contributors.
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
-"""
-@package libtextworker.interface.tk.about
-"""
 from tkinter import Toplevel, Misc
 from tkinter.ttk import Button, Frame, Label, Notebook
-from typing import AnyStr
 
 from . import editor
-from .. import available_licenses
-from ... import LICENSES
+from ... import _
 
 
 class AboutDialog:
@@ -28,42 +28,39 @@ class AboutDialog:
 
     # Project base infos
     ProjectName: str = ""
-    ProjectVersion: AnyStr = ""
-    ProjectSite: AnyStr = ""
-    ProjectDescription: AnyStr = ""
+    ProjectVersion: str = ""
+    ProjectSite: str = ""
+    ProjectDescription: str = ""
     ProjectLicense: str = ""
 
-    def SetArtMakers(self, _: list | str):
-        self.ArtMakers = "\n\t".join(_) if isinstance(_, list) else _
+    def SetArtMakers(this, names: list | str):
+        this.ArtMakers = "\n\t".join(names) if isinstance(names, list) else names
 
-    def SetDevelopers(self, _: list | str):
-        self.Developers = "\n\t".join(_) if isinstance(_, list) else _
+    def SetDevelopers(this, names: list | str):
+        this.Developers = "\n\t".join(names) if isinstance(names, list) else names
 
-    def SetAppTesters(self, _: list | str):
-        self.Testers = "\n\t".join(_) if isinstance(_, list) else _
+    def SetAppTesters(this, names: list | str):
+        this.Testers = "\n\t".join(names) if isinstance(names, list) else names
 
-    def SetAppTranslators(self, _: list | str):
-        self.Translators = "\n\t".join(_) if isinstance(_, list) else _
+    def SetAppTranslators(this, names: list | str):
+        this.Translators = "\n\t".join(names) if isinstance(names, list) else names
 
-    def SetProjectName(self, _: str):
-        self.ProjectName = _
+    def SetProjectName(this, name: str):
+        this.ProjectName = name
 
-    def SetProjectVersion(self, _: AnyStr):
-        self.ProjectVersion = _
+    def SetProjectVersion(this, version: str):
+        this.ProjectVersion = version
 
-    def SetProjectSite(self, _: AnyStr):
-        self.ProjectSite = _
+    def SetProjectSite(this, address: str):
+        this.ProjectSite = address
 
-    def SetProjectDescription(self, _: AnyStr):
-        self.ProjectDescription = _
+    def SetProjectDescription(this, description: str):
+        this.ProjectDescription = description
 
-    def SetProjectLicense(self, _: str):
-        if _ in available_licenses:
-            self.ProjectLicense = open(LICENSES + "/" + _ + ".txt", "r").read()
-        else:
-            self.ProjectLicense = _
+    def SetProjectLicense(this, license: str):
+        this.ProjectLicense = license
 
-    def ShowDialog(self, master: Misc | None = None):
+    def ShowDialog(this, master: Misc | None = None):
         """
         Here goes the real About dialog.
         If you don't like my style, just derive this function and
@@ -75,31 +72,25 @@ class AboutDialog:
         dlg.grab_set()
         dlg.geometry("350x450")  # legit?
 
-        project_infos = _(
-            "About this project\n"
-            f"{self.ProjectName} version {self.ProjectVersion}\n"
-            f"Description: {self.ProjectDescription}\n"
-            f"Project website: {self.ProjectSite}"
-        )
+        project_infos = _("About this project\n"
+                          f"{this.ProjectName} version {this.ProjectVersion}\n"
+                          f"Description: {this.ProjectDescription}\n"
+                          f"Project website: {this.ProjectSite}")
 
-        project_credits = _(
-            "This software is made thanks to many contributors:\n"
-            f"Developers:\n{self.Developers}"
-        )
+        project_credits = _("This software is made thanks to many contributors:\n"
+                            f"Developers:\n{this.Developers}")
 
-        if self.ArtMakers:
-            project_credits += _(f"\nArtists:\n{self.ArtMakers}")
+        if this.ArtMakers:
+            project_credits += _(f"\nArtists:\n{this.ArtMakers}")
 
-        if self.Testers:
-            project_credits += _(f"\nTesters:\n{self.Testers}")
+        if this.Testers:
+            project_credits += _(f"\nTesters:\n{this.Testers}")
 
-        if self.Translators:
-            project_credits += _(f"\nTranslators:\n{self.Translators}")
+        if this.Translators:
+            project_credits += _(f"\nTranslators:\n{this.Translators}")
 
-        project_license = (
-            f'{_("This project is licensed to the following license:")}'
-            f"\n\n\n{self.ProjectLicense}"
-        )
+        project_license = _("This project is licensed to the following license:") + \
+                          f"\n\n\n{this.ProjectLicense}"
 
         nb = Notebook(dlg)
         nb.pack(fill="both", expand=True)
