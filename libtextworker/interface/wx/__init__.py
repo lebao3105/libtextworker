@@ -42,8 +42,8 @@ class ColorManager(manager.ColorManager):
 
         # fore&back
         bg, fg = self.GetColor()
-        bg = wx.Colour(*hextorgb(bg))
-        fg = wx.Colour(*hextorgb(fg))
+        bg = wx.Colour(*manager.hextorgb(bg))
+        fg = wx.Colour(*manager.hextorgb(fg))
 
         # font
         font = self.GetFont()
