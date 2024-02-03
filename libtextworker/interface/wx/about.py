@@ -1,12 +1,19 @@
 """
 @package libtextworker.interface.wx.about
+@brief About dialog for wxPython projects
 """
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import wx
 import wx.adv
 
 from typing import Any
-from ...general import CraftItems
 from .. import available_licenses
+from ...general import CraftItems
 from ... import LICENSES
 
 
@@ -42,12 +49,11 @@ class AboutDialog:
         """
         data = ""  # Our result
         if license in available_licenses:
-            license = open(
-                CraftItems(LICENSES, license + ".txt"),
-                "r",
-            ).read()
+            license = open(CraftItems(LICENSES, license + ".txt"), "r").read()
+
         if include_copyright == True and self.infos.GetCopyright() != "":
             data += self.infos.GetCopyright() + "\n"
+
         data += license
         self.infos.SetLicence(data)
 
