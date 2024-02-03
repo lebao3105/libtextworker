@@ -1,9 +1,19 @@
+"""
+@package libtextworker.interface.tk.findreplace
+@brief Find & Replace dialog(s)
+"""
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 from enum import auto
-from tkinter import Toplevel
 from tkinter.ttk import Frame, Label, Entry
 
-from ...general import libTewException
 from . import actionrow
+from ... import _
+from ...general import libTewException
 
 FR_FIND = auto()
 FR_REPLACE = auto()
@@ -12,7 +22,6 @@ class FindReplace(Frame):
 
     def __init__(this, master, style: int = -1, *args, **kwds):
         Frame.__init__(this, master, *args, **kwds)
-        # Build the UI
 
         if FR_FIND in style:
             row1 = actionrow.ActionRow(this)
@@ -26,8 +35,4 @@ class FindReplace(Frame):
 
         if style == -1:
             raise libTewException("No style specified for FindReplace class.")
-
-class FindReplaceDialog(Toplevel):
-
-    def __init__(this, *args, **kwds):
-        Toplevel.__init__(this, *args, **kwds)
+    

@@ -1,21 +1,17 @@
-#	A cross-platform library for Python apps.
-#	Copyright (C) 2023 Le Bao Nguyen and contributors.
-#	This is a part of the libtextworker project.
-#	Licensed under the GNU General Public License version 3.0 or later.
-
 """
 @package libtextworker.interface.tk.miscs
 """
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 from typing import Literal
 from tkinter import Menu, Misc
 
-
-def CreateMenu(
-    items: list[dict[str]],
-    parent: Misc | None = None,
-    tearoff: Literal[0, 1] = 0,
-    title: str = ...,
-) -> Menu:
+def CreateMenu(items: list[dict[str]], parent: Misc | None = None,
+               tearoff: Literal[0, 1] = 0, title: str = ...) -> Menu:
     """
     Make a Tkinter menu with commands inside.
 
