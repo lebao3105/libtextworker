@@ -12,8 +12,11 @@ import os
 import time
 
 from tkinter import TclError, ttk, Misc
-from libtextworker.general import CraftItems
-from libtextworker.interface.base.dirctrl import *
+
+from ..base.dirctrl import *
+from ... import _
+from ...general import CraftItems
+
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 

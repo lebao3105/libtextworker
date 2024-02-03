@@ -23,9 +23,10 @@ else:
 
 from libtextworker import EDITOR_DIR
 
-from .. import stock_editor_configs
-from ...get_config import GetConfig
 from .miscs import CreateMenu
+from .. import stock_editor_configs
+from ... import _
+from ...get_config import GetConfig
 
 
 class StyledTextControl(Text):
