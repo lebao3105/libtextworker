@@ -1,12 +1,13 @@
-# 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
-# 	This is a part of the libtextworker project.
-# 	Licensed under the GNU General Public License version 3.0 or later.
-
 """
 @package libtextworker.interface.base
 @brief The base of all GUIs in libtextworker
 """
+
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
+
 from enum import Flag, auto
 from typing import Callable, Literal
 
@@ -40,7 +41,7 @@ class WidgetBase:
 
     Parent_ArgName: Literal["master", "parent", "Parent", "Master"] | str
     Styles: auto
-    Frame: Callable | None = None
+    Frame: object | None = None
     _Frame: Callable | None = None
 
     def __init__(this, *args, **kwds):

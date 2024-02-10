@@ -1,13 +1,13 @@
-# 	A cross-platform library for Python apps.
-# 	Copyright (C) 2023 Le Bao Nguyen and contributors.
-# 	This is a part of the libtextworker project.
-# 	Licensed under the GNU General Public License version 3.0 or later.
-
 """
 @package libtextworker.interface.base.dirctrl
 @brief The base of DirCtrl - directory tree widget
-TODO: Items sorting support
 """
+
+# 	A cross-platform library for Python apps.
+# 	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+# 	This is a part of the libtextworker project.
+# 	Licensed under the GNU General Public License version 3.0 or later.
+
 import os
 from libtextworker.general import libTewException
 from typing import Callable, Literal, Any
