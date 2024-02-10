@@ -36,35 +36,23 @@ class Logger(logging.Logger):
 
     UseToolKit: available_toolkits | bool = False
 
-    def UseGUIToolKit(
-        self, toolkit: available_toolkits
-    ):
+    def UseGUIToolKit(self, toolkit: available_toolkits):
         """
         Set's the GUI toolkit to use.
         Currently there is no support for Tkinter yet.
         """
         self.UseToolKit = toolkit
 
-    def CallGUILog(
-        self,
-        name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"],
-        msg: object,
-        *args: object,
-    ):
+    def CallGUILog(self, name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"], 
+                   msg: object, *args: object):
         """
         Call GUI toolkit logging function.
         Do nothing if not able to.
         """
         if not self.UseToolKit: return
-        try:
-            do = import_module(
-                f"libtextworker.interface.{self.UseToolKit}.constants"
-            )
-        except:
-            raise
-        else:
-            if args: msg = msg % args
-            getattr(do, "LOG_" + name)(msg)
+        do = import_module(f"libtextworker.interface.{self.UseToolKit}.constants")
+        if args: msg = msg % args
+        getattr(do, "LOG_" + name)(msg)
 
     def critical(self, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
@@ -89,21 +77,6 @@ class Logger(logging.Logger):
     def warning(self, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
         self.CallGUILog("WARNING", msg, *args)
-
-## Logging setup
-## Only for libtextworker!
-logger = Logger("libtextworker", logging.INFO)
-logging.captureWarnings(True)
-formatter = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s",
-                              "%Y-%m-%d %H:%M:%S")
-
-### Log to stream (sys.stdout/stderr)
-### Probably we don't know if we need to make a
-### handler for writing to file too
-strhdlr = logging.StreamHandler()
-strhdlr.setFormatter(formatter)
-
-logger.addHandler(strhdlr)
 
 ## Base Exception class
 class libTewException(Exception):
@@ -212,3 +185,25 @@ def test_import(pkgname: str) -> bool:
     else:
         Importable[pkgname] = True
         return True
+
+## Logging setup
+## Only for libtextworker!
+logger = Logger("libtextworker", logging.INFO)
+logging.captureWarnings(True)
+formatter = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
+
+### Log to stream (sys.stdout/stderr)
+strhdlr = logging.StreamHandler()
+strhdlr.setFormatter(formatter)
+
+### Log to file
+from time import strftime, localtime
+logpath = os.path.expanduser(f"~/.logs/libtextworker-{strftime(r'%Y-%m-%d', localtime())}.log")
+CreateDirectory(os.path.dirname(logpath))
+if not os.path.isfile(logpath): open(logpath, "w").write("")
+
+filehdlr = logging.FileHandler(logpath)
+filehdlr.setFormatter(formatter)
+
+logger.addHandler(strhdlr)
+logger.addHandler(filehdlr)
