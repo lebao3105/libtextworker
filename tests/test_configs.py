@@ -29,6 +29,8 @@ def test_mkconfig():
 
     cfgs = GetConfig(cfg, "helloworld/one/configs/configs.ini")
     cfgs.set("section1", "option1", "value_changed")
+    assert cfgs.getkey("section1", "option1") == "value_changed"
+    
     cfgs.update()
     cfgs.move(
         {

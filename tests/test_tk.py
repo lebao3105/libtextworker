@@ -33,7 +33,7 @@ def test_tk():
     aboutdlg.SetProjectSite(GITHUB_URL)
     aboutdlg.SetAppTesters(["Le Bao Nguyen"])
     aboutdlg.SetDevelopers(["Le bao Nguyen"])
-    aboutdlg.SetProjectLicense("GPL3_full")
+    aboutdlg.SetProjectLicense("GNU General Public License Version 3")
 
     if platform.system() == "Darwin":
         app.createcommand("tkAboutDialog", lambda: aboutdlg.ShowDialog(fm))
@@ -52,6 +52,7 @@ def test_tk():
     dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.path}"))
     dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.path}"))
     dc.bind(FileOpenedEvent, lambda evt: mgb.showinfo("File opened", f"Opened {evt.path}"))
+    dc.Frame.pack(expand=True, fill="both")
 
     te = StyledTextControl(nb)
     te.EditorInit()
