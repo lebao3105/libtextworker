@@ -25,10 +25,57 @@ except ImportError as e:
 else:
     AUTOCOLOR = bool(darkdetect.theme())
 
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
 def hextorgb(value: str):
     value = value.lstrip("#")
     lv = len(value)
     return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+class UISync:
+    """
+    A class that automatically syncs your UI to match system settings.
+    Features:
+    * Auto match system color settings
+    * Auto match settings change (Font? Yes. Color? Yes too.)
+
+    Why UISync:
+    * ColorManager.autocolor_run does not work
+    * I've looked for solutions from older builds of texteditor/textworker, found that v1.4
+    uses a custom class. So I made this:)
+
+    Notes:
+    * The target function that will be used must accept at least arguments, with the first one
+      (excluding the self parameter if any) is for the widget, the second one is for the color.
+    * Nothing more (for now)
+
+    Don't get this class wrong: This only makes a thread that uses your custom function.
+    """
+
+    Target: object
+    Func: typing.Callable | type
+
+    def __init__(this, Target: object, Func: typing.Callable | type):
+        # Nothing is allowed to be None
+        assert Target != None
+        assert Func != None
+
+        # Target function must accept arguments
+        from inspect import signature
+        sig = signature(Func)
+        assert len(sig.parameters) > 0
+
+        this.Target = Target
+        this.Func = Func
+
+        this.thread = threading.Thread(target=darkdetect.listener,
+                                       args=(this.configure,), daemon=True)
+        this.thread.start()
+
+    def configure(this, color: str):
+        color = color.lower()
+        return this.Func(this.Target, color)
 
 
 class ColorManager(GetConfig):
@@ -40,6 +87,8 @@ class ColorManager(GetConfig):
     setcolorfn: dict[object | type, list] = {}
     setfontfn: dict[object | type, list] = {}
     setfcfn: dict[object | type, list] = {}
+
+    _threads: dict[object, threading.Thread] = {}
 
     def __init__(self, default_configs: dict[str, typing.Any] = stock_ui_configs,
                  customfilepath: str = CraftItems(THEMES_DIR, "default.ini")):
@@ -108,19 +157,16 @@ class ColorManager(GetConfig):
         @param color (str | None = None): Defaults to darkdetect's output/current setting.
         @return tuple[str, str]: Background - Foreground colors
         """
-
-        # Deternmine if we can use darkdetect here
-        if AUTOCOLOR and color is None:
-            currmode = darkdetect.theme().lower()
-        elif not AUTOCOLOR and color is None:
-            currmode = str(
-                self.getkey("color", "background", needed=True, make=True)
-            ).lower()
+        # print(darkdetect.theme().lower())
+        if not color:
+            if AUTOCOLOR: currmode = darkdetect.theme().lower()
+            else: currmode = str(self.getkey("color", "background", True, True)).lower()
         else:
             currmode = color
 
-        # if not currmode in ["dark", "light"]:
-        #     raise ConfigurationError(self._file, "Invalid value", "color", "background")
+        # print(currmode)
+        if not currmode in ["dark", "light"]:
+            raise ConfigurationError(self._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         try:
@@ -189,21 +235,23 @@ class ColorManager(GetConfig):
         if not obj in self.setfcfn: self.setfcfn[obj] = []
         self.setfcfn[obj].append({"fn": func, "params": params})
 
-    def configure(self, widget: typing.Any):
+    def configure(self, widget: object, color: str | None = None):
         """
         Style a widget (only fore+back) with pre-defined settings.
         This is usable for (almost) all GUI toolkits.
 
         @param widget : Widget to configure
+        @param color: Color to use (optional)
         @see setcolorfunc
         @see setfontcfunc
         """
 
         if not widget:
             logger.debug(f"Widget {widget} died, skip configuring.")
+            self._threads.pop(widget, None)
             return
 
-        color, fontcolor = self.GetColor()
+        color, fontcolor = self.GetColor(color)
 
         def runfn(func: typing.Callable, args: dict|tuple):
             extra_aliases = {
@@ -214,7 +262,6 @@ class ColorManager(GetConfig):
             def replacetext(target: str):
                 for key in extra_aliases:
                     target = target.replace(key, extra_aliases[key])
-                print(target)
                 return target
 
             if isinstance(args, dict):
@@ -259,4 +306,4 @@ class ColorManager(GetConfig):
             )
             return
 
-        threading.Thread(args=self.configure(widget), daemon=True).start()
+        self._threads[widget] = UISync(widget, self.configure)
