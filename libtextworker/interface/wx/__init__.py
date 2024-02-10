@@ -27,8 +27,8 @@ else:
 class ColorManager(manager.ColorManager):
     recursive_configure: bool = True
 
-    def GetFont(self):
-        size, style, weight, family = manager.ColorManager.GetFont()
+    def GetFont(this):
+        size, style, weight, family = manager.ColorManager.GetFont(this)
 
         _dict = {"system": "normal"}
         weight = _dict.get(weight, weight)
@@ -37,22 +37,22 @@ class ColorManager(manager.ColorManager):
         return wx.Font(size, wx.FONTFAMILY_MODERN, constants.FONTST[style],
                        constants.FONTWT[weight], 0, family)
 
-    def configure(self, widget: wx.Control, childs_too: bool = recursive_configure):
-        manager.ColorManager.configure(widget)
+    def configure(this, widget: wx.Control, childs_too: bool = recursive_configure):
+        manager.ColorManager.configure(this, widget)
 
         # fore&back
-        bg, fg = self.GetColor()
+        bg, fg = this.GetColor()
         bg = wx.Colour(*manager.hextorgb(bg))
         fg = wx.Colour(*manager.hextorgb(fg))
 
         # font
-        font = self.GetFont()
+        font = this.GetFont()
 
         if childs_too and hasattr(widget, "GetChildren"):
             widget.SetBackgroundColour(bg)
             widget.SetForegroundColour(fg)
             for children in widget.GetChildren():
-                self.configure(children, True)
+                this.configure(children, True)
         else:
             widget.SetOwnBackgroundColour(bg)
             widget.SetOwnForegroundColour(fg)

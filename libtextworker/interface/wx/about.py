@@ -12,7 +12,6 @@ import wx
 import wx.adv
 
 from typing import Any
-from .. import available_licenses
 from ...general import CraftItems
 from ... import LICENSES
 
@@ -43,13 +42,10 @@ class AboutDialog:
     def SetLicense(self, license: str, include_copyright: bool = False):
         """
         Set the long, multiline string containing the text of the program license.
-        Not all license types are available. You can include your program copyright if needed.
         @see available_licenses
         @see SetCopyright
         """
         data = ""  # Our result
-        if license in available_licenses:
-            license = open(CraftItems(LICENSES, license + ".txt"), "r").read()
 
         if include_copyright == True and self.infos.GetCopyright() != "":
             data += self.infos.GetCopyright() + "\n"

@@ -21,23 +21,23 @@ class ActionRow(wx.BoxSizer):
     """
 
     @property
-    def Parent(self):
+    def Parent(this):
         """
         The actual parent of this widget.
         """
-        return self._Parent
+        return this._Parent
 
     @Parent.setter
-    def Parent(self, obj: wx.Control):
-        self._Parent = obj
+    def Parent(this, obj: wx.Control):
+        this._Parent = obj
 
-    def SetParent(self, obj: wx.Control):
+    def SetParent(this, obj: wx.Control):
         """
         Make wxActionRow know its parent, where widgets will set their parent to.
         """
-        self.Parent = obj
+        this.Parent = obj
 
-    def PlaceObj(self, obj: wx.Control, stretch: int = 1, *args, **kwds) -> wx.Control:
+    def PlaceObj(this, obj: wx.Control, stretch: int = 1, *args, **kwds) -> wx.Control:
         """
         Place a widget from the LEFT.
         For overriding existing widgets,
@@ -53,8 +53,8 @@ class ActionRow(wx.BoxSizer):
         @return wx.Control: initialized & added-to-sizer widget
         """
 
-        kwds["parent"] = self.Parent
+        kwds["parent"] = this.Parent
         target = obj(*args, **kwds)
 
-        self.Add(target, stretch, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+        this.Add(target, stretch, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
         return target

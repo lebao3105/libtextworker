@@ -1,6 +1,13 @@
 """
 @package libtextworker.interface.wx.editor
+@brief Home of the buffed wxStyledTextEditor!
 """
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import wx
 import wx.stc
 
@@ -28,7 +35,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     FileLoaded: str = ""
     Hash = md5("".encode("utf-8"))
 
-    def EditorInit(self, config_path: str = ""):
+    def EditorInit(this, config_path: str = ""):
         """
         @since 0.1.3
         Initialize the editor, customized part.
@@ -37,52 +44,52 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         if not config_path:
             config_path = CraftItems(EDITOR_DIR, "default.ini")
 
-        self.cfg = GetConfig(stock_editor_configs, config_path)
+        this.cfg = GetConfig(stock_editor_configs, config_path)
 
         # Setup line numbers
-        self.LineNumbers()
+        this.LineNumbers()
 
         # Drag-and-drop support
-        self.DNDSupport()
+        this.DNDSupport()
 
         # Indentation
-        self.IndentationSet()
+        this.IndentationSet()
 
         # Right click menu
-        if self.cfg.getkey("menu", "enabled") in self.cfg.yes_values:
-            self.Bind(wx.EVT_RIGHT_DOWN, self.MenuPopup)
+        if this.cfg.getkey("menu", "enabled") in this.cfg.yes_values:
+            this.Bind(wx.EVT_RIGHT_DOWN, this.MenuPopup)
 
         # Word wrap
-        self.SetWrapMode(self.cfg.getkey("editor", "wordwrap") in self.cfg.yes_values)
+        this.SetWrapMode(this.cfg.getkey("editor", "wordwrap") in this.cfg.yes_values)
 
         # Editor modifications
         def OnEditorModify(evt):
-            self.Hash = md5(self.GetText().encode("utf-8"))
+            this.Hash = md5(this.GetText().encode("utf-8"))
             evt.Skip()
         
-        self.Bind(wx.stc.EVT_STC_MODIFIED, OnEditorModify)
+        this.Bind(wx.stc.EVT_STC_MODIFIED, OnEditorModify)
 
     """
     Setup GUI elements.
     """
 
-    def DNDSupport(self) -> bool:
+    def DNDSupport(this) -> bool:
         """Meh DND does not mean do not disturb."""
-        if self.cfg.getkey("editor", "dnd_enabled", True, True) \
-           not in self.cfg.yes_values:
+        if this.cfg.getkey("editor", "dnd_enabled", True, True) \
+           not in this.cfg.yes_values:
             return False
 
-        dt = DragNDropTarget(self)
-        self.SetDropTarget(dt)
+        dt = DragNDropTarget(this)
+        this.SetDropTarget(dt)
 
         return True
 
-    def IndentationSet(self):
-        size = int(self.cfg.getkey("indentation", "size", True, True))
-        tp = self.cfg.getkey("indentation", "type", True, True)
-        show_guide = self.cfg.getkey("indentation", "show_guide", True, True)
-        bk_unindent = self.cfg.getkey("indentation", "backspace_unindents", True, True)
-        view_ws = self.cfg.getkey("editor", "view_whitespaces", True, True)
+    def IndentationSet(this):
+        size = int(this.cfg.getkey("indentation", "size", True, True))
+        tp = this.cfg.getkey("indentation", "type", True, True)
+        show_guide = this.cfg.getkey("indentation", "show_guide", True, True)
+        bk_unindent = this.cfg.getkey("indentation", "backspace_unindents", True, True)
+        view_ws = this.cfg.getkey("editor", "view_whitespaces", True, True)
 
         if not 8 >= size > 0:
             raise ConfigurationError(
@@ -94,27 +101,27 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
                 "indentation", "type", "Must be either 'tabs' or 'spaces'"
             )
 
-        self.SetUseTabs(tp == "tabs")
-        self.SetBackSpaceUnIndents(bk_unindent in self.cfg.yes_values)
-        self.SetViewWhiteSpace(view_ws in self.cfg.yes_values)
-        self.SetIndent(size)
-        self.SetIndentationGuides(show_guide in self.cfg.yes_values)
+        this.SetUseTabs(tp == "tabs")
+        this.SetBackSpaceUnIndents(bk_unindent in this.cfg.yes_values)
+        this.SetViewWhiteSpace(view_ws in this.cfg.yes_values)
+        this.SetIndent(size)
+        this.SetIndentationGuides(show_guide in this.cfg.yes_values)
 
-    def LineNumbers(self) -> bool:
+    def LineNumbers(this) -> bool:
         """
         Setup line numbers margin for the editor.
         The margin's default width is 20px.
         """
-        state = self.cfg.getkey("editor", "line_count", True, True)
+        state = this.cfg.getkey("editor", "line_count", True, True)
 
-        if state in self.cfg.no_values:
-            self.SetMarginWidth(0, 0)
+        if state in this.cfg.no_values:
+            this.SetMarginWidth(0, 0)
             return False
 
-        self.SetMarginWidth(0, 20)
-        self.SetMarginType(0, wx.stc.STC_MARGIN_NUMBER)
-        self.SetMarginMask(0, 0)
-        self.Bind(wx.stc.EVT_STC_UPDATEUI, self.OnUIUpdate)
+        this.SetMarginWidth(0, 20)
+        this.SetMarginType(0, wx.stc.STC_MARGIN_NUMBER)
+        this.SetMarginMask(0, 0)
+        this.Bind(wx.stc.EVT_STC_UPDATEUI, this.OnUIUpdate)
 
         return True
 
@@ -122,25 +129,26 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     File-related things
     """
 
-    def LoadFile(self, path: str):
+    def LoadFile(this, path: str):
         """
         Loads the content of a file into the editor.
         No check for contents already inside the editor!
         """
-        wx.stc.StyledTextCtrl.LoadFile(self, path)
-        self.FileLoaded = path
+        wx.stc.StyledTextCtrl.LoadFile(this, path)
+        this.FileLoaded = path
+        this.Hash = md5(open(path, "r").read().encode("utf-8"))
 
     @property
-    def IsModified(self):
+    def IsModified(this):
         """
         Show if the editor has been modified or not.
         Works exactly the same way + implementation as Tkinter's one.
         """
-        def checkhash(target): return not self.Hash.digest() == md5(target.encode("utf-8")).digest()
-        if not self.FileLoaded: return checkhash("")
-        return checkhash(open(self.FileLoaded, "r").read())
+        def checkhash(target): return not this.Hash.digest() == md5(target.encode("utf-8")).digest()
+        if not this.FileLoaded: return checkhash("")
+        return checkhash(open(this.FileLoaded, "r").read())
 
-    def SetModified(self, state: bool):
+    def SetModified(this, state: bool):
         """
         Marks this editor as modified or not.
         wxStyledTextControl seems can't use this.
@@ -151,36 +159,34 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
     Events.
     """
 
-    def OnUIUpdate(
-        self, event
-    ):  # MS Bing found this - thanks to the people who made it!
-        line_count = self.GetLineCount()
+    def OnUIUpdate(this, event):  # MS Bing found this - thanks to the people who made it!
+        line_count = this.GetLineCount()
         last_line_num = str(line_count)
 
         if len(last_line_num) <= 4:
             margin_width = 40
         else:
-            last_line_width = self.TextWidth(wx.stc.STC_STYLE_LINENUMBER, last_line_num)
+            last_line_width = this.TextWidth(wx.stc.STC_STYLE_LINENUMBER, last_line_num)
             # add some extra space
             margin_width = last_line_width + 4
 
         # set the margin width
-        self.SetMarginWidth(0, margin_width)
+        this.SetMarginWidth(0, margin_width)
         event.Skip()
 
-    def MenuPopup(self, event):
+    def MenuPopup(this, event):
         pt = event.GetPosition()
         menu = CreateMenu(
-            self,
+            this,
             [
-                (wx.ID_CUT, None, None, lambda evt: self.Cut(), None),
-                (wx.ID_COPY, None, None, lambda evt: self.Copy(), None),
-                (wx.ID_PASTE, None, None, lambda evt: self.Paste(), None),
+                (wx.ID_CUT, None, None, lambda evt: this.Cut(), None),
+                (wx.ID_COPY, None, None, lambda evt: this.Copy(), None),
+                (wx.ID_PASTE, None, None, lambda evt: this.Paste(), None),
                 (None, None, None, None, None),
-                (wx.ID_UNDO, None, None, lambda evt: self.Undo(), None),
-                (wx.ID_REDO, None, None, lambda evt: self.Redo(), None),
-                (wx.ID_DELETE, None, None, lambda evt: self.DeleteBack(), None),
-                (wx.ID_SELECTALL, None, None, lambda evt: self.SelectAll(), None),
+                (wx.ID_UNDO, None, None, lambda evt: this.Undo(), None),
+                (wx.ID_REDO, None, None, lambda evt: this.Redo(), None),
+                (wx.ID_DELETE, None, None, lambda evt: this.DeleteBack(), None),
+                (wx.ID_SELECTALL, None, None, lambda evt: this.SelectAll(), None),
                 (None, None, None, None, None),
             ],
         )
@@ -192,13 +198,13 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
             wx.ITEM_CHECK,
         )
         menu.Append(readonly)
-        self.Bind(
+        this.Bind(
             wx.EVT_MENU,
-            lambda evt: (self.SetReadOnly(readonly.IsChecked()),),
+            lambda evt: (this.SetReadOnly(readonly.IsChecked()),),
             readonly,
         )
 
-        self.PopupMenu(menu, pt)
+        this.PopupMenu(menu, pt)
         menu.Destroy()
 
 
@@ -207,18 +213,18 @@ class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
     Drag-and-drop (DND) support for wxStyledTextCtrl.
     """
 
-    def __init__(self, textctrl):
+    def __init__(this, textctrl):
         super().__init__()
-        self.Target = textctrl
+        this.Target = textctrl
 
-    def OnDropText(self, x, y, data):
-        self.Target.WriteText(data)
+    def OnDropText(this, x, y, data):
+        this.Target.WriteText(data)
         return True
 
-    def OnDragOver(self, x, y, defResult):
+    def OnDragOver(this, x, y, defResult):
         return wx.DragCopy
 
-    def OnDropFiles(self, x, y, filenames):
+    def OnDropFiles(this, x, y, filenames):
         if len(filenames) > 0:
-            self.Target.LoadFile(filenames)
+            this.Target.LoadFile(filenames)
         return True
