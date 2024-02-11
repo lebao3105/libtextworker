@@ -16,9 +16,9 @@ Here's the ```require``` function parameters:
 
 ```python
 def require(
-        str    project,
-        str    target_version
-)
+        project         : str,
+        target_version  : str
+):
         """
         Ensures that a project is available for the requested version OR HIGHER.
         @param project (str): Project name
@@ -36,7 +36,7 @@ The top-level module has some useful attributes:
 
 * THEMES_DIR (str): Defaults to ```~/.configs/textworker/themes```; where all themes for GUIs are placed
 * EDITOR_DIR (str): Defauls to ```~/.configs/textworker/editorconfigs/```; default configs directory for GUI editors
-* Importable (dict): Actually it's ```general.Importable```, contains check results for Python modules.
+* Importable (dict): An alias to ```general.Importable```, contains check results for Python modules.
 
 In libtextworker.general module we have a variable called available_toolkits (since 0.1.3), indicates supported GUI toolkits. Only wxPython and Tkinter are supported. Also we have LOG_PATH shows us where the log file is located, TOPLV_DIR for the top-level settings path.
 
@@ -50,13 +50,6 @@ Take a look at all library modules:
 * ```interface.manager```: Contains ColorManager which handles GUI widgets color/font
 * ```interface._colors``` (since 0.1.3) specifies *some* colors. Moved to ```interface``` since version 0.1.4.
 * subfolders in ```interface```: GUIs support ('wx' for wxPython, 'tk' for Tkinter)
-
-Now your next line is...
-
-**Let's go now!**
-
-But no, just this time, head for step 4: see all aliases that will be used on this site.
-Then you can do what you want!
 
 ## Packaging
 

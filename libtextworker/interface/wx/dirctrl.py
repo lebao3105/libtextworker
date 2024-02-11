@@ -23,7 +23,7 @@ from watchdog.observers import Observer
 
 # Index for images (for nodes)
 
-imgs = wx.ImageList(16, 16) # TODO
+imgs = wx.ImageList(16, 16)
 
 def addImg(name: str) -> int:
     return imgs.Add(
@@ -192,13 +192,13 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         this.Bind(wx.EVT_TREE_ITEM_EXPANDED, this.LazyExpand)
         this.Bind(wx.EVT_TREE_SEL_CHANGED, this.LazyExpand)
 
-        def AddItem(evt: FileCreatedEvent | DirCreatedEvent):
+        def AddItem(evt: FileCreatedEvent | DirCreatedEvent): # type: ignore
             this.AppendItem(this.MatchItem(os.path.dirname(evt.path)),
                             os.path.basename(evt.path),
                             fileidx if isinstance(evt, FileCreatedEvent) else folderidx)
             evt.Skip()
         
-        def DeleteItem(evt: FileDeletedEvent | DirDeletedEvent):
+        def DeleteItem(evt: FileDeletedEvent | DirDeletedEvent): # type: ignore
             wx.TreeCtrl.Delete(this, this.MatchItem(evt.path))
             evt.Skip()
 
@@ -399,19 +399,11 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
     Styles = DC_USEICON
     History: list = []
     TargetIsSelf = True
-    Watcher: Observer
+    Watcher: Observer # type: ignore
 
-    def __init__(
-        this,
-        parent: wx.Window,
-        id=wx.ID_ANY,
-        pos=wx.DefaultPosition,
-        size=wx.DefaultSize,
-        style=wx.LC_REPORT,
-        validator=wx.DefaultValidator,
-        name=wx.ListCtrlNameStr,
-        w_styles: auto = DC_USEICON,
-    ):
+    def __init__(this, parent: wx.Window, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
+                 style=wx.LC_REPORT, validator=wx.DefaultValidator, name=wx.ListCtrlNameStr, w_styles: auto = DC_USEICON):
+        
         if DC_EDIT in w_styles:
             style |= wx.LC_EDIT_LABELS
 

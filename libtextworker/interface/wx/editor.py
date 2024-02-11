@@ -79,8 +79,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
            not in this.cfg.yes_values:
             return False
 
-        dt = DragNDropTarget(this)
-        this.SetDropTarget(dt)
+        this.SetDropTarget(DragNDropTarget(this))
 
         return True
 
@@ -92,14 +91,10 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         view_ws = this.cfg.getkey("editor", "view_whitespaces", True, True)
 
         if not 8 >= size > 0:
-            raise ConfigurationError(
-                "indentation", "size", "Must be in range from 1 to 8"
-            )
+            raise ConfigurationError("indentation", "size", "Must be in range from 1 to 8")
 
         if not tp in ["tabs", "spaces"]:
-            raise ConfigurationError(
-                "indentation", "type", "Must be either 'tabs' or 'spaces'"
-            )
+            raise ConfigurationError("indentation", "type", "Must be either 'tabs' or 'spaces'")
 
         this.SetUseTabs(tp == "tabs")
         this.SetBackSpaceUnIndents(bk_unindent in this.cfg.yes_values)
@@ -176,33 +171,18 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def MenuPopup(this, event):
         pt = event.GetPosition()
-        menu = CreateMenu(
-            this,
-            [
-                (wx.ID_CUT, None, None, lambda evt: this.Cut(), None),
-                (wx.ID_COPY, None, None, lambda evt: this.Copy(), None),
-                (wx.ID_PASTE, None, None, lambda evt: this.Paste(), None),
-                (None, None, None, None, None),
-                (wx.ID_UNDO, None, None, lambda evt: this.Undo(), None),
-                (wx.ID_REDO, None, None, lambda evt: this.Redo(), None),
-                (wx.ID_DELETE, None, None, lambda evt: this.DeleteBack(), None),
-                (wx.ID_SELECTALL, None, None, lambda evt: this.SelectAll(), None),
-                (None, None, None, None, None),
-            ],
-        )
-        readonly = wx.MenuItem(
-            menu,
-            wx.ID_ANY,
-            _("Read only"),
-            _("Set the text to be read-only"),
-            wx.ITEM_CHECK,
-        )
+        menu = CreateMenu(this, [(wx.ID_CUT, None, None, lambda evt: this.Cut(), None),
+                                 (wx.ID_COPY, None, None, lambda evt: this.Copy(), None),
+                                 (wx.ID_PASTE, None, None, lambda evt: this.Paste(), None),
+                                 (None, None, None, None, None),
+                                 (wx.ID_UNDO, None, None, lambda evt: this.Undo(), None),
+                                 (wx.ID_REDO, None, None, lambda evt: this.Redo(), None),
+                                 (wx.ID_DELETE, None, None, lambda evt: this.DeleteBack(), None),
+                                 (wx.ID_SELECTALL, None, None, lambda evt: this.SelectAll(), None),
+                                 (None, None, None, None, None)])
+        readonly = wx.MenuItem(menu, wx.ID_ANY, _("Read only"), _("Set the text to be read-only"), wx.ITEM_CHECK)
         menu.Append(readonly)
-        this.Bind(
-            wx.EVT_MENU,
-            lambda evt: (this.SetReadOnly(readonly.IsChecked()),),
-            readonly,
-        )
+        this.Bind(wx.EVT_MENU, lambda evt: (this.SetReadOnly(readonly.IsChecked()),), readonly)
 
         this.PopupMenu(menu, pt)
         menu.Destroy()
@@ -225,6 +205,5 @@ class DragNDropTarget(wx.FileDropTarget, wx.TextDropTarget):
         return wx.DragCopy
 
     def OnDropFiles(this, x, y, filenames):
-        if len(filenames) > 0:
-            this.Target.LoadFile(filenames)
+        this.Target.LoadFile(filenames[0])
         return True

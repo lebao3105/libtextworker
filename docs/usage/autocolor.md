@@ -56,13 +56,20 @@ No default value. Check for options above.
 
 ## Implementation for GUIs
 
-Derive ```libtextworker.interface.manager.ColorManager```.
+The main class is ```libtextworker.interface.manager.ColorManager```.
 
 Functions to overwrite (not all of them):
 
 * GetColor (or \_get\_color in older versions): get color defines
 * GetFont (or \_get\_font in older versions): get font settings
 * configure: configure (a) widget
-* autocolor_run: you know it
 
 Place your derived ColorManager class in libtextworker.interface.\<toolkit>/\_\_init\_\_.py.
+
+New in `0.1.4`: `UISync` class. As the name says, this class uses `darkdetect.listener` to change the application color when needed.
+
+You probably don't need to derive this, as this is made for all toolkits. You even can use any function you want, not only `ColorManager.configure`.
+
+Probably `ColorManager.configure` is preferred.
+
+Run `ColorManager.autocolor_run(object)` to get started.

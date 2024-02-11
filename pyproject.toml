@@ -27,7 +27,7 @@ watchdog = {version = "^3.0.0", optional = true}
 wx = ["wxPython", "watchdog"]
 tkinter = ["tklinenums", "watchdog"]
 autocolor = ["darkdetect"]
-all = ["darkdetect", "wxPython", "commented-configparser", "tklinenums", "watchdog"]
+all = ["wx", "tkinter", "autocolor"]
 
 [build-system]
 requires = ["poetry-core"]
