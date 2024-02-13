@@ -17,15 +17,15 @@ python = "^3.8"
 packaging = "^23.0"
 importlib-metadata = "^6.1.0"
 commented-configparser = "^1.0.0"
+watchdog = "^3.0.0"
 
 wxPython = {version = "^4.0.0", optional = true}
 darkdetect = {version = "^0.8.0", optional = true}
 tklinenums = {version = "^1.6.5", optional = true}
-watchdog = {version = "^3.0.0", optional = true}
 
 [tool.poetry.extras]
-wx = ["wxPython", "watchdog"]
-tkinter = ["tklinenums", "watchdog"]
+wx = ["wxPython"]
+tkinter = ["tklinenums"]
 autocolor = ["darkdetect"]
 all = ["wx", "tkinter", "autocolor"]
 
