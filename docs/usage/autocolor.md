@@ -8,7 +8,8 @@ Currently both Tk and wxPython are supported.
 
 ## Settings
 
-It's defined under the "color" section in your theme file:
+It's defined under the "color" section in your theme file, like this:
+
 ```ini
 [color]
 background = light
@@ -16,17 +17,15 @@ foreground = default
 auto = yes
 ```
 
-Nothing to explain here.
-
 ### Color->Background
 
 Type: string
 
 Defaults to ```light```.
 
-In 0.1.4, you can also use hex colors, or use custom colors defined in ```libtextworker.interface.colors``` (dictionary).
+Since 0.1.4, you can also use hex colors, or use custom colors defined in ```libtextworker.interface.colors``` (dictionary).
 
-In 0.1.3, you only can choose between "dark" and "light".
+On previous versions, you only can choose between "dark" and "light".
 
 ### Color->Foreground
 
@@ -73,3 +72,15 @@ You probably don't need to derive this, as this is made for all toolkits. You ev
 Probably `ColorManager.configure` is preferred.
 
 Run `ColorManager.autocolor_run(object)` to get started.
+
+## Custom functions for coloring
+
+See ColorManager's set*func:
+
+* `setcolorfunc`: Background
+* `setfontcfunc`: Foreground (or font color/fontc in function name, no typo here!)
+* `setfontandcolorfunc`: The combination of the 2 functions above (available on 0.1.4+)
+
+Pass your widget/widget class, the function you want to use, and parameters if any (tuple type seems not working, don't know why?).
+
+`ColorManager.configure` will handle this itself.

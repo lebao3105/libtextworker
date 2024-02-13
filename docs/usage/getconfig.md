@@ -50,11 +50,12 @@ GetConfig extends ConfigParser with these features:
 
 * Backup/reset settings;
 * JSON support as said above;
-* Run-time update - to a dictionary (GetConfig.backup) and to a file (GetConfig.full_backup);
-* Advanced value getter with auto restore & alias feature (GetConfig.getkey)
-* Move any thing to a new section, new option, or even to another file! (GetConfig.move)
+* Run-time update - to a dictionary (GetConfig.backup) and/or to a file (GetConfig.full_backup);
+* Advanced value getter with auto restore & alias feature (GetConfig.getkey);
+* Move any thing to a new section, new option, or even to another file! (GetConfig.move);
+* Watch file system change!
 
-These features makes GetConfig an unique thing you must see ever:)
+These features makes GetConfig an unique thing you must see:)
 
 A planned thing: GetConfig will use ```watchdog``` [module](https://pypi.org/project/watchdog) to dynamically notify the user when the file is changed outside, also an option to chose whetever to load the changes or not.
 

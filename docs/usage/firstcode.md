@@ -12,7 +12,7 @@ require("libtextworker", "0.1.3")
 
 In the code above, we import the require function from the libtextworker.versioning module, then use it to "require" version 0.1.3 of libtextworker. This ensures that your project is using the library with version 0.1.3, nothing else.
 
-Here's the ```require``` function parameters:
+Here's the ```require``` function:
 
 ```python
 def require(
@@ -72,14 +72,10 @@ mainFrame = Frame(parent=None, title="libtextworker example")
 
 # Create a menu bar with menus inside. This will vary on different GUIs.
 menuBar = mainFrame.CreateMenuBar()
-menu1 = CreateMenu(mainFrame,
-        [
-                # Menu item syntax:
-                # Label - handler - accelerator - type - isDisabled
-                ("Hello world", lambda evt: print("hello!"), None, None, None),
-                ...
-        ]
-)
+menu1 = CreateMenu(mainFrame, [# Menu item syntax:
+                			   # Label - handler - accelerator - type - isDisabled
+                			   ("Hello world", lambda evt: print("hello!"), None, None, None),
+                			   ...])
 menuBar.Append(menu1, "Testtesttest")
 
 # Add some objects.

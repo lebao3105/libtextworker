@@ -4,9 +4,8 @@ The latest version of this library is 0.1.3.
 
 You will need:
 
-* Python 3.8 or higher with pip installed - get it from [python.org](https://python.org)
-* Basic Python & Python GUI programming knowledge - this is not really a project for beginners
-* Your head should be cold, as this is a working-on project - changes and bugs ahead
+* Python 3 or higher with pip installed - get it from [python.org](https://python.org). Only tested on Python 3.11 which is my daily-driver for now
+* Basic Python programming knowledge - this is not really a project for beginners
 
 ## Available packages
 
@@ -24,7 +23,7 @@ Note: For the application autocolor support, the support is OS-dependent:
 * macOS 10.14
 * Linux/BSD with at least GTK3?
 
-'Auto color' means getting the current OS color scheme (dark/light) and eventually apply that to the interface. And that dark/light scheme is only available on systems that I listed above.
+'Auto color' means getting the current OS color scheme (dark/light) and eventually apply that to the interface.
 
 ## Install
 
@@ -37,15 +36,15 @@ Install from source:
 ```bash
 $ pip install .
 $ # Or
-$ pip install .[sub-package-if-you-d-like-to]
+$ pip install .[things here as you wish]
 $ # Or
-$ poetry install
+$ poetry install .[things here too]
 ```
 
 From Pypi:
 
 ```bash
-$ pip install libtextworker
+$ pip install libtextworker[blahblah]
 ```
 
 <div class="section_buttons">

@@ -23,7 +23,7 @@ Normally a GUI support in libtextworker has:
 
 Look for the ```libtextworker.interface.base``` module first, then your toolkit support in ```libtextworker.interface```. Can you see your idea there?
 
-Normally modules in ```libtextworker.interface.base``` are intended to be a skeleton for our existing widgets. Whatever it's optional, but recommended to know how your widget should work, for you and everyone else. Yeah, the **logic**.
+Widgets inside ```libtextworker.interface.base``` are intended to help other people implementing the widget in their desired GUI as a skeleton, and therefore is recommended.
 
 The ```WidgetBase``` class is used as a base for every other GUI classes here, has the following:
 

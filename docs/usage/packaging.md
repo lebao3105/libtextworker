@@ -25,28 +25,6 @@ Explain:
 
 You can use this with other packages too.
 
-## Packaging with poetry
+## Packaging with for-Pypi build systems
 
-Add libtextworker like any other packages:
-
-```bash
-    $ poetry add libtextworker
-```
-
-If you want to use the library from a specific path, so instead of running the command above, add this to your ```[tool.poetry.dependencies]```:
-
-```toml
-libtextworker = {path = "path_to_the_lib", extras = ["what_you_want"]}
-```
-
-But if you use libtextworker as a git submodule and want to publish your project to (Test)Pypi (like me), then you shouldn't pack the submodule like that. You should use the git way (modify pyproject.toml):
-
-```toml
-libtextworker = { git = "https://github.com/lebao3105/libtextworker.git", ..., extras = ["extra"] }
-```
-
-Why "..."? It's your option:
-
-* ```rev```: Git revision, use a specific commit hash
-* ```tag```: Git tag
-* ```branch```: Git branch
+Just like any packages else.
