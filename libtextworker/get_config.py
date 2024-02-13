@@ -1,4 +1,3 @@
-
 """
 @package libtextworker.get_config
 @brief Contains classes for generic INI files parsing
@@ -16,6 +15,9 @@ import os
 import typing
 
 from .general import WalkCreation, libTewException
+from warnings import warn
+from watchdog.observers import Observer
+from watchdog.events import *
 
 __all__ = ["ConfigurationError", "GetConfig"]
 
@@ -24,17 +26,15 @@ try:
 except ImportError:
     from configparser import ConfigParser
 
-
 class ConfigurationError(libTewException):
-    def __init__(
-        this, path: str, msg: str, section: str, option: str = "\\not_specified\\"
-    ):
+    def __init__(this, path: str, msg: str, section: str,
+                 option: str = "\\not_specified\\"):
+        
         full = "Configuration file {}, path [{}->{}]: {}"
         full = full.format(path, section, option, msg)
-        super().__init__(full)
+        libTewException.__init__(this, full)
 
-
-class GetConfig(ConfigParser):
+class GetConfig(ConfigParser, FileSystemEventHandler):
     # Values
     yes_values: list = ["yes", "True", True, "1", 1, "on"]
     no_values: list = ["no", "False", False, "0", 0, "off"]
@@ -43,6 +43,8 @@ class GetConfig(ConfigParser):
     backups: dict = {}
     cfg: dict = {}
     detailedlogs: bool = True
+
+    _observer = Observer()
 
     for item in yes_values:
         aliases[item] = True
@@ -57,13 +59,13 @@ class GetConfig(ConfigParser):
         @param file : Configuration file
         @param **kwds : To pass to configparser.ConfigParser (base class)
 
-        When initialized, GetConfig loads all default configs (from config param) and store it in
+        When initialized, GetConfig loads all default configs (from config parameter) and store it in
         a dictionary for further actions (backup/restore file).
 
         @since 0.1.3: Allow config parameter as a str object
-        @since 0.1.4: Allow importing+exporting configs as a json object, allow config param to be None
+        @since 0.1.4: JSON support, allow config parameter to be None, file system watch
         """
-        super().__init__(**kwds)
+        ConfigParser.__init__(this, **kwds)
 
         if isinstance(config, str):
             this.read_string(config)
@@ -75,10 +77,13 @@ class GetConfig(ConfigParser):
                 this.cfg[key] = this[key]
 
         this.readf(file)
-        this._file = file
 
     # File tasks
     def readf(this, file: str, encoding: str | None = None):
+        """
+        Reads all settings from a file.
+        Mostly for application/GetConfig internal use.
+        """
         WalkCreation(os.path.dirname(file))
         if not os.path.exists(file):
             this.write(open(file, "w"))
@@ -89,8 +94,19 @@ class GetConfig(ConfigParser):
                 this.read(file, encoding)
 
         this._file = file
+        this._observer.schedule(this, file)
+        this._observer.start()
+    
+    def __del__(this):
+        if this._observer.is_alive():
+            this._observer.stop()
+            this._observer.join()
 
     def reset(this, restore: bool = False):
+        """
+        Loads default settings to GetConfig and loaded file.
+        Also restore backups if restore is True and GetConfig.backups is not empty.
+        """
         os.remove(this._file)
         for key in this.cfg:
             this[key] = this.cfg[key]
@@ -102,44 +118,47 @@ class GetConfig(ConfigParser):
         this.update()
 
     def update(this):
+        """
+        Writes current settings to loaded file.
+        """
         with open(this._file, "w") as f:
             this.write(f)
         this.read(this._file)
 
     # Options
-    def backup(this, keys: dict[str, str], direct_to_keys: bool = False) -> dict:
+    def backup(this, keys: dict, direct_to_keys: bool = False) -> dict:
         """
         Backs up user data, specified by the keys parameter (dictionary).
-        Returns the successfully *updated* dictionary (if direct_to_keys param is True),
+        Returns the successfully *updated* dictionary (if direct_to_keys is True),
         or the self-made dict.
         """
+        target = keys if direct_to_keys else this.backups
         for key in keys:
             for subelm in keys[key]:
-                if direct_to_keys == True:
-                    keys[key][subelm] = this[key][subelm]
-                else:
-                    this.backups[key][subelm] = this[key][subelm]
+                target[key][subelm] = this[key][subelm]
 
-        if direct_to_keys:
-            return keys
-        else:
-            return this.backups
+        return target
 
-    def full_backup(this, path: str, use_json: bool = False):
+    def full_backup(this, noFile: bool, path: str, use_json: bool = False):
         """
         @since 0.1.4
-        Do a full backup.
+        Backup all settings by writing to GetConfig.backups and/or another file.
+        @param noFile (bool): Don't write to any file else.
         @param path (str): Target backup file
         @param use_json (bool = False): Use the backup file in JSON format
         """
         if path == this._file:
             raise Exception("GetConfig.full_backup: filepath must be the loaded file!")
 
-        with open(path, "w") as f:
-            if use_json:
-                json.dump(this, f)
-            else:
-                this.write(f)
+        for section in this.sections():
+            this.backups[section] = this[section]
+
+        if not noFile:
+            with open(path, "w") as f:
+                if use_json:
+                    json.dump(this, f)
+                else:
+                    this.write(f)
 
     def restore(this, keys: dict[str, str] | None, optional_path: str):
         """
@@ -164,15 +183,8 @@ class GetConfig(ConfigParser):
             with open(optional_path, "w") as f:
                 this.write(f)
 
-    def getkey(
-        this,
-        section: str,
-        option: str,
-        needed: bool = False,
-        make: bool = False,
-        noraiseexp: bool = False,
-        raw: bool = False,
-    ) -> typing.Any | None:
+    def getkey(this, section: str, option: str, needed: bool = False,
+               make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
         """
         Try to get the value of an option under the spectified section.
 
@@ -193,19 +205,11 @@ class GetConfig(ConfigParser):
                 if not target:
                     target = this.cfg
                 if not target[section]:
-                    raise ConfigurationError(
-                        this._file,
-                        "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
-                        section,
-                        option,
-                    )
+                    raise ConfigurationError(this._file, "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
+                                             section, option)
                 if not target[section][option]:
-                    raise ConfigurationError(
-                        this._file,
-                        "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
-                        section,
-                        option,
-                    )
+                    raise ConfigurationError(this._file, "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
+                                             section, option)
                 if not section in this.sections():
                     this.add_section(section)
                 value_ = target[section][option]
@@ -223,9 +227,7 @@ class GetConfig(ConfigParser):
                 if not value:
                     return None
             else:
-                raise ConfigurationError(
-                    this._file, "Section or option not found", section, option
-                )
+                raise ConfigurationError(this._file, "Section or option not found", section, option)
 
         # Remove ' / "
         trans = ["'", '"']
@@ -237,7 +239,7 @@ class GetConfig(ConfigParser):
         else:
             return this.aliases[value]
 
-    def aliasyesno(this, yesvalue=None, novalue=None) -> None:
+    def aliasyesno(this, yesvalue=None, novalue=None):
         if yesvalue:
             this.yes_values.append(yesvalue)
             this.aliases[yesvalue] = True
@@ -246,7 +248,7 @@ class GetConfig(ConfigParser):
             this.no_values.append(novalue)
             this.aliases[novalue] = False
 
-    def alias(this, value, value2) -> None:
+    def alias(this, value, value2):
         this.aliases[value] = value2
 
     def move(this, list_: dict[str, dict[str, str]]):
@@ -286,9 +288,7 @@ class GetConfig(ConfigParser):
             if not section_ in this.sections():
                 raise ConfigurationError(this._file, "Section not found", section_)
             if not option_ in this[section]:
-                raise ConfigurationError(
-                    this._file, "Option not found", section_, option_
-                )
+                raise ConfigurationError(this._file, "Option not found", section_, option_)
 
             value = this[section_][option_]
 
@@ -304,18 +304,32 @@ class GetConfig(ConfigParser):
                 newobj.add_section(newsection)
                 newobj.set_and_update(newsection, newoption, value)
 
-            if (
-                "delete_entire_section" in list_[section]
-                and list_[section_]["delete_entire_section"] == "yes"
-            ):
+            if "delete_entire_section" in list_[section] \
+                and list_[section_]["delete_entire_section"] in this.yes_values:
                 this.remove_section(section_)
 
-    def set_and_update(
-        this, section: str, option: str, value: str | None = None
-    ) -> None:
+    def set_and_update(this, section: str, option: str, value: str | None = None):
         """
         @since 0.1.3
         Set an option, and eventually apply it to the file.
         """
         this.set(section, option, value)
         this.update()
+
+    """
+    FileSystemEventHandler
+    """
+
+    def on_any_event(this, event: FileSystemEvent):
+        assert event.src_path == this._file
+        assert event.is_directory == False
+
+        if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
+            this.readf(event.src_path)
+        elif isinstance(event, (FileOpenedEvent, FileClosedEvent)):
+            return
+        else:
+            warn(f"{event.src_path} has gone!")
+        
+    
+    

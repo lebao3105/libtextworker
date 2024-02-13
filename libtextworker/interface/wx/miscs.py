@@ -2,12 +2,19 @@
 @package libtextworker.interface.wx.miscs
 @brief Misc stuffs for wxPython.
 """
+
+#	A cross-platform library for Python apps.
+#	Copyright (C) 2023-2024 Le Bao Nguyen and contributors.
+#	This is a part of the libtextworker project.
+#	Licensed under the GNU General Public License version 3.0 or later.
+
 import os
 import re
 import wx
 import wx.aui
 import wx.xrc
 
+from types import ModuleType
 from typing import Callable
 
 
@@ -79,19 +86,17 @@ class XMLBuilder:
     Use this class by call it as a varible, or make a sub-class.
     """
 
-    def __init__(
-        self, Parent: wx.Window | None, FilePath: str, _: Callable | None = None
-    ):
+    def __init__(self, Parent: wx.Window | None, FilePath: str, _: Callable[[str], str] | None = None):
         """
         Constructor of the class.
         @param Parent: wx.Window object
         @param FilePath: XRC file to load
-        @param _: (initialized,optional) gettext
+        @param _: gettext.gettext or whatever you want, for translations
         """
 
         """
-        @since 0.1.3: \
-            Changed self.Parent -> self.Master to avoid confusion when the class \
+        @since 0.1.3:
+            Changed self.Parent -> self.Master to avoid confusion when the class
             is being subclassed with other wxPython classes
         """
         self.Master: wx.Window | None = Parent
@@ -128,3 +133,59 @@ class XMLBuilder:
             GetSizer, GetChilren, or even wx.FindWindowBy*.
         """
         return self.Res.LoadObject(self.Master, objectname, objecttype)
+    
+def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = True) -> ModuleType:
+    """
+    Localizes wxFormBuilder-generated Python code.
+    @param path : The path to the Python code
+    @param importText : The from .. import statement that will be added to the file (like importing gettext)
+    @param ignoreDoneWork: Ignore translated file
+    @returns result (ModuleType): Imported @path
+    """
+
+    assert os.path.isfile(path)
+    content = open(path, "r").read()
+
+    if not ignoreDoneWork:
+        assert content.startswith(path) == False, \
+            "Already translated. To avoid the file being broken, this cannot continue.\n" \
+            "Replace the file with newly generated code from wxFormBuilder and try again."
+    
+    if not importText.endswith("\n"): importText += "\n"
+    func = importText.split(" ")[-1] # Get the translate function (e.g gettext in from gettext import gettext)
+    content = importText + content # Add import statement
+
+    # Made with the help of, yeah, AI. (cuz I'm bad at regex)
+    # I have modified it myself for the most perfect pattern.
+    # All strings in wxFormBuilder generated Python code are unicode type:
+    # u"<content>"
+    # Pattern with start with u. Then 4 regex groups:
+    # One for the first double quote (")
+    # One for the string content (. for every character except \n, + for >=1 match, ? to catch as much as posible)
+    # The matching quote (")
+    # The final look for space (just one space) OR a comma (,) but NOT include it to the catch result.
+    # One draw back is that numberic only strings are included, but can be skipped below.
+    pattern = r'u(")(.+?)(")(?=[\s,])'
+    matches = re.findall(pattern, content)
+    
+    for match in matches:
+        # The match result will be a list of 
+        # (quote, string, matching quote) tuples.
+        # Skip numberic/float strings.
+        try: int(match[1]); float(match[1])
+        except: pass
+        else: continue
+        localized = f'{func}(u"{match[1]}")'
+        content = content.replace(f'u"{match[1]}"', localized)
+    
+    open(path, "w").write(content)
+    name = os.path.basename(path)
+    dirpath = path.removesuffix(name)
+
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    assert spec != None
+    result = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(result)
+    return result
+

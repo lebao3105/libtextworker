@@ -25,9 +25,6 @@ except ImportError as e:
 else:
     AUTOCOLOR = bool(darkdetect.theme())
 
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
 def hextorgb(value: str):
     value = value.lstrip("#")
     lv = len(value)
@@ -36,12 +33,10 @@ def hextorgb(value: str):
 class UISync:
     """
     A class that automatically syncs your UI to match system settings.
-    Features:
-    * Auto match system color settings
-    * Auto match settings change (Font? Yes. Color? Yes too.)
 
     Why UISync:
-    * ColorManager.autocolor_run does not work
+    * The original ColorManager.autocolor_run, which just makes a thread running ColorManager.configure, does not work.
+    * Easy to use, quick setup. No need to derive this class!
     * I've looked for solutions from older builds of texteditor/textworker, found that v1.4
     uses a custom class. So I made this:)
 
@@ -112,9 +107,8 @@ class ColorManager(GetConfig):
         Reset the configuration file.
         This is blocked as it can make conflicts with other instances of the class - unless you shutdown the app immediately..
         """
-        raise NotImplementedError(
-            "reset() is blocked on ColorManager. Please use get_config.GetConfig class instead.\n"
-        )
+        raise NotImplementedError("reset() is blocked on ColorManager."
+                                  "Please use get_config.GetConfig class instead.")
 
     # Configure widgets
     def GetFont(self) -> typing.Any | tuple[str, int, str, str, str]:
@@ -301,9 +295,8 @@ class ColorManager(GetConfig):
     def autocolor_run(self, widget: typing.Any):
         autocolor = self.getkey("color", "auto")
         if (not AUTOCOLOR) or (autocolor in self.no_values):
-            logger.warning(
-                "ColorManager.autocolor_run() called when auto-color system is not usable. Skipping."
-            )
+            logger.warning("ColorManager.autocolor_run() called when auto-color system is not usable."
+                           "Detailed: auto coloring has been turned of or doesn't have required dependency (darkdetect).")
             return
 
         self._threads[widget] = UISync(widget, self.configure)
