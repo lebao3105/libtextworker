@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['fileidx_0',['fileidx',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html#a5ae4b0a820ac9d031d49ee80cb1d4ffa',1,'libtextworker::interface::wx::dirctrl::PatchedDirCtrl']]],
-  ['folderidx_1',['folderidx',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html#a222df30f488521f2af4787dfff7a87c0',1,'libtextworker::interface::wx::dirctrl::PatchedDirCtrl']]]
+  ['findreplace_29',['FindReplace',['../a00180.html',1,'libtextworker::interface::tk::findreplace']]],
+  ['first_20steps_30',['First steps',['../a00680.html',1,'']]],
+  ['fseventhandler_31',['FSEventHandler',['../a00164.html',1,'libtextworker.interface.tk.dirctrl.FSEventHandler'],['../a00196.html',1,'libtextworker.interface.wx.dirctrl.FSEventHandler']]],
+  ['full_5fbackup_32',['full_backup',['../a00128_ad4fbcf9315b472eeb7fa651ff781a2f6.html#ad4fbcf9315b472eeb7fa651ff781a2f6',1,'libtextworker::get_config::GetConfig']]]
 ];

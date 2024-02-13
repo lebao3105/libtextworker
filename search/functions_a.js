@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['ondragover_0',['OnDragOver',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#acc044c5b3b44360d475a83b688553a2d',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondropfiles_1',['OnDropFiles',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#afd5043d490e02103352e7471a08d7174',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondroptext_2',['OnDropText',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#a001e1b225c4d57bd4b08166421c3d0cb',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['onstcmodify_3',['OnSTCModify',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#acc1bdc3c368d787e26dcd81124a95be4',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
-  ['onuiupdate_4',['OnUIUpdate',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a8d8a56ef48cf77fe01950c31fd251917',1,'libtextworker::interface::wx::editor::StyledTextControl']]]
+  ['parent_173',['Parent',['../a00192_a968082f0f47b501bcca54c53d3e5c7f9.html#a968082f0f47b501bcca54c53d3e5c7f9',1,'libtextworker::interface::wx::actionrow::ActionRow']]],
+  ['parse_5fversion_174',['parse_version',['../a00106_a63788889810631f141f1879c579120d5.html#a63788889810631f141f1879c579120d5',1,'libtextworker::versioning']]],
+  ['placeobj_175',['PlaceObj',['../a00160_aad795db43a21f20d5a5063ecd3d9ab23.html#aad795db43a21f20d5a5063ecd3d9ab23',1,'libtextworker.interface.tk.actionrow.ActionRow.PlaceObj()'],['../a00192_a1c07340417ef2550a5a4eb47727097b5.html#a1c07340417ef2550a5a4eb47727097b5',1,'libtextworker.interface.wx.actionrow.ActionRow.PlaceObj()']]],
+  ['placeobjpack_176',['PlaceObjPack',['../a00160_a85bacfd6fff236621e579a591bb5f297.html#a85bacfd6fff236621e579a591bb5f297',1,'libtextworker::interface::tk::actionrow::ActionRow']]]
 ];

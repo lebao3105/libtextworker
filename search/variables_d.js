@@ -1,8 +1,0 @@
-var searchData=
-[
-  ['recursive_5fconfigure_0',['recursive_configure',['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a0a4d6c2da371ed4e5d2f338c761ae3dd',1,'libtextworker.interface.tk.ColorManager.recursive_configure'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a630b87079102158edfa27ffe3fe9cc1a',1,'libtextworker.interface.tk.ColorManager.recursive_configure'],['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html#ad539f088211a23f87b5940d5e8f27b35',1,'libtextworker.interface.wx.ColorManager.recursive_configure'],['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html#a244299d653ece16d0f3600bbda69ebf7',1,'libtextworker.interface.wx.ColorManager.recursive_configure']]],
-  ['requested_1',['Requested',['../d6/dfb/namespacelibtextworker_1_1versioning.html#ad890b55eb9646261bd9b00667bd1dc81',1,'libtextworker::versioning']]],
-  ['res_2',['Res',['../db/db7/classlibtextworker_1_1interface_1_1wx_1_1miscs_1_1XMLBuilder.html#a665fd9c806851bada388ea2be814b0ca',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
-  ['returnbool_3',['returnbool',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a9c231d2c3254a79f8ec4b0afec56d9b6',1,'libtextworker.get_config.GetConfig.returnbool'],['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a201d775d9e3b95bfde5075f9075e47d5',1,'libtextworker.get_config.GetConfig.returnbool']]],
-  ['rmenu_4',['RMenu',['../dc/dce/classlibtextworker_1_1interface_1_1tk_1_1editor_1_1TextWidget.html#a192a33c31d1d33c43522fc8cd5c6ac90',1,'libtextworker::interface::tk::editor::TextWidget']]]
-];

@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['debug_0',['debug',['../d0/de7/classlibtextworker_1_1general_1_1Logger.html#ac247dd80352b74f2acef61f16506e5e1',1,'libtextworker::general::Logger']]],
-  ['default_5fconfigs_1',['default_configs',['../dc/d8a/namespacelibtextworker_1_1interface_1_1manager.html#ac3c87f242ef9e96dbed164adbc6534b2',1,'libtextworker.interface.manager.default_configs'],['../dd/d93/namespacelibtextworker_1_1interface_1_1wx_1_1editor.html#aff1df1310dbc34c1ef89a64a33d4b4fb',1,'libtextworker.interface.wx.editor.default_configs']]],
-  ['deprecated_20list_2',['Deprecated List',['../da/d58/deprecated.html',1,'']]],
-  ['detailedlogs_3',['detailedlogs',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#af32fe1bb5aa43c7fea6053d3169644a9',1,'libtextworker::get_config::GetConfig']]],
-  ['dirctrl_2epy_4',['dirctrl.py',['../dd/d23/dirctrl_8py.html',1,'']]],
-  ['dndsupport_5',['DNDSupport',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a0a9270a7f3f6add5b595b387829e536a',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
-  ['dragndroptarget_6',['DragNDropTarget',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html',1,'libtextworker::interface::wx::editor']]]
+  ['dc_5fflags_16',['DC_FLAGS',['../a00132.html',1,'libtextworker::interface::base']]],
+  ['delete_17',['Delete',['../a00200_ad528a4457f7574c595919d82867f5aee.html#ad528a4457f7574c595919d82867f5aee',1,'libtextworker::interface::wx::dirctrl::DirCtrl']]],
+  ['deletechildren_18',['DeleteChildren',['../a00200_a3aa6828d8d2ebdcca99d959d74a2cf21.html#a3aa6828d8d2ebdcca99d959d74a2cf21',1,'libtextworker::interface::wx::dirctrl::DirCtrl']]],
+  ['deprecated_20list_19',['Deprecated List',['../a00083.html',1,'']]],
+  ['dirctrl_20',['DirCtrl',['../a00168.html',1,'libtextworker.interface.tk.dirctrl.DirCtrl'],['../a00200.html',1,'libtextworker.interface.wx.dirctrl.DirCtrl']]],
+  ['dirctrlbase_21',['DirCtrlBase',['../a00140.html',1,'libtextworker::interface::base::dirctrl']]],
+  ['dirlist_22',['DirList',['../a00172.html',1,'libtextworker.interface.tk.dirctrl.DirList'],['../a00204.html',1,'libtextworker.interface.wx.dirctrl.DirList']]],
+  ['dndsupport_23',['DNDSupport',['../a00208_a1f0f69a5ee36cc70fc163568f88b99f6.html#a1f0f69a5ee36cc70fc163568f88b99f6',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['dragndroptarget_24',['DragNDropTarget',['../a00212.html',1,'libtextworker::interface::wx::editor']]],
+  ['drawitems_25',['DrawItems',['../a00204_ab35caf7cfad255462ea75c7c00fa41cf.html#ab35caf7cfad255462ea75c7c00fa41cf',1,'libtextworker::interface::wx::dirctrl::DirList']]]
 ];

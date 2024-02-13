@@ -1,9 +1,14 @@
 var searchData=
 [
-  ['readf_0',['readf',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a71c899da09f113f4e99894b93f609928',1,'libtextworker::get_config::GetConfig']]],
-  ['require_1',['require',['../d6/dfb/namespacelibtextworker_1_1versioning.html#a5e260a9743b3aff2143c420edab56ae9',1,'libtextworker::versioning']]],
-  ['require_5fexact_2',['require_exact',['../d6/dfb/namespacelibtextworker_1_1versioning.html#af05443425f699ba0953dbf163ba0af17',1,'libtextworker::versioning']]],
-  ['require_5flower_3',['require_lower',['../d6/dfb/namespacelibtextworker_1_1versioning.html#ac5e711fb99793df6cccd2bbbf7aebd0e',1,'libtextworker::versioning']]],
-  ['reset_4',['reset',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a1897afd741e507099e0d5b937fa53912',1,'libtextworker.get_config.GetConfig.reset()'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a3840505e43677f4a0b38ab8ac06ba388',1,'libtextworker.interface.manager.ColorManager.reset()']]],
-  ['reseteveryconfig_5',['ResetEveryConfig',['../d8/d08/namespacelibtextworker_1_1general.html#a8cdb38ab238314ff84d3f1830164f93e',1,'libtextworker::general']]]
+  ['savefile_184',['SaveFile',['../a00176_ae040020979d0dcb90349ed4a960bd7b6.html#ae040020979d0dcb90349ed4a960bd7b6',1,'libtextworker.interface.tk.editor.StyledTextControl.SaveFile(this, str path)'],['../a00176_aae93a07096d855ec983b4de41176640a.html#aae93a07096d855ec983b4de41176640a',1,'libtextworker.interface.tk.editor.StyledTextControl.SaveFile(this)']]],
+  ['set_5fand_5fupdate_185',['set_and_update',['../a00128_a972cbc376a898b57f3a4b203ae2a22c3.html#a972cbc376a898b57f3a4b203ae2a22c3',1,'libtextworker::get_config::GetConfig']]],
+  ['setcolorfunc_186',['setcolorfunc',['../a00148_a43bb4524ecf42162d9ab4985e1739123.html#a43bb4524ecf42162d9ab4985e1739123',1,'libtextworker::interface::manager::ColorManager']]],
+  ['setfolder_187',['SetFolder',['../a00140_ad04452a66be2713b233dc4e46ac3d993.html#ad04452a66be2713b233dc4e46ac3d993',1,'libtextworker.interface.base.dirctrl.DirCtrlBase.SetFolder()'],['../a00168_aded3e086df62adb62c90d18c60929a41.html#aded3e086df62adb62c90d18c60929a41',1,'libtextworker.interface.tk.dirctrl.DirCtrl.SetFolder()'],['../a00172_a1513c86f7a3bc0aa4eec08c0a3ec8405.html#a1513c86f7a3bc0aa4eec08c0a3ec8405',1,'libtextworker.interface.tk.dirctrl.DirList.SetFolder()'],['../a00200_a980528d67e59ac71e7f6de7908e5b057.html#a980528d67e59ac71e7f6de7908e5b057',1,'libtextworker.interface.wx.dirctrl.DirCtrl.SetFolder()'],['../a00204_a1cf10037dd3409463d40ad2e41998e9e.html#a1cf10037dd3409463d40ad2e41998e9e',1,'libtextworker.interface.wx.dirctrl.DirList.SetFolder()']]],
+  ['setfontandcolorfunc_188',['setfontandcolorfunc',['../a00148_a986b4ba69ea49c30e33aa355ccd5db6c.html#a986b4ba69ea49c30e33aa355ccd5db6c',1,'libtextworker::interface::manager::ColorManager']]],
+  ['setfontcfunc_189',['setfontcfunc',['../a00148_a2ffc17f4480806f21f05abdd5dfa625f.html#a2ffc17f4480806f21f05abdd5dfa625f',1,'libtextworker::interface::manager::ColorManager']]],
+  ['setlicense_190',['SetLicense',['../a00188_a0cb356df27830372c60c35b7bbe8ff72.html#a0cb356df27830372c60c35b7bbe8ff72',1,'libtextworker::interface::wx::about::AboutDialog']]],
+  ['setmodified_191',['SetModified',['../a00208_a1dba28e95b4c568a72aa04b777b0a4a3.html#a1dba28e95b4c568a72aa04b777b0a4a3',1,'libtextworker::interface::wx::editor::StyledTextControl']]],
+  ['setparent_192',['SetParent',['../a00192_a9f80f1d911f2eb4b687f1a2c05388d0d.html#a9f80f1d911f2eb4b687f1a2c05388d0d',1,'libtextworker::interface::wx::actionrow::ActionRow']]],
+  ['showbox_193',['ShowBox',['../a00188_aab4c633b5a27f87984f9b3f4d197df02.html#aab4c633b5a27f87984f9b3f4d197df02',1,'libtextworker::interface::wx::about::AboutDialog']]],
+  ['showdialog_194',['ShowDialog',['../a00156_a20260193fce2d52923eb58b854d26c33.html#a20260193fce2d52923eb58b854d26c33',1,'libtextworker::interface::tk::about::AboutDialog']]]
 ];

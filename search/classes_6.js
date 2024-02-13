@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['styledtextcontrol_0',['StyledTextControl',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html',1,'libtextworker::interface::wx::editor']]]
+  ['styledtextcontrol_121',['StyledTextControl',['../a00176.html',1,'libtextworker.interface.tk.editor.StyledTextControl'],['../a00208.html',1,'libtextworker.interface.wx.editor.StyledTextControl']]]
 ];

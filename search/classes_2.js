@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['dragndroptarget_0',['DragNDropTarget',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html',1,'libtextworker::interface::wx::editor']]]
+  ['dc_5fflags_111',['DC_FLAGS',['../a00132.html',1,'libtextworker::interface::base']]],
+  ['dirctrl_112',['DirCtrl',['../a00168.html',1,'libtextworker.interface.tk.dirctrl.DirCtrl'],['../a00200.html',1,'libtextworker.interface.wx.dirctrl.DirCtrl']]],
+  ['dirctrlbase_113',['DirCtrlBase',['../a00140.html',1,'libtextworker::interface::base::dirctrl']]],
+  ['dirlist_114',['DirList',['../a00172.html',1,'libtextworker.interface.tk.dirctrl.DirList'],['../a00204.html',1,'libtextworker.interface.wx.dirctrl.DirList']]],
+  ['dragndroptarget_115',['DragNDropTarget',['../a00212.html',1,'libtextworker::interface::wx::editor']]]
 ];

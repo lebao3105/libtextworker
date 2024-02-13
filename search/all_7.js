@@ -1,11 +1,11 @@
 var searchData=
 [
-  ['general_2epy_0',['general.py',['../df/d4f/general_8py.html',1,'']]],
-  ['get_5fconfig_2epy_1',['get_config.py',['../db/d5b/get__config_8py.html',1,'']]],
-  ['getcolor_2',['GetColor',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a52b92160162ec253b4b8f6b6f6ee99ff',1,'libtextworker.interface.manager.ColorManager.GetColor(self)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a2850854089b5a57a1af0457078f2e9c6',1,'libtextworker.interface.manager.ColorManager.GetColor(self, typing.Callable func)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a52b92160162ec253b4b8f6b6f6ee99ff',1,'libtextworker.interface.manager.ColorManager.GetColor(self)']]],
-  ['getconfig_3',['GetConfig',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html',1,'libtextworker::get_config']]],
-  ['getcurrentdir_4',['GetCurrentDir',['../d8/d08/namespacelibtextworker_1_1general.html#abe7746576353e6939d2b98a7af70cc5e',1,'libtextworker::general']]],
-  ['getfont_5',['GetFont',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a17a255f5e1f9023f27d5e85bfce4927a',1,'libtextworker.interface.manager.ColorManager.GetFont(self)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a364db26c4efc7bf7bcc066ad207f01c8',1,'libtextworker.interface.manager.ColorManager.GetFont(self, typing.Callable func)'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a17a255f5e1f9023f27d5e85bfce4927a',1,'libtextworker.interface.manager.ColorManager.GetFont(self)'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#ab9d7d1d560557ef652610cd1cb16214a',1,'libtextworker.interface.tk.ColorManager.GetFont()']]],
-  ['getfullpath_6',['GetFullPath',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html#a7a2049c90a56db16c9bc3beb6a222808',1,'libtextworker::interface::wx::dirctrl::PatchedDirCtrl']]],
-  ['getkey_7',['getkey',['../da/dc8/classlibtextworker_1_1get__config_1_1GetConfig.html#a90ad0784c28178659bb8e5410fc83443',1,'libtextworker::get_config::GetConfig']]]
+  ['getcolor_33',['GetColor',['../a00148_a550faf0a774661c32474aeebf7548f24.html#a550faf0a774661c32474aeebf7548f24',1,'libtextworker::interface::manager::ColorManager']]],
+  ['getconfig_34',['GetConfig',['../a00128.html',1,'libtextworker::get_config']]],
+  ['getconfig_20class_35',['GetConfig class',['../a00681.html',1,'']]],
+  ['getcurrentdir_36',['GetCurrentDir',['../a00085_a976df9cde49e6e61f962e8ef489fc054.html#a976df9cde49e6e61f962e8ef489fc054',1,'libtextworker::general']]],
+  ['getfont_37',['GetFont',['../a00148_af4c61e3d89d4eb858c651decc6c22284.html#af4c61e3d89d4eb858c651decc6c22284',1,'libtextworker.interface.manager.ColorManager.GetFont()'],['../a00184_a7685e0efd4986d1016743170a1512fb7.html#a7685e0efd4986d1016743170a1512fb7',1,'libtextworker.interface.wx.ColorManager.GetFont()']]],
+  ['getfullpath_38',['GetFullPath',['../a00140_a263c831a536971fba3f619abaab31340.html#a263c831a536971fba3f619abaab31340',1,'libtextworker.interface.base.dirctrl.DirCtrlBase.GetFullPath()'],['../a00200_af783d8467978a2297e4ea801e6369f7c.html#af783d8467978a2297e4ea801e6369f7c',1,'libtextworker.interface.wx.dirctrl.DirCtrl.GetFullPath()'],['../a00204_a6d129b4bb8dbb3911d0648f9a5e31ad3.html#a6d129b4bb8dbb3911d0648f9a5e31ad3',1,'libtextworker.interface.wx.dirctrl.DirList.GetFullPath()']]],
+  ['getkey_39',['getkey',['../a00128_a428fca2d3760c757e0e504525e550160.html#a428fca2d3760c757e0e504525e550160',1,'libtextworker::get_config::GetConfig']]],
+  ['getnodechildren_40',['GetNodeChildren',['../a00200_a37faf9823ae8ed55cce68a977ad56f93.html#a37faf9823ae8ed55cce68a977ad56f93',1,'libtextworker::interface::wx::dirctrl::DirCtrl']]]
 ];

@@ -1,9 +1,11 @@
 var searchData=
 [
-  ['ondragover_0',['OnDragOver',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#acc044c5b3b44360d475a83b688553a2d',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondropfiles_1',['OnDropFiles',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#afd5043d490e02103352e7471a08d7174',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['ondroptext_2',['OnDropText',['../d8/d65/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1DragNDropTarget.html#a001e1b225c4d57bd4b08166421c3d0cb',1,'libtextworker::interface::wx::editor::DragNDropTarget']]],
-  ['onstcmodify_3',['OnSTCModify',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#ae660267a80ec7d950c6f173782a3e0ac',1,'libtextworker.interface.wx.editor.StyledTextControl.OnSTCModify'],['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#acc1bdc3c368d787e26dcd81124a95be4',1,'libtextworker.interface.wx.editor.StyledTextControl.OnSTCModify(self, event)']]],
-  ['onuiupdate_4',['OnUIUpdate',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a438b88fbffbc2c0e1b938a9d0ecc6157',1,'libtextworker.interface.wx.editor.StyledTextControl.OnUIUpdate'],['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#a8d8a56ef48cf77fe01950c31fd251917',1,'libtextworker.interface.wx.editor.StyledTextControl.OnUIUpdate(self, event)']]],
-  ['openfolder_5',['openfolder',['../d1/dae/classlibtextworker_1_1interface_1_1wx_1_1dirctrl_1_1PatchedDirCtrl.html#a217dda62d5ad1e6db8cde7b5ae959d71',1,'libtextworker::interface::wx::dirctrl::PatchedDirCtrl']]]
+  ['readf_77',['readf',['../a00128_aee35bf5f6d27f8770d451793f3f0231e.html#aee35bf5f6d27f8770d451793f3f0231e',1,'libtextworker::get_config::GetConfig']]],
+  ['require_78',['require',['../a00106_ac941c9aa8e1aced949758afc7518da88.html#ac941c9aa8e1aced949758afc7518da88',1,'libtextworker::versioning']]],
+  ['require_5fexact_79',['require_exact',['../a00106_a9dbe6f6ca77906cc939fe18c09f935c3.html#a9dbe6f6ca77906cc939fe18c09f935c3',1,'libtextworker::versioning']]],
+  ['require_5flower_80',['require_lower',['../a00106_adcdf366012b36708593d2bf4e343b874.html#adcdf366012b36708593d2bf4e343b874',1,'libtextworker::versioning']]],
+  ['res_81',['Res',['../a00216_a665fd9c806851bada388ea2be814b0ca.html#a665fd9c806851bada388ea2be814b0ca',1,'libtextworker::interface::wx::miscs::XMLBuilder']]],
+  ['reset_82',['reset',['../a00128_a46ca85f41eb836afdcedcca0f6ee19aa.html#a46ca85f41eb836afdcedcca0f6ee19aa',1,'libtextworker.get_config.GetConfig.reset()'],['../a00148_abb4cec866c44b5b7b1ad87e03d7b6e19.html#abb4cec866c44b5b7b1ad87e03d7b6e19',1,'libtextworker.interface.manager.ColorManager.reset()']]],
+  ['reseteveryconfig_83',['ResetEveryConfig',['../a00085_a274cab3285f9153159c54cec4c7e1f91.html#a274cab3285f9153159c54cec4c7e1f91',1,'libtextworker::general']]],
+  ['restore_84',['restore',['../a00128_a0e89fb962d308e104ffe697a97827bf6.html#a0e89fb962d308e104ffe697a97827bf6',1,'libtextworker::get_config::GetConfig']]]
 ];

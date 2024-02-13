@@ -1,13 +1,12 @@
 var searchData=
 [
-  ['clrmgr_0',['clrmgr',['../d5/dcd/classlibtextworker_1_1interface_1_1wx_1_1editor_1_1StyledTextControl.html#ab5291c899f9587cc88cfef03b2aa6e6d',1,'libtextworker.interface.wx.editor.StyledTextControl.clrmgr'],['../de/d85/namespacelibtextworker_1_1interface_1_1wx.html#a0ed24a24fc3e4f9452c6260c98c74d1b',1,'libtextworker.interface.wx.clrmgr'],['../dd/d15/namespacelibtextworker_1_1interface_1_1tk.html#a451999822bc411fe278c3cb4779247f3',1,'libtextworker.interface.tk.clrmgr']]],
-  ['colormanager_1',['ColorManager',['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html',1,'libtextworker.interface.manager.ColorManager'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html',1,'libtextworker.interface.tk.ColorManager'],['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html',1,'libtextworker.interface.wx.ColorManager']]],
-  ['colors_2',['colors',['../d8/dc0/namespacelibtextworker_1_1interface_1_1__colors.html#a4ad30995217cae789686c872b906a77b',1,'libtextworker::interface::_colors']]],
-  ['configurationerror_3',['ConfigurationError',['../d1/d9d/classlibtextworker_1_1get__config_1_1ConfigurationError.html',1,'libtextworker::get_config']]],
-  ['configure_4',['configure',['../d1/dd1/classlibtextworker_1_1interface_1_1wx_1_1ColorManager.html#a8df2eee94d1ec52f4506e4f473af7dd1',1,'libtextworker.interface.wx.ColorManager.configure()'],['../de/d86/classlibtextworker_1_1interface_1_1tk_1_1ColorManager.html#a1660c71f9594795ce10fc5c20ac76f01',1,'libtextworker.interface.tk.ColorManager.configure()'],['../dc/d61/classlibtextworker_1_1interface_1_1manager_1_1ColorManager.html#a14692829bdaa2717dfb295feef947bb0',1,'libtextworker.interface.manager.ColorManager.configure()']]],
-  ['constants_2epy_5',['constants.py',['../d5/d01/constants_8py.html',1,'']]],
-  ['craftitems_6',['CraftItems',['../d8/d08/namespacelibtextworker_1_1general.html#a44c191378b85632e1297eedc7d17fdc1',1,'libtextworker::general']]],
-  ['createdirectory_7',['CreateDirectory',['../d8/d08/namespacelibtextworker_1_1general.html#a88f36029ffb283e744e98c04e064a397',1,'libtextworker::general']]],
-  ['createmenu_8',['CreateMenu',['../dd/d2e/namespacelibtextworker_1_1interface_1_1tk_1_1miscs.html#ac9fefa631df4c7d4c17585cd9433820f',1,'libtextworker.interface.tk.miscs.CreateMenu()'],['../d6/db0/namespacelibtextworker_1_1interface_1_1wx_1_1miscs.html#afac642782ec7fe84216eaa97e521c132',1,'libtextworker.interface.wx.miscs.CreateMenu()']]],
-  ['critical_9',['critical',['../d0/de7/classlibtextworker_1_1general_1_1Logger.html#ac5129beb74ab5303e75a4664b741ee34',1,'libtextworker::general::Logger']]]
+  ['callguilog_7',['CallGUILog',['../a00116_a6ebf66137bbbb72add1d5e6e419a15f7.html#a6ebf66137bbbb72add1d5e6e419a15f7',1,'libtextworker::general::Logger']]],
+  ['choose_20the_20right_20toolkit_20you_20want_8',['Choose the right toolkit you want',['../a00682.html',1,'']]],
+  ['clrmgr_9',['clrmgr',['../a00099_a0ed24a24fc3e4f9452c6260c98c74d1b.html#a0ed24a24fc3e4f9452c6260c98c74d1b',1,'libtextworker::interface::wx']]],
+  ['colormanager_10',['ColorManager',['../a00148.html',1,'libtextworker.interface.manager.ColorManager'],['../a00152.html',1,'libtextworker.interface.tk.ColorManager'],['../a00184.html',1,'libtextworker.interface.wx.ColorManager']]],
+  ['configurationerror_11',['ConfigurationError',['../a00124.html',1,'libtextworker::get_config']]],
+  ['configure_12',['configure',['../a00148_a17ab3511926c51b67f2c5be3939328c2.html#a17ab3511926c51b67f2c5be3939328c2',1,'libtextworker::interface::manager::ColorManager']]],
+  ['craftitems_13',['CraftItems',['../a00085_a44c191378b85632e1297eedc7d17fdc1.html#a44c191378b85632e1297eedc7d17fdc1',1,'libtextworker::general']]],
+  ['createdirectory_14',['CreateDirectory',['../a00085_aa8bbe359727bc2bb67f5b82456c2d570.html#aa8bbe359727bc2bb67f5b82456c2d570',1,'libtextworker::general']]],
+  ['createmenu_15',['CreateMenu',['../a00098_a914dd8a040ad5d802c661e85a11b4a24.html#a914dd8a040ad5d802c661e85a11b4a24',1,'libtextworker.interface.tk.miscs.CreateMenu()'],['../a00105_a7dc6dc2a7e026ff0970313e59aa8ea54.html#a7dc6dc2a7e026ff0970313e59aa8ea54',1,'libtextworker.interface.wx.miscs.CreateMenu()']]]
 ];
