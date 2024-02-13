@@ -225,6 +225,7 @@ class ColorManager(GetConfig):
         @param obj (type | object): Object (variable or type reference)
         @param func (typing.Callable | str): Function to use (Reference)
         @param params (typle | dict): Function parameters
+        @since 0.1.4: First appearance
         """
         if not obj in self.setfcfn: self.setfcfn[obj] = []
         self.setfcfn[obj].append({"fn": func, "params": params})
