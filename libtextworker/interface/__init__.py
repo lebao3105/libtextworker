@@ -8,7 +8,9 @@
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
-"""Default UI settings"""
+"""
+Default UI settings
+"""
 stock_ui_configs = {
     "color": {
         "background": "light",
@@ -17,7 +19,7 @@ stock_ui_configs = {
         # New in 0.1.4:
         # background and foreground color specificially for light and dark mode,
         # suffixed by "-light" and/or "-dark"
-        # by default we won't leave it here, this is for the end-users
+        # by default we won't leave it here
     },
     "font": {  # default value 'normal' now switched to 'system'
         "style": "system",
@@ -25,9 +27,18 @@ stock_ui_configs = {
         "family": "system",
         "size": "system",
     },
+    "highlight": {
+        # Also new in this version: highlighted background and foreground,
+        # for hightlight by mouse and by finder.
+        # Key for each situations would use "-mouse" and "-finder" prefixes.
+        "background": "",
+        "foreground": ""
+    }
 }
 
-"""Default editor configs"""
+"""
+Default editor configs
+"""
 stock_editor_configs = {
     "indentation": {
         "size": 4,
@@ -57,5 +68,6 @@ colors = {
     "red": "#ff0000",
     "rose": "#ffaa95",
     "light_pink": "#ffd1d6",
-    "light_green": "#20eaaa",
+    "light_green": "#95ffaa",
+    "black": "#000000"
 }
