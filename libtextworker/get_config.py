@@ -27,6 +27,9 @@ except ImportError:
     from configparser import ConfigParser
 
 class ConfigurationError(libTewException):
+    """
+    As the name says, class for (mostly) GetConfig exceptions.
+    """
     def __init__(this, path: str, msg: str, section: str,
                  option: str = "\\not_specified\\"):
         
@@ -34,7 +37,7 @@ class ConfigurationError(libTewException):
         full = full.format(path, section, option, msg)
         libTewException.__init__(this, full)
 
-class GetConfig(ConfigParser, FileSystemEventHandler):
+class GetConfig(ConfigParser):
     # Values
     yes_values: list = ["yes", "True", True, "1", 1, "on"]
     no_values: list = ["no", "False", False, "0", 0, "off"]
@@ -44,7 +47,8 @@ class GetConfig(ConfigParser, FileSystemEventHandler):
     cfg: dict = {}
     detailedlogs: bool = True
 
-    _observer = Observer()
+    _evtHdlr = FileSystemEventHandler()
+    _observer: Observer
 
     for item in yes_values:
         aliases[item] = True
@@ -77,6 +81,7 @@ class GetConfig(ConfigParser, FileSystemEventHandler):
                 this.cfg[key] = this[key]
 
         this.readf(file)
+        this._evtHdlr.on_any_event = this.on_any_event
 
     # File tasks
     def readf(this, file: str, encoding: str | None = None):
@@ -94,7 +99,8 @@ class GetConfig(ConfigParser, FileSystemEventHandler):
                 this.read(file, encoding)
 
         this._file = file
-        this._observer.schedule(this, file)
+        this._observer = Observer()
+        this._observer.schedule(this._evtHdlr, file)
         this._observer.start()
     
     def __del__(this):
@@ -197,7 +203,7 @@ class GetConfig(ConfigParser, FileSystemEventHandler):
         @return False if the option does not exist and needed parameter set to False.
         """
 
-        def bringitback() -> typing.Any | None:
+        def bringitback():
             target = this.backups
             value_: typing.Any
 
@@ -321,8 +327,8 @@ class GetConfig(ConfigParser, FileSystemEventHandler):
     """
 
     def on_any_event(this, event: FileSystemEvent):
-        assert event.src_path == this._file
-        assert event.is_directory == False
+        if event.src_path != this._file: # Watchdog also catch events from other files
+            return
 
         if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
             this.readf(event.src_path)
