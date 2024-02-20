@@ -22,7 +22,7 @@ gettext.textdomain(PROJDOMAIN)
 _ = gettext.gettext
 
 # Something else;-;
-__version__ = "0.1.4b0"
+__version__ = "0.1.4b1"
 THEMES_DIR: str = ""
 EDITOR_DIR: str = ""
 LICENSES = rf'{os.path.normpath(CraftItems(GetCurrentDir(__file__), "licenses"))}'
