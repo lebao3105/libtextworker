@@ -42,7 +42,7 @@ class UISync:
 
     Notes:
     * The target function that will be used must accept at least arguments, with the first one
-      (excluding the self parameter if any) is for the widget, the second one is for the color.
+      (excluding the class's this/self parameter if any) is for the widget, the second one is for the color.
     * Nothing more (for now)
 
     Don't get this class wrong: This only makes a thread that uses your custom function.
@@ -85,7 +85,7 @@ class ColorManager(GetConfig):
 
     _threads: dict[object, threading.Thread] = {}
 
-    def __init__(self, default_configs: dict[str, typing.Any] = stock_ui_configs,
+    def __init__(this, default_configs: dict[str, typing.Any] = stock_ui_configs,
                  customfilepath: str = CraftItems(THEMES_DIR, "default.ini")):
         """
         Constructor of the class.
@@ -93,16 +93,16 @@ class ColorManager(GetConfig):
         @param customfilepath (str): Custom file path. Disabled by default.
         """
         if customfilepath != "":
-            self._file = os.path.normpath(customfilepath)
+            this._file = os.path.normpath(customfilepath)
         else:
-            self._file = CraftItems(THEMES_DIR, "default.ini")
+            this._file = CraftItems(THEMES_DIR, "default.ini")
 
-        GetConfig.__init__(self, default_configs, self._file)
+        GetConfig.__init__(this, default_configs, this._file)
 
         if os.path.exists("mergelist.json"):
-            self.move(json.loads(open("mergelist.json", "r").read()))
+            this.move(json.loads(open("mergelist.json", "r").read()))
 
-    def reset(self, restore: bool = False):
+    def reset(this, restore: bool = False):
         """
         Reset the configuration file.
         This is blocked as it can make conflicts with other instances of the class - unless you shutdown the app immediately..
@@ -111,7 +111,7 @@ class ColorManager(GetConfig):
                                   "Please use get_config.GetConfig class instead.")
 
     # Configure widgets
-    def GetFont(self) -> typing.Any | tuple[str, int, str, str, str]:
+    def GetFont(this) -> typing.Any | tuple[str, int, str, str, str]:
         """
         Call the font definitions.
         When called, this returns the following:
@@ -121,13 +121,13 @@ class ColorManager(GetConfig):
         * Tkinter: tkinter.font.Font object
         """
 
-        if not self.has_section("font"):
+        if not this.has_section("font"):
             return 10, "system", "system", ""
 
-        family = self.getkey("font", "family", False, True)
-        size = self.getkey("font", "size", False, True)
-        weight = self.getkey("font", "weight", False, True)
-        style = self.getkey("font", "style", False, True)
+        family = this.getkey("font", "family", False, True)
+        size = this.getkey("font", "size", False, True)
+        weight = this.getkey("font", "weight", False, True)
+        style = this.getkey("font", "style", False, True)
 
         if family == "default":
             family = ""
@@ -144,7 +144,7 @@ class ColorManager(GetConfig):
 
         return size_, style, weight, family
 
-    def GetColor(self, color: str | None = None) -> tuple[str, str]:
+    def GetColor(this, color: str | None = None) -> tuple[str, str]:
         """
         Get the current foreground/background defined in the settings.
         @since 0.1.4: Made to be a non-@property item
@@ -154,23 +154,23 @@ class ColorManager(GetConfig):
         # print(darkdetect.theme().lower())
         if not color:
             if AUTOCOLOR: currmode = darkdetect.theme().lower()
-            else: currmode = str(self.getkey("color", "background", True, True)).lower()
+            else: currmode = str(this.getkey("color", "background", True, True)).lower()
         else:
             currmode = color
 
         # print(currmode)
         if not currmode in ["dark", "light"]:
-            raise ConfigurationError(self._file, "Invalid value", "color", "background")
+            raise ConfigurationError(this._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         try:
-            test_back = self.getkey("color", "background-%s" % currmode, noraiseexp=True)
-            test_fore = self.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
+            test_back = this.getkey("color", "background-%s" % currmode, noraiseexp=True)
+            test_fore = this.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
             # print(test_back, test_fore)
 
             back_ = test_back if test_back else colors[currmode]
 
-            fore_ = self.getkey("color", "foreground", make=True)
+            fore_ = this.getkey("color", "foreground", make=True)
             if fore_ == "default":
                 fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
 
@@ -187,13 +187,13 @@ class ColorManager(GetConfig):
                 fore_ = colors[test_fore]
 
             else:
-                raise ConfigurationError(self._file, "Invalid value", "color", "foreground")
+                raise ConfigurationError(this._file, "Invalid value", "color", "foreground")
 
             return back_, fore_
         except KeyError or ConfigurationError:
             pass
 
-    def setcolorfunc(self, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
+    def setcolorfunc(this, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
         """
         Set GUI widget background color-set function.
         @param obj (type | object): Object (variable or type reference)
@@ -203,10 +203,10 @@ class ColorManager(GetConfig):
         Function paramers must have %(color) in order to
             pass color value. Use %(color-rgb) if you want RGB value.
         """
-        if not obj in self.setcolorfn: self.setcolorfn[obj] = []
-        self.setcolorfn[obj].append({"fn": func, "params": params})
+        if not obj in this.setcolorfn: this.setcolorfn[obj] = []
+        this.setcolorfn[obj].append({"fn": func, "params": params})
 
-    def setfontcfunc(self, obj: type | object, func: typing.Callable, params: dict | tuple | None = None):
+    def setfontcfunc(this, obj: type | object, func: typing.Callable, params: dict | tuple | None = None):
         """
         Set GUI widget font color-set function.
         @param obj (type | object): Object (variable or type reference)
@@ -216,10 +216,10 @@ class ColorManager(GetConfig):
         Function paramers must have %(font) in order to
             pass color value. Use %(font-rgb) if you want RGB value.
         """
-        if not obj in self.setfontfn: self.setfontfn[obj] = []
-        self.setfontfn[obj].append({"fn": func, "params": params})
+        if not obj in this.setfontfn: this.setfontfn[obj] = []
+        this.setfontfn[obj].append({"fn": func, "params": params})
 
-    def setfontandcolorfunc(self, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
+    def setfontandcolorfunc(this, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
         """
         Add a function that sets both the background and font color.
         @param obj (type | object): Object (variable or type reference)
@@ -227,10 +227,10 @@ class ColorManager(GetConfig):
         @param params (typle | dict): Function parameters
         @since 0.1.4: First appearance
         """
-        if not obj in self.setfcfn: self.setfcfn[obj] = []
-        self.setfcfn[obj].append({"fn": func, "params": params})
+        if not obj in this.setfcfn: this.setfcfn[obj] = []
+        this.setfcfn[obj].append({"fn": func, "params": params})
 
-    def configure(self, widget: object, color: str | None = None):
+    def configure(this, widget: object, color: str | None = None):
         """
         Style a widget (only fore+back) with pre-defined settings.
         This is usable for (almost) all GUI toolkits.
@@ -243,10 +243,10 @@ class ColorManager(GetConfig):
 
         if not widget:
             logger.debug(f"Widget {widget} died, skip configuring.")
-            self._threads.pop(widget, None)
+            this._threads.pop(widget, None)
             return
 
-        color, fontcolor = self.GetColor(color)
+        color, fontcolor = this.GetColor(color)
 
         def runfn(func: typing.Callable, args: dict|tuple):
             extra_aliases = {
@@ -276,15 +276,15 @@ class ColorManager(GetConfig):
         
         def runloop(attr: typing.Literal["color", "font", "fc"]):
 
-            for item in getattr(self, f"set{attr}fn"):
+            for item in getattr(this, f"set{attr}fn"):
                 if isinstance(item, type):
                     if not isinstance(widget, item): continue
                 elif item != widget: continue
 
-                dictionary = getattr(self, f"set{attr}fn")[item]
+                dictionary = getattr(this, f"set{attr}fn")[item]
 
                 for i in range(len(dictionary)):
-                    fn = getattr(self, f"set{attr}fn")[item][i]["fn"]
+                    fn = getattr(this, f"set{attr}fn")[item][i]["fn"]
                     if isinstance(fn, str): fn = getattr(widget, fn)
 
                     runfn(fn, dictionary[i]["params"])
@@ -293,11 +293,11 @@ class ColorManager(GetConfig):
         runloop("font")
         runloop("fc")
 
-    def autocolor_run(self, widget: typing.Any):
-        autocolor = self.getkey("color", "auto")
-        if (not AUTOCOLOR) or (autocolor in self.no_values):
+    def autocolor_run(this, widget: typing.Any):
+        autocolor = this.getkey("color", "auto")
+        if (not AUTOCOLOR) or (autocolor in this.no_values):
             logger.warning("ColorManager.autocolor_run() called when auto-color system is not usable."
                            "Detailed: auto coloring has been turned of or doesn't have required dependency (darkdetect).")
             return
 
-        self._threads[widget] = UISync(widget, self.configure)
+        this._threads[widget] = UISync(widget, this.configure)
