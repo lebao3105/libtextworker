@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "libtextworker"
-version = "0.1.4b0"
+version = "0.1.4b1"
 description = "An universal library for Python projects"
 authors = ["lebao3105 <bao12345yocoo@gmail.com>"]
 license = "GPL-3.0-or-later"
