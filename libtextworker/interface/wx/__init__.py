@@ -37,8 +37,8 @@ class ColorManager(manager.ColorManager):
         return wx.Font(size, wx.FONTFAMILY_MODERN, constants.FONTST[style],
                        constants.FONTWT[weight], 0, family)
 
-    def configure(this, widget: wx.Control, childs_too: bool = recursive_configure):
-        manager.ColorManager.configure(this, widget)
+    def configure(this, widget: wx.Control, color: str | None = None, childs_too: bool = recursive_configure):
+        manager.ColorManager.configure(this, widget, color)
 
         # fore&back
         bg, fg = this.GetColor()
@@ -47,17 +47,17 @@ class ColorManager(manager.ColorManager):
 
         # font
         font = this.GetFont()
-
         if childs_too and hasattr(widget, "GetChildren"):
             widget.SetBackgroundColour(bg)
             widget.SetForegroundColour(fg)
             for children in widget.GetChildren():
-                this.configure(children, True)
+                this.configure(children, color, True)
         else:
             widget.SetOwnBackgroundColour(bg)
             widget.SetOwnForegroundColour(fg)
 
         widget.SetFont(font)
+        widget.Refresh()
 
 ## @deprecated On version 0.1.3
 clrmgr = None
