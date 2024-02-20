@@ -24,7 +24,7 @@ class ActionRow(tkinter.Frame):
     _curr_col: int = 0
 
     def PlaceObj(this, obj: tkinter.Misc, column: int | str = -1,
-                 sticky: str = "e", *args, **kwds):
+                 sticky: str = "e", *args, **kwds) -> tkinter.Misc:
         """
         Place a widget using grid method.
         @param obj (tkinter.Misc): What widget to place (class/function reference, NOT an instance)
@@ -47,8 +47,8 @@ class ActionRow(tkinter.Frame):
         return target
     
     def PlaceObjPack(this, obj: tkinter.Misc, side: str = "right",
-                 expand: bool = True, fill: str = "x",
-                 *args, **kwds):
+                     expand: bool = True, fill: str = "x",
+                     *args, **kwds) -> tkinter.Misc:
         """
         Place a widget using pack method.
         @param obj (tkinter.Misc): What widget to place (class/function reference, NOT an instance)

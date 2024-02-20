@@ -9,18 +9,25 @@ Contains class(es) and needed attributes for Tkinter.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
 import typing
+from enum import Flag, auto
 
 from ... import Importable
 from ...general import libTewException
 from ..manager import ColorManager
 
 if Importable["tkinter"] == True:
-    from tkinter import TclError, font, Misc, Menu, Label
+    from tkinter import font, Misc, Menu
 else:
-    raise libTewException(
-        "Tkinter is not (correctly) installed! libtextworker.interface.tk can't work!"
-    )
+    raise libTewException("Tkinter is not (correctly) installed!")
 
+class TK_PLACEOPTS(Flag):
+    TK_USEGRID = auto()
+    TK_USEPLACE = auto()
+    TK_USEPACK = auto()
+
+TK_USEGRID = TK_PLACEOPTS.TK_USEGRID
+TK_USEPLACE = TK_PLACEOPTS.TK_USEPLACE
+TK_USEPACK = TK_PLACEOPTS.TK_USEPACK
 
 class ColorManager(ColorManager):
     recursive_configure: bool = True
@@ -52,8 +59,8 @@ class ColorManager(ColorManager):
     def setcolorfunc(self, objname: str, func: typing.Callable, params: dict):
         raise NotImplementedError
 
-    def configure(self, widget: Misc, childs_too: bool = recursive_configure):
-        back, fore = self.GetColor()
+    def configure(self, widget: Misc, color: str | None = None, childs_too: bool = recursive_configure):
+        back, fore = self.GetColor(color)
         font_to_use = self.GetFont()
 
         if isinstance(widget, Menu):
@@ -82,4 +89,4 @@ class ColorManager(ColorManager):
 
         if childs_too:
             for child in widget.winfo_children():
-                self.configure(child, True)
+                self.configure(child, color, True)
