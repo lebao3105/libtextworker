@@ -129,7 +129,6 @@ class GetConfig(ConfigParser):
         """
         with open(this._file, "w") as f:
             this.write(f)
-        this.read(this._file)
 
     # Options
     def backup(this, keys: dict, direct_to_keys: bool = False) -> dict:
@@ -140,8 +139,7 @@ class GetConfig(ConfigParser):
         """
         target = keys if direct_to_keys else this.backups
         for key in keys:
-            for subelm in keys[key]:
-                target[key][subelm] = this[key][subelm]
+            target[key] = this[key]
 
         return target
 
@@ -150,12 +148,12 @@ class GetConfig(ConfigParser):
         @since 0.1.4
         Backup all settings by writing to GetConfig.backups and/or another file.
         @param noFile (bool): Don't write to any file else.
-        @param path (str): Target backup file
+        @param path (str): Target backup file (defaults to the loaded one)
         @param use_json (bool = False): Use the backup file in JSON format
         """
-        if path == this._file:
-            raise Exception("GetConfig.full_backup: filepath must be the loaded file!")
-
+        if not path:
+            path = this._file
+        
         for section in this.sections():
             this.backups[section] = this[section]
 
