@@ -11,11 +11,6 @@
 import wx
 import wx.adv
 
-from typing import Any
-from ...general import CraftItems
-from ... import LICENSES
-
-
 class AboutDialog:
     """
     About dialog built with wxPython.
@@ -26,7 +21,6 @@ class AboutDialog:
     """
 
     infos = wx.adv.AboutDialogInfo()
-    Parent: Any | None = None
 
     SetArtists = infos.SetArtists
     SetCopyright = infos.SetCopyright
@@ -53,10 +47,10 @@ class AboutDialog:
         data += license
         self.infos.SetLicence(data)
 
-    def ShowBox(self, event=None):
+    def ShowBox(self, Parent):
         """
         Shows a About dialog with infomations collected.
         @param event | None: wxPython event
         @return wx.adv.AboutBox: About window
         """
-        return wx.adv.AboutBox(self.infos, self.Parent)
+        return wx.adv.AboutBox(self.infos, Parent)

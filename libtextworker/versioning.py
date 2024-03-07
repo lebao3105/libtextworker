@@ -35,9 +35,7 @@ def parse_version(project: str) -> packaging.version.Version:
 
     if project not in Requested:
         if not module.__version__:
-            raise general.libTewException(
-                "%(project)s does not have __version__ attribute!"
-            )
+            raise general.libTewException(f"{project} does not have __version__ attribute!")
         Requested[project] = packaging.version.parse(module.__version__)
 
     return Requested[project]
@@ -70,7 +68,7 @@ def require(project: str, target_version: str):
 
     if currver < target:
         raise general.libTewException(
-            "Project %(project)s must be version >=%(target_version)s"
+            "Project %(project)s must have version >=%(target_version)s"
         )
 
 

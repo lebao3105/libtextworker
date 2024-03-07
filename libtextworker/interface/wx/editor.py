@@ -75,8 +75,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def DNDSupport(this) -> bool:
         """Meh DND does not mean do not disturb."""
-        if this.cfg.getkey("editor", "dnd_enabled", True, True) \
-           not in this.cfg.yes_values:
+        if this.cfg.getkey("editor", "dnd_enabled", True, True) not in this.cfg.yes_values:
             return False
 
         this.SetDropTarget(DragNDropTarget(this))
@@ -156,14 +155,13 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def OnUIUpdate(this, event):  # MS Bing found this - thanks to the people who made it!
         line_count = this.GetLineCount()
-        last_line_num = str(line_count)
 
-        if len(last_line_num) <= 4:
+        if line_count <= 1000:
             margin_width = 40
         else:
-            last_line_width = this.TextWidth(wx.stc.STC_STYLE_LINENUMBER, last_line_num)
             # add some extra space
-            margin_width = last_line_width + 4
+            # why 4?
+            margin_width = this.TextWidth(wx.stc.STC_STYLE_LINENUMBER, str(line_count)) + 4
 
         # set the margin width
         this.SetMarginWidth(0, margin_width)

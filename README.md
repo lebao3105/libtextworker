@@ -3,8 +3,6 @@
 
 This is the official library for [texteditor/textworker](https://github.com/lebao3105/texteditor). Unlike its name, you can also use this for your projects too!
 
-## Usage
-
 This library aims to be suitable for both GUI and CLI/TUI programs.
 
 Available packages from Pypi:

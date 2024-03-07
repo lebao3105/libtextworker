@@ -48,7 +48,7 @@ class GetConfig(ConfigParser):
     detailedlogs: bool = True
 
     _evtHdlr = FileSystemEventHandler()
-    _observer: Observer
+    _observer: Observer # type: ignore
 
     for item in yes_values:
         aliases[item] = True
