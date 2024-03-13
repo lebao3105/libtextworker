@@ -70,7 +70,7 @@ def require(project: str, target_version: str):
 
     if currver < target:
         raise general.libTewException(
-            "Project %(project)s must be version >=%(target_version)s"
+            "Project %(project)s must have version >=%(target_version)s"
         )
 
 
@@ -85,7 +85,7 @@ def require_exact(project: str, target_version: str):
 
     if currver != target:
         raise general.libTewException(
-            "Project %(project)s not available for version %(target_version)"
+            "Project %(project)s version %(target_version)s is not available"
         )
 
 
@@ -100,5 +100,5 @@ def require_lower(project: str, target_version: str):
 
     if currver >= target:
         raise general.libTewException(
-            "Project %(project)s not available for version %(target_version)"
+            "Project %(project)s version %(target_version)s is not available"
         )
