@@ -8,31 +8,76 @@
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
-from enum import auto
-from tkinter.ttk import Frame, Label, Entry
+import tkinter
+from tkinter.ttk import Button, Frame, Label, Entry
 
-from . import actionrow
+from . import TK_USEGRID, actionrow, TK_USEPACK
 from ... import _
 from ...general import libTewException
 
-FR_FIND = auto()
-FR_REPLACE = auto()
-
 class FindReplace(Frame):
+    """
+    A find-replace dialog for Tkinter text edits.
+    TODO: More searching options (regex etc)
+    """
 
-    def __init__(this, master, style: int = -1, *args, **kwds):
+    Target: tkinter.Text
+    LastIndex: str = "1.0"
+
+    def __init__(this, master, editor: tkinter.Text, placestyle = TK_USEGRID , addReplace: bool = False, *args, **kwds):
         Frame.__init__(this, master, *args, **kwds)
+        this.Target = editor
 
-        if FR_FIND in style:
-            row1 = actionrow.ActionRow(this)
-            row1.PlaceObjPack(Label, text=_("Find for:"), side="left")
-            this.findentry = row1.PlaceObjPack(Entry, justify="left")
+        if TK_USEGRID in placestyle:
+            target = actionrow.ActionRow.PlaceObj
+            leftside = {"column": -1}
+        else:
+            target = actionrow.ActionRow.PlaceObjPack
+            leftside = {"side": "left"}
 
-        if FR_REPLACE in style:
+        row1 = actionrow.ActionRow(this)
+        target(row1, Label, text=_("Find for:"), **leftside)
+        this.findentry = target(row1, Entry, justify="left")
+        row1.pack(expand=True, fill="x")
+
+        do_row = actionrow.ActionRow(this)
+        findbtn = target(do_row, Button, text=_("Find"))
+        findbtn.configure(command=this.Search)
+        do_row.pack(expand=True, fill="x")
+
+        if addReplace:
             row2 = actionrow.ActionRow(this)
-            row2.PlaceObjPack(Label, text=_("Replace with:"), side="left")
             this.replaceentry = row2.PlaceObjPack(Entry, justify="left")
+            target(row2, Label, text=_("Replace with:"), **leftside)
+            row2.pack(expand=True, fill="x")
 
-        if style == -1:
-            raise libTewException("No style specified for FindReplace class.")
+
+            do2_row = actionrow.ActionRow(this)
+            replacebtn = target(do2_row, Button, text=_("Replace"))
+            replacebtn.configure(command=lambda: this.Replace(1))
+            replaceall_btn = target(do2_row, Button, text=_("Replace all"))
+            replaceall_btn.configure(command=lambda: this.Replace(2))
+            do2_row.pack(expand=True, fill="x")
+
+        result_row = actionrow.ActionRow(this)
+        target(result_row, Label, **leftside)
+        closebtn = target(result_row, Button, text=_("Close"))
+        closebtn.configure(command=this.destroy)
+        result_row.pack(expand=True, fill="x")
     
+    def Search(this):
+        text = this.findentry.get()
+        this.Target.tag_remove("found", 1.0, "end")
+        pos = "1.0"
+        if text:
+            this.Target.tag_config("found", background="yellow")
+            while True:
+                pos = this.Target.search(text, this.LastIndex, 'end', nocase=1)
+                lastidx = f"{pos}+{len(text)}c"
+                this.Target.tag_add("found", pos, lastidx)
+                pos = lastidx
+    
+    def Replace(this, evt):
+        this.Target.replace(1.0, this.LastIndex if evt == 1 else "END",
+                            this.Target.get(1.0, "END").replace(this.findentry.get()))
+            

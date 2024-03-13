@@ -13,13 +13,108 @@ import wx
 import wx.lib.newevent
 
 from libtextworker import _
-from libtextworker.general import CraftItems, libTewException
+from libtextworker.general import CraftItems, Importable, libTewException
 from libtextworker.interface.base.dirctrl import *
 
 from enum import auto
 from typing import Callable
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
+
+if Importable["watchdog"]:
+    from watchdog.events import FileSystemEvent, FileSystemEventHandler
+    from watchdog.observers import Observer
+
+
+    class FSEventHandler(FileSystemEventHandler):
+        """
+        A file system event handler derived from watchdog's FileSystemEventHandler.
+
+        On both wx and Tk, a new event will be generated.
+        Set the Target attribute which the handler sends the event to.
+
+        Or, if you use this for your own widget, derive this class like any other classes
+        you use for that widget, and set TargetIsSelf = True instead of Target.
+        This class does not use __init__.
+
+        Currently only one target is supported.
+
+        Example usage:
+        ```python
+            from watchdog.observers import Observer
+            (...)
+
+            def on_close(evt): # On window close
+                observer.stop()
+                observer.join()
+                evt.Skip()
+
+            def func(evt):
+                # Do anything with evt.path!
+
+            wind = wx.(...) # A wxWindow
+            wind.Bind("put your wanted event here", func)
+            path = os.path.expanduser('~/')
+            evt_handler = FSEventHandler()
+            evt_handler.Target = wind
+            observer = Observer()
+            observer.schedule(evt_handler, path, recursive=True)
+            observer.start()
+        ```
+        """
+
+        Target: wx.Window
+        TargetIsSelf: bool = True
+
+        def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
+        def getTarget(this): return this.Target if not this.TargetIsSelf else this
+
+        # It sucks when I can't use __dict__ (module variable) to access
+        # class easier (= less code used)
+
+        def on_moved(this, event: FileSystemEvent): 
+            if this.evtIsDir(event) == "Dir": cls_to_use = DirMovedEvent
+            else: cls_to_use = FileMovedEvent
+            wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
+
+        def on_created(this, event: FileSystemEvent): 
+            if this.evtIsDir(event) == "Dir": cls_to_use = DirCreatedEvent
+            else: cls_to_use = FileCreatedEvent
+            wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
+
+        def on_deleted(this, event: FileSystemEvent):
+            if this.evtIsDir(event) == "Dir": cls_to_use = DirDeletedEvent
+            else: cls_to_use = FileDeletedEvent
+            wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
+
+        def on_modified(this, event: FileSystemEvent): 
+            if this.evtIsDir(event) == "Dir": cls_to_use = DirEditedEvent
+            else: cls_to_use = FileEditedEvent
+            wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
+
+        def on_closed(this, event: FileSystemEvent): 
+            wx.PostEvent(this.getTarget(), FileClosedEvent(path=event.src_path))
+
+        def on_opened(this, event: FileSystemEvent): 
+            wx.PostEvent(this.getTarget(), FileOpenedEvent(path=event.src_path))
+
+else:
+    class FSEventHandler: ...
+
+# File system events
+# I leave them here and you just do what you want to
+# Each *Event class here (yeah they are classes) accepts path as the main keyword.
+# Use: wx.PostEvent(target, *Event(path=event.src_path)) with event is a watchdog's FileSystemEvent object
+
+FileEditedEvent, EVT_FILE_EDITED = wx.lib.newevent.NewEvent()
+FileCreatedEvent, EVT_FILE_CREATED = wx.lib.newevent.NewEvent()
+FileDeletedEvent, EVT_FILE_DELETED = wx.lib.newevent.NewEvent()
+FileOpenedEvent, EVT_FILE_OPEN = wx.lib.newevent.NewEvent()
+FileClosedEvent, EVT_FILE_CLOSED = wx.lib.newevent.NewEvent()
+FileMovedEvent, EVT_FILE_MOVED = wx.lib.newevent.NewEvent()
+
+DirEditedEvent, EVT_DIR_EDITED = wx.lib.newevent.NewEvent()
+DirCreatedEvent, EVT_DIR_CREATED = wx.lib.newevent.NewEvent()
+DirMovedEvent, EVT_DIR_MOVED = wx.lib.newevent.NewEvent()
+DirDeletedEvent, EVT_DIR_DELETED = wx.lib.newevent.NewEvent()
 
 # Index for images (for nodes)
 
@@ -36,94 +131,6 @@ folderidx = addImg("folder")
 fileidx = addImg("normal_file")
 openfolderidx = addImg("folder_open")
 
-# File system events
-# I leave them here and you just do what you want
-# Each *Event class here (yeah they are classes) accepts path as the main keyword.
-# Use: wx.PostEvent(target, *Event(path=event.src_path)) with event is a watchdog's FileSystemEvent object
-FileEditedEvent, EVT_FILE_EDITED = wx.lib.newevent.NewEvent()
-FileCreatedEvent, EVT_FILE_CREATED = wx.lib.newevent.NewEvent()
-FileDeletedEvent, EVT_FILE_DELETED = wx.lib.newevent.NewEvent()
-FileOpenedEvent, EVT_FILE_OPEN = wx.lib.newevent.NewEvent()
-FileClosedEvent, EVT_FILE_CLOSED = wx.lib.newevent.NewEvent()
-FileMovedEvent, EVT_FILE_MOVED = wx.lib.newevent.NewEvent()
-
-DirEditedEvent, EVT_DIR_EDITED = wx.lib.newevent.NewEvent()
-DirCreatedEvent, EVT_DIR_CREATED = wx.lib.newevent.NewEvent()
-DirMovedEvent, EVT_DIR_MOVED = wx.lib.newevent.NewEvent()
-DirDeletedEvent, EVT_DIR_DELETED = wx.lib.newevent.NewEvent()
-
-class FSEventHandler(FileSystemEventHandler):
-    """
-    A file system event handler derived from watchdog's FileSystemEventHandler.
-
-    On both wx and Tk, a new event will be generated.
-    Set the Target attribute which the handler sends the event to.
-
-    Or, if you use this for your own widget, derive this class like any other classes
-    you use for that widget, and set TargetIsSelf = True instead of Target.
-    This class does not use __init__.
-
-    Currently only one target is supported.
-
-    Example usage:
-    ```python
-        from watchdog.observers import Observer
-        (...)
-
-        def on_close(evt): # On window close
-            observer.stop()
-            observer.join()
-            evt.Skip()
-
-        def func(evt):
-            # Do anything with evt.path!
-
-        wind = wx.(...) # A wxWindow
-        wind.Bind("put your wanted event here", func)
-        path = os.path.expanduser('~/')
-        evt_handler = FSEventHandler()
-        evt_handler.Target = wind
-        observer = Observer()
-        observer.schedule(evt_handler, path, recursive=True)
-        observer.start()
-    ```
-    """
-
-    Target: wx.Window
-    TargetIsSelf: bool = True
-
-    def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
-    def getTarget(this): return this.Target if not this.TargetIsSelf else this
-
-    # It sucks when I can't use __dict__ (module variable) to access
-    # class easier (= less code used)
-
-    def on_moved(this, event: FileSystemEvent): 
-        if this.evtIsDir(event) == "Dir": cls_to_use = DirMovedEvent
-        else: cls_to_use = FileMovedEvent
-        wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
-
-    def on_created(this, event: FileSystemEvent): 
-        if this.evtIsDir(event) == "Dir": cls_to_use = DirCreatedEvent
-        else: cls_to_use = FileCreatedEvent
-        wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
-
-    def on_deleted(this, event: FileSystemEvent):
-        if this.evtIsDir(event) == "Dir": cls_to_use = DirDeletedEvent
-        else: cls_to_use = FileDeletedEvent
-        wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
-
-    def on_modified(this, event: FileSystemEvent): 
-        if this.evtIsDir(event) == "Dir": cls_to_use = DirEditedEvent
-        else: cls_to_use = FileEditedEvent
-        wx.PostEvent(this.getTarget(), cls_to_use(path=event.src_path))
-
-    def on_closed(this, event: FileSystemEvent): 
-        wx.PostEvent(this.getTarget(), FileClosedEvent(path=event.src_path))
-
-    def on_opened(this, event: FileSystemEvent): 
-        wx.PostEvent(this.getTarget(), FileOpenedEvent(path=event.src_path))
-
 # For the old os.walk method, please head to
 # https://python-forum.io/thread-8513.html
 
@@ -131,7 +138,9 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
 
     Parent_ArgName = "parent"
     TargetIsSelf = True
-    Observers: dict[str] = {}
+
+    if Importable["watchdog"]:
+        Observers: dict[str] = {}
 
     def __init__(this, *args, **kw):
         """
@@ -192,26 +201,28 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         this.Bind(wx.EVT_TREE_ITEM_EXPANDED, this.LazyExpand)
         this.Bind(wx.EVT_TREE_SEL_CHANGED, this.LazyExpand)
 
-        def AddItem(evt: FileCreatedEvent | DirCreatedEvent): # type: ignore
-            this.AppendItem(this.MatchItem(os.path.dirname(evt.path)),
-                            os.path.basename(evt.path),
-                            fileidx if isinstance(evt, FileCreatedEvent) else folderidx)
-            evt.Skip()
-        
-        def DeleteItem(evt: FileDeletedEvent | DirDeletedEvent): # type: ignore
-            wx.TreeCtrl.Delete(this, this.MatchItem(evt.path))
-            evt.Skip()
+        if Importable["watchdog"]:
+            def AddItem(evt: FileCreatedEvent | DirCreatedEvent): # type: ignore
+                this.AppendItem(this.MatchItem(os.path.dirname(evt.path)),
+                                os.path.basename(evt.path),
+                                fileidx if isinstance(evt, FileCreatedEvent) else folderidx)
+                evt.Skip()
+            
+            def DeleteItem(evt: FileDeletedEvent | DirDeletedEvent): # type: ignore
+                wx.TreeCtrl.Delete(this, this.MatchItem(evt.path))
+                evt.Skip()
 
-        this.Bind(EVT_FILE_CREATED, AddItem)
-        this.Bind(EVT_DIR_CREATED, AddItem)
-        this.Bind(EVT_FILE_DELETED, DeleteItem)
-        this.Bind(EVT_DIR_DELETED, DeleteItem)
+            this.Bind(EVT_FILE_CREATED, AddItem)
+            this.Bind(EVT_DIR_CREATED, AddItem)
+            this.Bind(EVT_FILE_DELETED, DeleteItem)
+            this.Bind(EVT_DIR_DELETED, DeleteItem)
     
     def Destroy(this):
-        if this.Observers:
-            for item in this.Observers:
-                this.Observers[item].stop()
-                this.Observers[item].join()
+        if Importable["watchdog"]:
+            if this.Observers:
+                for item in this.Observers:
+                    this.Observers[item].stop()
+                    this.Observers[item].join()
         return wx.TreeCtrl.Destroy(this)
 
     def LazyExpand(this, what: wx.PyEvent | wx.TreeItemId):
@@ -222,10 +233,8 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         the item has been opened before. This can be done by checking
         whether the item full path is a directory and has items inside.
         """
-        if isinstance(what, wx.TreeItemId):
-            path = what
-        else:
-            path = this.GetSelection()
+
+        path = what if isinstance(what, wx.TreeItemId) else this.GetSelection()
 
         fullpath = os.path.normpath(this.GetFullPath(path))
 
@@ -233,6 +242,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
             wx.TreeCtrl.DeleteChildren(this, path)
             this.SetItemImage(path, openfolderidx, wx.TreeItemIcon_Expanded)
             ls = os.listdir(fullpath)
+
             for item in ls:
                 craftedpath = CraftItems(fullpath, item)
                 if os.path.isfile(craftedpath) and DC_DIRONLY in this.Styles:
@@ -269,6 +279,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         elif DC_ONEROOT in this.Styles:
             this.DeleteAllItems()
             kickstart = this.AddRoot(path)
+
         else:
             raise libTewException("The tree cannot determine whether to delete everything"
                                   " and start from scratch or just add a new one while keeping"
@@ -277,9 +288,10 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         this.SetItemHasChildren(kickstart)
         this.SetItemImage(kickstart, folderidx)
 
-        this.Observers[path] = Observer()
-        this.Observers[path].schedule(this, path, recursive=True)
-        this.Observers[path].start()
+        if Importable["watchdog"]:
+            this.Observers[path] = Observer()
+            this.Observers[path].schedule(this, path, recursive=True)
+            this.Observers[path].start()
 
     # From SO (that iterate_root function above) and the
     # useless help of Google Bard (and I found the problem myself,
@@ -292,6 +304,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         """
         parent = this.GetRootItem() if not start else start
         item, cookie = this.GetFirstChild(parent)
+
         while item.IsOk():
             if this.GetFullPath(item) == path:
                 return item
@@ -305,12 +318,10 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         Get all subitems of a tree node.
         """
 
-        if isinstance(item, str):
-            node = this.MatchItem(item)
-        else:
-            node = item
+        node = item if not isinstance(item, str) else this.MatchItem(item)
         result = []
         it, cookie = this.GetFirstChild(node)
+
         while it.IsOk():
             result += [it]
             it, cookie = this.GetNextChild(it, cookie)
@@ -324,10 +335,12 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         """
         
         fullpath = this.GetFullPath(item)
-        if os.path.isdir(fullpath) and fullpath in this.Observers:
-            this.Observers[fullpath].stop()
-            this.Observers[fullpath].join()
-            this.Observers.pop(fullpath)
+
+        if Importable["watchdog"]:
+            if os.path.isdir(fullpath) and fullpath in this.Observers:
+                this.Observers[fullpath].stop()
+                this.Observers[fullpath].join()
+                this.Observers.pop(fullpath)
 
         import shutil
         if os.path.isdir(fullpath): shutil.rmtree(fullpath)
@@ -349,11 +362,8 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
         Get the full path of an item.
         The same work as wxGenericDirCtrl.GetPath.
         """
-        if item == None:
-            parent = this.GetSelection()
-        else:
-            parent = item
 
+        parent = item if item else this.GetSelection()
         result = []
 
         if parent == this.GetRootItem():
@@ -363,6 +373,7 @@ class DirCtrl(wx.TreeCtrl, FSEventHandler, DirCtrlBase):
             nonlocal parent
             text = this.GetItemText(parent)
             result.insert(0, text)
+
             if parent != this.GetRootItem():
                 if DC_HIDEROOT in this.Styles and DC_ONEROOT not in this.Styles \
                     and parent in this.GetNodeChildren(this.GetRootItem()): return
@@ -399,7 +410,9 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
     Styles = DC_USEICON
     History: list = []
     TargetIsSelf = True
-    Watcher: Observer # type: ignore
+
+    if Importable["watchdog"]:
+        Watcher: Observer # type: ignore
 
     def __init__(this, parent: wx.Window, id=wx.ID_ANY, pos=wx.DefaultPosition, size=wx.DefaultSize,
                  style=wx.LC_REPORT, validator=wx.DefaultValidator, name=wx.ListCtrlNameStr, w_styles: auto = DC_USEICON):
@@ -424,9 +437,10 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
         this.Bind(wx.EVT_LIST_ITEM_ACTIVATED, this.SetFolder)
 
     def Destroy(this):
-        this.Watcher.stop()
-        this.Watcher.join()
-        del this.Watcher
+        if Importable["watchdog"]:
+            this.Watcher.stop()
+            this.Watcher.join()
+            del this.Watcher
         wx.ListCtrl.Destroy(this)
 
     def DrawItems(this, path: str = os.path.expanduser("~/")):
@@ -484,12 +498,10 @@ class DirList(wx.ListCtrl, FSEventHandler, DirCtrlBase):
         this.Watcher.start()
         this.PostSetDir(path, "go")
 
-    def GoUp(this, evt):
+    def GoUp(this, evt=None):
         this.SetFolder(path=os.path.dirname(this.currpath))
 
-    def GetFullPath(
-        this, item: str | Callable | None = None, event: Callable | None = None
-    ):
+    def GetFullPath(this, item: str | Callable | None = None, event: Callable | None = None):
         """
         Never be implemented.
         Find the way yourself.

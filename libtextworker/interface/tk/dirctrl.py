@@ -13,15 +13,83 @@ import time
 
 from tkinter import TclError, ttk, Misc
 
+from libtextworker.interface.tk import TK_USEGRID, TK_USEPACK
+
 from ..base.dirctrl import *
 from ... import _
-from ...general import CraftItems
+from ...general import CraftItems, Importable
 
-from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from watchdog.observers import Observer
+if Importable["watchdog"]:
+    from watchdog.events import FileSystemEvent, FileSystemEventHandler
+    from watchdog.observers import Observer
+
+    class FSEventHandler(FileSystemEventHandler):
+        """
+        A file system events handler derived from watchdog's FileSystemEventHandler.
+
+        On both wx and Tk, a new event will be generated.
+        Set the Target attribute which the handler sends the event to.
+
+        On Tk, since a new event is just a new event: no custom value allowed. However
+        you can do a bind_class to connect the event to all widgets with your specified
+        class:
+        
+            ```python
+            # Binds FileDeletedEvent to all StyledTextControl instances
+            root.bind_class('StyledTextControl', FileDeletedEvent, callback)
+            # Or this (add=True won't replace the current callback if any)
+            widget.bind(FileDeletedEvent, callback, add=True)
+            ```
+
+        Or, if you use this for your own widget, derive this class like any other classes
+        you use for that widget, and set TargetIsSelf = True instead of Target.
+        This class does not use __init__.
+
+        Currently only one target is supported. You need to do something else to handle the
+        events generated here.
+        """
+
+        Target: Misc
+        TargetIsSelf: bool
+
+        def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
+        def getTarget(this): return this.Target if not this.TargetIsSelf else this
+
+        # It sucks when I can't use __dict__ (module variable) to access
+        # class easier (= less code used)
+
+        def on_moved(this, event: FileSystemEvent):
+            if this.evtIsDir(event) == "Dir": what_to_use = DirMovedEvent
+            else: what_to_use = FileMovedEvent
+            this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+        def on_created(this, event: FileSystemEvent): 
+            if this.evtIsDir(event) == "Dir": what_to_use = DirCreatedEvent
+            else: what_to_use = FileCreatedEvent
+            this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+        def on_deleted(this, event: FileSystemEvent):
+            if this.evtIsDir(event) == "Dir": what_to_use = DirDeletedEvent
+            else: what_to_use = FileDeletedEvent
+            this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+        def on_modified(this, event: FileSystemEvent): 
+            if this.evtIsDir(event) == "Dir": what_to_use = DirEditedEvent
+            else: what_to_use = FileEditedEvent
+            this.getTarget().event_generate(what_to_use, path=event.src_path)
+
+        def on_closed(this, event: FileSystemEvent): 
+            this.getTarget().event_generate(FileClosedEvent, path=event.src_path)
+
+        def on_opened(this, event: FileSystemEvent): 
+            this.getTarget().event_generate(FileOpenedEvent, path=event.src_path)
+else:
+    class FSEventHandler:
+        pass
 
 # File system events
-# I leave them here and you just do what you want
+# I leave them here and you just do what you want to
+
 FileEditedEvent = "<<FileEdited>>"
 FileCreatedEvent = "<<FileCreated>>"
 FileDeletedEvent = "<<FileDeleted>>"
@@ -33,67 +101,6 @@ DirEditedEvent = "<<DirEdited>>"
 DirCreatedEvent = "<<DirCreated>>"
 DirMovedEvent = "<<DirMoved>>"
 DirDeletedEvent = "<<DirDeleted>>"
-
-class FSEventHandler(FileSystemEventHandler):
-    """
-    A file system events handler derived from watchdog's FileSystemEventHandler.
-
-    On both wx and Tk, a new event will be generated.
-    Set the Target attribute which the handler sends the event to.
-
-    On Tk, since a new event is just a new event: no custom value allowed. However
-    you can do a bind_class to connect the event to all widgets with your specified
-    class:
-    
-        ```python
-        # Binds FileDeletedEvent to all StyledTextControl instances
-        root.bind_class('StyledTextControl', FileDeletedEvent, callback)
-        # Or this (add=True won't replace the current callback if any)
-        widget.bind(FileDeletedEvent, callback, add=True)
-        ```
-
-    Or, if you use this for your own widget, derive this class like any other classes
-    you use for that widget, and set TargetIsSelf = True instead of Target.
-    This class does not use __init__.
-
-    Currently only one target is supported. You need to do something else to handle the
-    events generated here.
-    """
-
-    Target: Misc
-    TargetIsSelf: bool
-
-    def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
-    def getTarget(this): return this.Target if not this.TargetIsSelf else this
-
-    # It sucks when I can't use __dict__ (module variable) to access
-    # class easier (= less code used)
-
-    def on_moved(this, event: FileSystemEvent):
-        if this.evtIsDir(event) == "Dir": what_to_use = DirMovedEvent
-        else: what_to_use = FileMovedEvent
-        this.getTarget().event_generate(what_to_use, path=event.src_path)
-
-    def on_created(this, event: FileSystemEvent): 
-        if this.evtIsDir(event) == "Dir": what_to_use = DirCreatedEvent
-        else: what_to_use = FileCreatedEvent
-        this.getTarget().event_generate(what_to_use, path=event.src_path)
-
-    def on_deleted(this, event: FileSystemEvent):
-        if this.evtIsDir(event) == "Dir": what_to_use = DirDeletedEvent
-        else: what_to_use = FileDeletedEvent
-        this.getTarget().event_generate(what_to_use, path=event.src_path)
-
-    def on_modified(this, event: FileSystemEvent): 
-        if this.evtIsDir(event) == "Dir": what_to_use = DirEditedEvent
-        else: what_to_use = FileEditedEvent
-        this.getTarget().event_generate(what_to_use, path=event.src_path)
-
-    def on_closed(this, event: FileSystemEvent): 
-        this.getTarget().event_generate(FileClosedEvent, path=event.src_path)
-
-    def on_opened(this, event: FileSystemEvent): 
-        this.getTarget().event_generate(FileOpenedEvent, path=event.src_path)
 
 class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
     Parent_ArgName = "master"
@@ -116,13 +123,17 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
         xsb = ttk.Scrollbar(this.Frame, orient="horizontal", command=this.xview)
         this.configure(yscroll=ysb.set, xscroll=xsb.set)
 
-        # ysb.pack(fill="y", expand=True, side="right")
-        # xsb.pack(fill="x", expand=True, side="bottom")
-        # this.pack(expand=True, fill="both")
-
-        this.grid(column=0, row=0)
-        ysb.grid(column=1, row=0, sticky="ns")
-        xsb.grid(column=0, row=1, sticky="ew")
+        if TK_USEPACK in kwds["w_styles"]:
+            ysb.pack(fill="y", expand=True, side="right")
+            xsb.pack(fill="x", expand=True, side="bottom")
+            this.pack(expand=True, fill="both")
+        elif TK_USEGRID in kwds["w_styles"]:
+            this.grid(column=0, row=0)
+            ysb.grid(column=1, row=0, sticky="ns")
+            xsb.grid(column=0, row=1, sticky="ew")
+        else:
+            raise NotImplementedError("If you want to use TK_USEPLACE, then sorry it is not used here (not implemented)."
+                                      "A widget place method is required (TK_USEPACK or TK_USEGRID).")
 
     def destroy(this):
         if this.Observers:
@@ -219,13 +230,17 @@ class DirList(ttk.Treeview, DirCtrlBase):
         xsb = ttk.Scrollbar(this.Frame, orient="horizontal", command=this.xview)
         this.configure(yscroll=ysb.set, xscroll=xsb.set)
 
-        # ysb.pack(fill="y", expand=True, side="right")
-        # xsb.pack(fill="x", expand=True, side="bottom")
-        # this.pack(expand=True, fill="both")
-
-        this.grid(column=0, row=0, sticky="nsew")
-        ysb.grid(column=1, row=0, sticky="nse")
-        xsb.grid(column=0, row=1, sticky="ews")
+        if TK_USEPACK in kwds["w_styles"]:
+            ysb.pack(fill="y", expand=True, side="right")
+            xsb.pack(fill="x", expand=True, side="bottom")
+            this.pack(expand=True, fill="both")
+        elif TK_USEGRID in kwds["w_styles"]:
+            this.grid(column=0, row=0, sticky="nsew")
+            ysb.grid(column=1, row=0, sticky="nse")
+            xsb.grid(column=0, row=1, sticky="ews")
+        else:
+            raise NotImplementedError("If you want to use TK_USEPLACE, then sorry it is not used here (not implemented)."
+                                      "A widget place method is required (TK_USEPACK or TK_USEGRID).")
 
     def SetFolder(this, path: str):
         """
@@ -245,8 +260,6 @@ class DirList(ttk.Treeview, DirCtrlBase):
                 it_type = _("File")
                 it_size = this.sizeof_fmt(statinfo.st_size)
 
-            lastmod = time.strftime(
-                "%d %b %Y, %H:%M:%S", time.localtime(statinfo.st_mtime)
-            )
+            lastmod = time.strftime("%d %b %Y, %H:%M:%S", time.localtime(statinfo.st_mtime))
 
             this.insert("", "end", values=(it, it_type, lastmod, it_size))

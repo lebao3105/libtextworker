@@ -14,13 +14,7 @@ from tkinter.font import Font
 from tkinter.ttk import Scrollbar, Frame
 from typing import overload
 
-try:
-    from tklinenums import TkLineNumbers
-except:
-    LINENUMS = False
-else:
-    LINENUMS = True
-
+from libtextworker.general import test_import
 from libtextworker import EDITOR_DIR
 
 from .miscs import CreateMenu
@@ -42,13 +36,9 @@ class StyledTextControl(Text):
         this._frame = Frame(master)
         Text.__init__(this, this._frame, **kwds)
 
-    def EditorInit(
-        this,
-        useMenu: bool = False,
-        useScrollBars: bool = True,
-        custom_config_path: str = EDITOR_DIR + "/editor.ini",
-        tabwidth: int = 4,
-    ):
+    def EditorInit(this, useMenu: bool = False, useScrollBars: bool = True,
+                   custom_config_path: str = EDITOR_DIR + "/editor.ini",
+                   tabwidth: int = 4):
         """
         Initialize the editor, libtextworker's customize part.
         @param useMenu: Enable right-click menu (depends on the user setting - else defaults to disable)
@@ -85,8 +75,8 @@ class StyledTextControl(Text):
             this._place_scrollbar()
 
         # Place the line-numbers margin
-        if LINENUMS and this.cfger.getkey("editor", "line_count", noraiseexp=True) \
-                        in this.cfger.yes_values: # Bad
+        if test_import("tklinenums") and this.cfger.getkey("editor", "line_count", noraiseexp=True) in this.cfger.yes_values:
+            from tklinenums import TkLineNumbers
             ln = TkLineNumbers(this._frame, this, "center")
             ln.pack(fill="y", side="left")
             this.bind("<<Modified>>", lambda evt: this._frame.after_idle(ln.redraw), add=True)
@@ -103,7 +93,7 @@ class StyledTextControl(Text):
     def _place_scrollbar(this):
         xbar = Scrollbar(this._frame, orient="horizontal", command=this.xview)
         ybar = Scrollbar(this._frame, orient="vertical", command=this.yview)
-        # ybar.set = ybar.quit
+
         xbar.pack(side="bottom", fill="x")
         ybar.pack(side="right", fill="y")
 
@@ -128,18 +118,15 @@ class StyledTextControl(Text):
                 },
             ]
         )
+
         if this.unRedo:
             this.RMenu.add_separator()
-            this.addMenucmd(
-                label=_("Undo"),
-                accelerator="Ctrl+Z",
-                command=lambda: this.edit_undo(),
-            )
-            this.addMenucmd(
-                label=_("Redo"),
-                accelerator="Ctrl+Y",
-                command=lambda: this.edit_redo(),
-            )
+            
+            this.addMenucmd(label=_("Undo"), accelerator="Ctrl+Z",
+                            command=lambda: this.edit_undo())
+            
+            this.addMenucmd(label=_("Redo"), accelerator="Ctrl+Y",
+                            command=lambda: this.edit_redo())
 
     def _open_menu(this, event):
         try:
@@ -154,7 +141,7 @@ class StyledTextControl(Text):
         Probably this will let you know if the editor content has been cooked or not.
         """
         def checkhash(target): return not this.Hash.digest() == md5(target.encode("utf-8")).digest()
-        if not this.FileLoaded: return checkhash("") # Currently can't use .get for no reason
+        if not this.FileLoaded: return checkhash("") # Currently can't use .get?
         return checkhash(open(this.FileLoaded, "r").read())
 
     def LoadFile(this, path: str):
@@ -198,7 +185,6 @@ class StyledTextControl(Text):
         this.wrapbtn.set(not value)
         return not value
 
-    # Undo/redo forks
     def edit_undo(this) -> None:
         """
         Undoes the last edit option, if able to.

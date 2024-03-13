@@ -11,14 +11,13 @@ Contains class(es) and needed attributes for Tkinter.
 import typing
 from enum import Flag, auto
 
-from ... import Importable
-from ...general import libTewException
+from ...general import libTewException, test_import
 from ..manager import ColorManager
 
-if Importable["tkinter"] == True:
+if test_import("tkinter"):
     from tkinter import font, Misc, Menu
 else:
-    raise libTewException("Tkinter is not (correctly) installed!")
+    raise libTewException("Tkinter is not correctly installed!")
 
 class TK_PLACEOPTS(Flag):
     TK_USEGRID = auto()
@@ -37,18 +36,13 @@ class ColorManager(ColorManager):
         size, style, weight, family = super().GetFont()
         font_families = font.families()
 
-        if family == "default" or family not in font_families:
-            family = "Consolas"
+        if family == "default" or family not in font_families: family = "Consolas"
 
-        if style == "normal" or style != "italic":
-            style = "roman"
+        if style != "italic": style = "roman"
 
-        if weight == "system":
-            weight = "normal"
-
-        if weight not in ["system", "normal", "bold"]:
-            # from warnings import warn
-            # warn("Tkinter font weight must be 'normal', 'system' (an alias to 'normal') or 'bold'")
+        if weight not in ["system", "normal", "bold"] or weight == "system": # Looks stupid
+            from warnings import warn
+            warn("Tkinter font weight must be 'normal', 'system' (an alias to 'normal') or 'bold'")
             weight = "normal"
 
         return font.Font(None, family=family, weight=weight, slant=style, size=size)

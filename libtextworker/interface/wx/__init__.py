@@ -18,7 +18,7 @@ from libtextworker import Importable
 from . import constants
 from .. import manager
 
-if Importable["wx"] == True:
+if Importable["wx"]:
     import wx
 else:
     raise Exception("wxPython is needed to use libtextworker.interface.wx")
@@ -58,6 +58,3 @@ class ColorManager(manager.ColorManager):
 
         widget.SetFont(font)
         widget.Refresh()
-
-## @deprecated On version 0.1.3
-clrmgr = None
