@@ -73,9 +73,7 @@ class DirCtrlBase(WidgetBase):
                 "Report this to the developer."
             )
 
-    def GetFullPath(
-        this, item: str | Callable | None = None, event: Callable | None = None
-    ) -> str:
+    def GetFullPath(this, item: str | Callable | None = None, event: Callable | None = None) -> str:
         """
         Get the full path of an item if specified, else the path of the curernt selection.
         @param event (Callable | None): GUI toolkit's event. Optional.

@@ -11,7 +11,7 @@ from typing import Literal
 from tkinter import Menu, Misc
 
 def CreateMenu(items: list[dict[str]], parent: Misc | None = None,
-               tearoff: Literal[0, 1] = 0, title: str = ...) -> Menu:
+               tearoff: Literal[0, 1] = 0, title: str = "") -> Menu:
     """
     Make a Tkinter menu with commands inside.
 
@@ -30,22 +30,16 @@ def CreateMenu(items: list[dict[str]], parent: Misc | None = None,
     """
 
     target = Menu(parent, tearoff=tearoff, title=title)
-    none_to_blank = {None: ""}
-    none_to_blank_2 = {None: ...}
-
-    def convert(item: str | None, type: Literal[1, 2]):
-        if type == 2:
-            return none_to_blank_2.get(item, item)
-        else:
-            return none_to_blank.get(item, item)
 
     for item in items:
-        label = convert(item.get("label", None), 1)
-        acc = convert(item.get("accelerator", None), 1)
-        handler = convert(item.get("handler", None), 2)
-        onvalue = convert(item.get("onvalue", None), 2)
-        offvalue = convert(item.get("offvalue", None), 2)
-        variable = convert(item.get("variable", None), 2)
+        label = item.get("label", "")
+        acc = item.get("accelerator", "")
+
+        handler = item.get("handler", "")
+        onvalue = item.get("onvalue", "")
+        offvalue =  item.get("offvalue", "")
+        variable =  item.get("variable", "")
+
         state = item.get("state", "normal")
         kind = item.get("kind", "normal")
 
@@ -55,17 +49,11 @@ def CreateMenu(items: list[dict[str]], parent: Misc | None = None,
             target.add_command(**args)
 
         if kind == "check":
-            target.add_checkbutton(
-                **args, onvalue=onvalue, offvalue=offvalue, variable=variable
-            )
+            target.add_checkbutton(**args, onvalue=onvalue, offvalue=offvalue, variable=variable)
 
         if kind == "separator":
             target.add_separator()
 
-        if kind == "option":
-            target.add_radiobutton(
-                **args,
-                variable=variable,
-            )
+        if kind == "option": target.add_radiobutton(**args, variable=variable)
 
     return target
