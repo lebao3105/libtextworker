@@ -14,27 +14,34 @@ import json
 import os
 import typing
 
-from .general import WalkCreation, libTewException
+from .general import Importable, WalkCreation, libTewException
 from warnings import warn
-from watchdog.observers import Observer
-from watchdog.events import *
 
 __all__ = ["ConfigurationError", "GetConfig"]
 
-try:
+if Importable["commentedconfigparser"]:
     from commentedconfigparser import CommentedConfigParser as ConfigParser
-except ImportError:
+elif Importable["configparser"]:
     from configparser import ConfigParser
+else:
+    warn("GetConfig is only able to use JSON files - required dependencies for INI are not installed")
+
+if Importable["watchdog"]:
+    from watchdog.observers import Observer
+    from watchdog.events import *
+else:
+    warn("Not able to import watchdog module - file system watching will not work")
+
 
 class ConfigurationError(libTewException):
     """
     As the name says, class for (mostly) GetConfig exceptions.
     """
     def __init__(this, path: str, msg: str, section: str,
-                 option: str = "\\not_specified\\"):
+                 option: str = "\\not specified\\", value: str = ""):
         
-        full = "Configuration file {}, path [{}->{}]: {}"
-        full = full.format(path, section, option, msg)
+        full = "File {}, path [{}->{}{}]: {}"
+        full = full.format(path, section, option, f'={value}' if value else '', msg)
         libTewException.__init__(this, full)
 
 class GetConfig(ConfigParser):
@@ -47,8 +54,11 @@ class GetConfig(ConfigParser):
     cfg: dict = {}
     detailedlogs: bool = True
 
-    _evtHdlr = FileSystemEventHandler()
-    _observer: Observer
+    addWatchDog: bool
+
+    if Importable["watchdog"]:
+        _evtHdlr = FileSystemEventHandler()
+        _observer: Observer
 
     for item in yes_values:
         aliases[item] = True
@@ -56,7 +66,7 @@ class GetConfig(ConfigParser):
     for item in no_values:
         aliases[item] = False
 
-    def __init__(this, config: dict[str] | str | None, file: str, **kwds):
+    def __init__(this, config: dict[str] | str | None, file: str, addWatchdog: bool, **kwds):
         """
         A customized INI file parser.
         @param config (dict[str] or str) : Your stock settings, used to reset the file or do some comparisions
@@ -81,7 +91,10 @@ class GetConfig(ConfigParser):
                 this.cfg[key] = this[key]
 
         this.readf(file)
-        this._evtHdlr.on_any_event = this.on_any_event
+
+        if Importable["watchdog"] and addWatchdog:
+            this._evtHdlr.on_any_event = this.on_any_event
+            this.addWatchDog = True
 
     # File tasks
     def readf(this, file: str, encoding: str | None = None):
@@ -98,15 +111,17 @@ class GetConfig(ConfigParser):
             except:
                 this.read(file, encoding)
 
-        this._file = file
-        this._observer = Observer()
-        this._observer.schedule(this._evtHdlr, file)
-        this._observer.start()
+        if Importable["watchdog"] and this.addWatchDog:
+            this._file = file
+            this._observer = Observer()
+            this._observer.schedule(this._evtHdlr, file)
+            this._observer.start()
     
     def __del__(this):
-        if this._observer.is_alive():
-            this._observer.stop()
-            this._observer.join()
+        if Importable["watchdog"] and this.addWatchDog:
+            if this._observer.is_alive():
+                this._observer.stop()
+                this._observer.join()
 
     def reset(this, restore: bool = False):
         """
@@ -140,8 +155,7 @@ class GetConfig(ConfigParser):
         """
         target = keys if direct_to_keys else this.backups
         for key in keys:
-            for subelm in keys[key]:
-                target[key][subelm] = this[key][subelm]
+            target[key] = this[key]
 
         return target
 
@@ -153,11 +167,8 @@ class GetConfig(ConfigParser):
         @param path (str): Target backup file
         @param use_json (bool = False): Use the backup file in JSON format
         """
-        if path == this._file:
-            raise Exception("GetConfig.full_backup: filepath must be the loaded file!")
 
-        for section in this.sections():
-            this.backups[section] = this[section]
+        this.backup()
 
         if not noFile:
             with open(path, "w") as f:
@@ -326,16 +337,20 @@ class GetConfig(ConfigParser):
     FileSystemEventHandler
     """
 
-    def on_any_event(this, event: FileSystemEvent):
-        if event.src_path != this._file: # Watchdog also catch events from other files
-            return
+    if Importable["watchdog"]:
+        def on_any_event(this, event: FileSystemEvent):
+            if event.src_path != this._file: # Watchdog also catch events from other files
+                return
 
-        if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
-            this.readf(event.src_path)
-        elif isinstance(event, (FileOpenedEvent, FileClosedEvent)):
-            return
-        else:
-            warn(f"{event.src_path} has gone!")
+            if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
+                this.readf(event.src_path)
+            elif isinstance(event, (FileOpenedEvent, FileClosedEvent)):
+                return
+            else:
+                warn(f"{event.src_path} has gone!")
+    else:
+        def on_any_event(this, event):
+            raise NotImplementedError("Watchdog module is not usable")
         
     
     
