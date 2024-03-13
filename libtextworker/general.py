@@ -23,7 +23,12 @@ from typing import Literal
 available_toolkits = Literal["tk", "wx"]
 
 Importable = {}
+
+# TODO: System path (e.g /usr/share/libtextworker) like many projects else
+# Top-level directory for themes etc
 TOPLV_DIR = ""
+EDITOR_DIR: str = ""
+THEMES_DIR: str = ""
 
 # Classes
 
@@ -36,47 +41,43 @@ class Logger(logging.Logger):
 
     UseToolKit: available_toolkits | bool = False
 
-    def UseGUIToolKit(self, toolkit: available_toolkits):
-        """
-        Set's the GUI toolkit to use.
-        Currently there is no support for Tkinter yet.
-        """
-        self.UseToolKit = toolkit
+    def UseGUIToolKit(this, toolkit: available_toolkits):
+        """Set's the GUI toolkit to use."""
+        this.UseToolKit = toolkit
 
-    def CallGUILog(self, name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"], 
+    def CallGUILog(this, name: Literal["CRITICAL", "DEBUG", "ERROR", "EXCEPTION", "NORMAL", "WARNING"], 
                    msg: object, *args: object):
-        """
-        Call GUI toolkit logging function.
-        Do nothing if not able to.
-        """
-        if not self.UseToolKit: return
-        do = import_module(f"libtextworker.interface.{self.UseToolKit}.constants")
+        """Call GUI toolkit logging function. Do nothing if not able to."""
+
+        if not this.UseToolKit: return
+        do = import_module(f"libtextworker.interface.{this.UseToolKit}.constants")
+
         if args: msg = msg % args
         getattr(do, "LOG_" + name)(msg)
 
-    def critical(self, msg: object, *args: object, **kwds):
+    def critical(this, msg: object, *args: object, **kwds):
         super().critical(msg, *args, **kwds)
-        self.CallGUILog("CRITICAL", msg, *args)
+        this.CallGUILog("CRITICAL", msg, *args)
 
-    def debug(self, msg: object, *args: object, **kwds):
+    def debug(this, msg: object, *args: object, **kwds):
         super().debug(msg, *args, **kwds)
-        self.CallGUILog("DEBUG", msg, *args)
+        this.CallGUILog("DEBUG", msg, *args)
 
-    def error(self, msg: object, *args: object, **kwds):
+    def error(this, msg: object, *args: object, **kwds):
         super().error(msg, *args, **kwds)
-        self.CallGUILog("ERROR", msg, *args)
+        this.CallGUILog("ERROR", msg, *args)
 
-    def exception(self, msg: object, *args: object, **kwds):
+    def exception(this, msg: object, *args: object, **kwds):
         super().exception(msg, *args, **kwds)
-        self.CallGUILog("EXCEPTION", msg, *args)
+        this.CallGUILog("EXCEPTION", msg, *args)
 
-    def log(self, level: int, msg: object, *args: object, **kwds):
+    def log(this, level: int, msg: object, *args: object, **kwds):
         super().log(level, msg, *args, **kwds)
-        self.CallGUILog("NORMAL", msg, *args)
+        this.CallGUILog("NORMAL", msg, *args)
 
-    def warning(self, msg: object, *args: object, **kwds):
+    def warning(this, msg: object, *args: object, **kwds):
         super().warning(msg, *args, **kwds)
-        self.CallGUILog("WARNING", msg, *args)
+        this.CallGUILog("WARNING", msg, *args)
 
 ## Base Exception class
 class libTewException(Exception):
