@@ -4,25 +4,26 @@
 #	Licensed under the GNU General Public License version 3.0 or later.
 
 import gettext
-import os.path
+from warnings import warn
 
-from .general import GetCurrentDir, CraftItems, Importable, TOPLV_DIR
+from .general import GetCurrentDir, CraftItems, Importable, TOPLV_DIR, test_import, EDITOR_DIR, THEMES_DIR
 
-__all__ = ( "__version__", "EDITOR_DIR", "Importable", "LOG_PATH", "THEMES_DIR", "TOPLV_DIR")
+__all__ = ( "__version__", "EDITOR_DIR", "Importable", "LOG_PATH", "THEMES_DIR", "TOPLV_DIR" )
 
 # Setup translations
-LOCALEDIR = CraftItems(GetCurrentDir(__file__), "po")
-PROJDOMAIN = "libtextworker"
 
-if not os.path.exists(LOCALEDIR):
-    LOCALEDIR = CraftItems(GetCurrentDir(__file__), "../po")
-
-gettext.bindtextdomain(PROJDOMAIN, LOCALEDIR)
-gettext.textdomain(PROJDOMAIN)
+gettext.bindtextdomain("libtextworker", CraftItems(GetCurrentDir(__file__), "../po"))
+gettext.textdomain("libtextworker")
 _ = gettext.gettext
 
-# Something else;-;
-__version__ = "0.1.4b1"
-THEMES_DIR: str = ""
-EDITOR_DIR: str = ""
-LICENSES = rf'{os.path.normpath(CraftItems(GetCurrentDir(__file__), "licenses"))}'
+# Else things
+
+__version__ = "0.1.4b1" # Project version
+
+## Dependencies checking
+
+if not test_import("watchdog"):
+    warn("watchdog module cannot be imported - file system watching wont work.")
+
+test_import("configparser")
+test_import("commentedconfigparser")
