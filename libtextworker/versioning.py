@@ -35,9 +35,7 @@ def parse_version(project: str) -> packaging.version.Version:
 
     if project not in Requested:
         if not module.__version__:
-            raise general.libTewException(
-                "%(project)s does not have __version__ attribute!"
-            )
+            raise general.libTewException(f"{project} does not have __version__ attribute!")
         Requested[project] = packaging.version.parse(module.__version__)
 
     return Requested[project]

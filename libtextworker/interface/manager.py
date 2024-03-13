@@ -111,7 +111,7 @@ class ColorManager(GetConfig):
                                   "Please use get_config.GetConfig class instead.")
 
     # Configure widgets
-    def GetFont(this) -> typing.Any | tuple[str, int, str, str, str]:
+    def GetFont(this) -> typing.Any | tuple[int, str, str, str]:
         """
         Call the font definitions.
         When called, this returns the following:
@@ -159,8 +159,8 @@ class ColorManager(GetConfig):
             currmode = color
 
         # print(currmode)
-        if not currmode in ["dark", "light"]:
-            raise ConfigurationError(this._file, "Invalid value", "color", "background")
+        #if not currmode in ["dark", "light"]:
+        #    raise ConfigurationError(this._file, "Invalid value", "color", "background")
 
         # Prefer color for specific modes first
         try:
@@ -172,7 +172,7 @@ class ColorManager(GetConfig):
 
             fore_ = this.getkey("color", "foreground", make=True)
             if fore_ == "default":
-                fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode)]
+                fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode, "dark")]
 
             if test_fore:
                 fore_ = test_fore
