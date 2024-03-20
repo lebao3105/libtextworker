@@ -73,9 +73,9 @@ mainFrame = Frame(parent=None, title="libtextworker example")
 # Create a menu bar with menus inside. This will vary on different GUIs.
 menuBar = mainFrame.CreateMenuBar()
 menu1 = CreateMenu(mainFrame, [# Menu item syntax:
-                			   # Label - handler - accelerator - type - isDisabled
-                			   ("Hello world", lambda evt: print("hello!"), None, None, None),
-                			   ...])
+                               # Label - handler - accelerator - type - isDisabled
+                               ("Hello world", lambda evt: print("hello!"), None, None, None),
+                               ...])
 menuBar.Append(menu1, "Testtesttest")
 
 # Add some objects.
@@ -85,7 +85,7 @@ CheckButton(mainFrame, check=True).Show()
 # Now bring our color in!
 clrcall = ColorManager() # Use custom path if you want (customfilepath param)
 # or set clrcall.recursive_configure to True and run clrcall.autocolor_run(mainFrame)
-clrcall.configure(mainFrame, True)
+clrcall.configure(mainFrame, childs_too=True)
 
 app.MainLoop()
 ```

@@ -159,39 +159,36 @@ class ColorManager(GetConfig):
             currmode = color
 
         # print(currmode)
-        #if not currmode in ["dark", "light"]:
-        #    raise ConfigurationError(this._file, "Invalid value", "color", "background")
+        if not currmode in ["dark", "light"]:
+           raise ConfigurationError(this._file, "Invalid value", "color", "background", currmode)
 
         # Prefer color for specific modes first
-        try:
-            test_back = this.getkey("color", "background-%s" % currmode, noraiseexp=True)
-            test_fore = this.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
-            # print(test_back, test_fore)
+        test_back = this.getkey("color", "background-%s" % currmode, noraiseexp=True)
+        test_fore = this.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
+        # print(test_back, test_fore)
 
-            back_ = test_back if test_back else colors[currmode]
+        back_ = test_back if test_back else colors[currmode]
 
-            fore_ = this.getkey("color", "foreground", make=True)
-            if fore_ == "default":
-                fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode, "dark")]
+        fore_ = this.getkey("color", "foreground", make=True)
+        if fore_ == "default":
+            fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode, "dark")]
 
-            if test_fore:
-                fore_ = test_fore
+        if test_fore:
+            fore_ = test_fore
 
-            elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
-                pass
-
-            elif fore_ in colors:
-                fore_ = colors[fore_]
-
-            elif test_fore in colors:
-                fore_ = colors[test_fore]
-
-            else:
-                raise ConfigurationError(this._file, "Invalid value", "color", "foreground")
-
-            return back_, fore_
-        except KeyError or ConfigurationError:
+        elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
             pass
+
+        elif fore_ in colors:
+            fore_ = colors[fore_]
+
+        elif test_fore in colors:
+            fore_ = colors[test_fore]
+
+        else:
+            raise ConfigurationError(this._file, "Invalid value", "color", "foreground")
+
+        return back_, fore_
 
     def setcolorfunc(this, obj: type | object, func: typing.Callable | str, params: dict | tuple | None = None):
         """

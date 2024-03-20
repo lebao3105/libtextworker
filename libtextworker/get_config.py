@@ -40,7 +40,7 @@ class ConfigurationError(libTewException):
     def __init__(this, path: str, msg: str, section: str,
                  option: str = "\\not specified\\", value: str = ""):
         
-        full = "File {}, path [{}->{}{}]: {}"
+        full = "Configuration file {},\n-> [{}->{}{}]: {}"
         full = full.format(path, section, option, f'={value}' if value else '', msg)
         libTewException.__init__(this, full)
 
@@ -66,7 +66,7 @@ class GetConfig(ConfigParser):
     for item in no_values:
         aliases[item] = False
 
-    def __init__(this, config: dict[str] | str | None, file: str, addWatchdog: bool, **kwds):
+    def __init__(this, config: dict[str] | str | None, file: str, addWatchdog: bool = True, **kwds):
         """
         A customized INI file parser.
         @param config (dict[str] or str) : Your stock settings, used to reset the file or do some comparisions
@@ -90,11 +90,17 @@ class GetConfig(ConfigParser):
             for key in this:
                 this.cfg[key] = this[key]
 
+        this.addWatchDog = addWatchdog
         this.readf(file)
 
         if Importable["watchdog"] and addWatchdog:
             this._evtHdlr.on_any_event = this.on_any_event
-            this.addWatchDog = True
+
+    def __del__(this):
+        if Importable["watchdog"] and this.addWatchDog:
+            if this._observer.is_alive():
+                this._observer.stop()
+                this._observer.join()
 
     # File tasks
     def readf(this, file: str, encoding: str | None = None):
@@ -117,12 +123,6 @@ class GetConfig(ConfigParser):
             this._observer.schedule(this._evtHdlr, file)
             this._observer.start()
     
-    def __del__(this):
-        if Importable["watchdog"] and this.addWatchDog:
-            if this._observer.is_alive():
-                this._observer.stop()
-                this._observer.join()
-
     def reset(this, restore: bool = False):
         """
         Loads default settings to GetConfig and loaded file.

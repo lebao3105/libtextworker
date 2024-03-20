@@ -129,7 +129,7 @@ def test_wx():
     log = wx.TextCtrl(nb, style=wx.TE_READONLY|wx.TE_MULTILINE|wx.HSCROLL)
     nb.AddPage(log, "Logs")
 
-    clrmgr.configure(nb, True)
+    clrmgr.configure(nb, childs_too=True)
     clrmgr.autocolor_run(nb)
 
     wx.Log.SetActiveTarget(wx.LogTextCtrl(log))

@@ -17,6 +17,7 @@ from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
 from libtextworker.interface.tk.dirctrl import *
 from libtextworker.interface.tk.editor import StyledTextControl
+from libtextworker.interface.tk.findreplace import FindReplace
 
 clrmgr = ColorManager(customfilepath=THEMEPATH)
 
@@ -26,6 +27,8 @@ def test_tk():
     app.geometry("300x258")
 
     fm = ttk.Frame(app)
+
+    # About dialog
     aboutdlg = AboutDialog()
     aboutdlg.SetProjectName("libtextworker")
     aboutdlg.SetProjectVersion(libver)
@@ -38,6 +41,7 @@ def test_tk():
     if platform.system() == "Darwin":
         app.createcommand("tkAboutDialog", lambda: aboutdlg.ShowDialog(fm))
 
+    # Build the UI
     ttk.Label(fm, text="Hello world!").pack()
     ttk.Button(
         fm, text="Click it!", command=lambda: (aboutdlg.ShowDialog(fm))
@@ -48,6 +52,9 @@ def test_tk():
 
     dc = DirCtrl(nb, show="tree")
     dc.SetFolder(os.path.expanduser("~/Desktop"))
+    ## Some of file system events are bond here.
+    ## Why not more? I'm lazy.
+    ## Better with a status bar
     dc.bind(FileCreatedEvent, lambda evt: mgb.showinfo("New created file", f"Created {evt.path}"))
     dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.path}"))
     dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.path}"))
@@ -56,14 +63,15 @@ def test_tk():
 
     te = StyledTextControl(nb)
     te.EditorInit()
+    FindReplace(fm, te).mainloop()
     te.pack(expand=True, fill="both")
 
     nb.add(ttk.Combobox(nb, values=["one", "two", "three"]), text="Tab 1")
     nb.add(dc.Frame, text="Tab 2")
     nb.add(te._frame, text="Tab 3")
 
-    clrmgr.configure(fm, True)
-    clrmgr.configure(nb, True)
+    clrmgr.configure(fm, childs_too=True)
+    clrmgr.configure(nb, childs_too=True)
     nb.pack(expand=True, fill="both")
     fm.pack(expand=True, fill="both")
 

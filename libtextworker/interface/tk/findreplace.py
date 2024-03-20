@@ -18,16 +18,18 @@ from ...general import libTewException
 class FindReplace(Frame):
     """
     A find-replace dialog for Tkinter text edits.
-    TODO: More searching options (regex etc)
     """
 
     Target: tkinter.Text
     LastIndex: str = "1.0"
 
-    def __init__(this, master, editor: tkinter.Text, placestyle = TK_USEGRID , addReplace: bool = False, *args, **kwds):
+    def __init__(this, master, editor: tkinter.Text, placestyle = TK_USEGRID,
+                 addReplace: bool = False, foundBackground: str = "yellow", *args, **kwds):
         Frame.__init__(this, master, *args, **kwds)
         this.Target = editor
 
+        # UI Building
+        # TODO: More find options, e.g case sensitive and regex
         if TK_USEGRID in placestyle:
             target = actionrow.ActionRow.PlaceObj
             leftside = {"column": -1}
@@ -64,15 +66,18 @@ class FindReplace(Frame):
         closebtn = target(result_row, Button, text=_("Close"))
         closebtn.configure(command=this.destroy)
         result_row.pack(expand=True, fill="x")
+
+        # Configure found color tag
+        this.Target.tag_config("found", background=foundBackground)
     
     def Search(this):
         text = this.findentry.get()
         this.Target.tag_remove("found", 1.0, "end")
         pos = "1.0"
+
         if text:
-            this.Target.tag_config("found", background="yellow")
             while True:
-                pos = this.Target.search(text, this.LastIndex, 'end', nocase=1)
+                pos = this.Target.search(text, this.LastIndex, 'end', nocase=True, regexp=True)
                 lastidx = f"{pos}+{len(text)}c"
                 this.Target.tag_add("found", pos, lastidx)
                 pos = lastidx
@@ -80,4 +85,3 @@ class FindReplace(Frame):
     def Replace(this, evt):
         this.Target.replace(1.0, this.LastIndex if evt == 1 else "END",
                             this.Target.get(1.0, "END").replace(this.findentry.get()))
-            
