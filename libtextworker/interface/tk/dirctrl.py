@@ -13,7 +13,7 @@ import time
 
 from tkinter import TclError, ttk, Misc
 
-from libtextworker.interface.tk import TK_USEGRID, TK_USEPACK
+from libtextworker.interface.tk import TK_PLACEOPTS, TK_USEGRID, TK_USEPACK
 
 from ..base.dirctrl import *
 from ... import _
@@ -105,10 +105,11 @@ DirDeletedEvent = "<<DirDeleted>>"
 class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
     Parent_ArgName = "master"
     TargetIsSelf = True
-    Observers: dict[str, Observer] = {}
+    if Importable["watchdog"]:
+        Observers: dict[str, Observer] = {}
     _Frame = ttk.Frame
 
-    def __init__(this, *args, **kwds):
+    def __init__(this, master: Misc, place_options: TK_PLACEOPTS = TK_USEPACK, *args, **kwds):
         """
         A ttkTreeview customized to show folder list using os.listdir.
         Multiple roots is supported, but only adding new for now.
@@ -116,18 +117,18 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
 
         DirCtrl's custom styles can be defined via the "w_styles" keyword.
         """
-        args, kwds = DirCtrlBase.__init__(this, *args, **kwds)
+        args, kwds = DirCtrlBase.__init__(this, master, *args, **kwds)
         ttk.Treeview.__init__(this, this.Frame, *args, **kwds)
 
         ysb = ttk.Scrollbar(this.Frame, orient="vertical", command=this.yview)
         xsb = ttk.Scrollbar(this.Frame, orient="horizontal", command=this.xview)
         this.configure(yscroll=ysb.set, xscroll=xsb.set)
 
-        if TK_USEPACK in kwds["w_styles"]:
+        if TK_USEPACK in place_options:
             ysb.pack(fill="y", expand=True, side="right")
             xsb.pack(fill="x", expand=True, side="bottom")
             this.pack(expand=True, fill="both")
-        elif TK_USEGRID in kwds["w_styles"]:
+        elif TK_USEGRID in place_options:
             this.grid(column=0, row=0)
             ysb.grid(column=1, row=0, sticky="ns")
             xsb.grid(column=0, row=1, sticky="ew")
@@ -156,6 +157,7 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
 
         def Expand(evt):
             path = this.focus()
+            if not path: return
             this.item(path, open=True)
             fullpath = os.path.normpath(this.GetFullPath())
             iter = os.listdir(fullpath)
@@ -174,9 +176,10 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
         first = this.insert("", "end", text=path)
         insert_node(first, path)
 
-        this.Observers[path] = Observer()
-        this.Observers[path].schedule(this, path, recursive=True)
-        this.Observers[path].start()
+        if Importable["watchdog"]:
+            this.Observers[path] = Observer()
+            this.Observers[path].schedule(this, path, recursive=True)
+            this.Observers[path].start()
 
         this.bind("<<TreeviewOpen>>", Expand)
 
@@ -209,7 +212,7 @@ class DirList(ttk.Treeview, DirCtrlBase):
     Parent_ArgName = "master"
     _Frame = ttk.Frame
 
-    def __init__(this, *args, **kwds):
+    def __init__(this, master: Misc, place_options: TK_PLACEOPTS = TK_USEPACK, *args, **kwds):
         """
         A directory items list.
         By default contains these columns:
@@ -221,7 +224,7 @@ class DirList(ttk.Treeview, DirCtrlBase):
         No libtextworker custom style support for now.
         """
 
-        args, kwds = DirCtrlBase.__init__(this, *args, **kwds)
+        args, kwds = DirCtrlBase.__init__(this, master, *args, **kwds)
         ttk.Treeview.__init__(this, this.Frame, show="headings",
                               columns=[_("Name"), _("Item type"), _("Last modified"), _("Size")],
                               *args, **kwds)
@@ -230,11 +233,11 @@ class DirList(ttk.Treeview, DirCtrlBase):
         xsb = ttk.Scrollbar(this.Frame, orient="horizontal", command=this.xview)
         this.configure(yscroll=ysb.set, xscroll=xsb.set)
 
-        if TK_USEPACK in kwds["w_styles"]:
+        if TK_USEPACK in place_options:
             ysb.pack(fill="y", expand=True, side="right")
             xsb.pack(fill="x", expand=True, side="bottom")
             this.pack(expand=True, fill="both")
-        elif TK_USEGRID in kwds["w_styles"]:
+        elif TK_USEGRID in place_options:
             this.grid(column=0, row=0, sticky="nsew")
             ysb.grid(column=1, row=0, sticky="nse")
             xsb.grid(column=0, row=1, sticky="ews")
