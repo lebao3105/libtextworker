@@ -106,7 +106,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         Setup line numbers margin for the editor.
         The margin's default width is 20px.
         """
-        state = this.cfg.getkey("editor", "line_count", True, True)
+        state = this.cfg.getkey("editor", "line_count", True, True, True)
 
         if state in this.cfg.no_values:
             this.SetMarginWidth(0, 0)

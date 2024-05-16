@@ -10,6 +10,7 @@ See the documentation in /usage/getconfig.
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
+import ast
 import json
 import os
 import typing
@@ -21,16 +22,15 @@ __all__ = ["ConfigurationError", "GetConfig"]
 
 if Importable["commentedconfigparser"]:
     from commentedconfigparser import CommentedConfigParser as ConfigParser
+    from configparser import SectionProxy
 elif Importable["configparser"]:
-    from configparser import ConfigParser
+    from configparser import ConfigParser, SectionProxy
 else:
-    warn("GetConfig is only able to use JSON files - required dependencies for INI are not installed")
+    warn("GetConfig is only able to use JSON files - required dependency for INI is not installed")
 
 if Importable["watchdog"]:
     from watchdog.observers import Observer
     from watchdog.events import *
-else:
-    warn("Not able to import watchdog module - file system watching will not work")
 
 
 class ConfigurationError(libTewException):
@@ -66,32 +66,34 @@ class GetConfig(ConfigParser):
     for item in no_values:
         aliases[item] = False
 
-    def __init__(this, config: dict[str] | str | None, file: str, addWatchdog: bool = True, **kwds):
+    def __init__(this, defaults: dict[str] | str | None, load: str | dict[str], addWatchdog: bool = True, **kwds):
         """
         A customized INI file parser.
-        @param config (dict[str] or str) : Your stock settings, used to reset the file or do some comparisions
-        @param file : Configuration file
+        @param defaults (dict[str] or str) : Default settings
+        @param load (str | dict[str]) : (Loaded or not) file to use
         @param **kwds : To pass to configparser.ConfigParser (base class)
 
-        When initialized, GetConfig loads all default configs (from config parameter) and store it in
-        a dictionary for further actions (backup/restore file).
-
         @since 0.1.3: Allow config parameter as a str object
-        @since 0.1.4: JSON support, allow config parameter to be None, file system watch
+        @since 0.1.4: JSON support, allow config (now is defaults) parameter to be None, file system watch
         """
         ConfigParser.__init__(this, **kwds)
 
-        if isinstance(config, str):
-            this.read_string(config)
-        elif isinstance(config, dict):
-            this.read_dict(config)
-
-        if config != None:
-            for key in this:
-                this.cfg[key] = this[key]
-
         this.addWatchDog = addWatchdog
-        this.readf(file)
+
+        if isinstance(load, str):
+            if load.startswith('['): # The provided data clearly is not a path to any file
+                this.read_string(load)
+            elif load.startswith('{'):
+                this.read_dict(json.loads(load))
+            else:
+                this.readf(load)
+                
+        elif isinstance(load, dict):
+            this.read_dict(load)
+
+        if defaults != None:
+            for key in defaults:
+                this.cfg[key] = defaults[key] # this.cfg: name to be changed (TODO)
 
         if Importable["watchdog"] and addWatchdog:
             this._evtHdlr.on_any_event = this.on_any_event
@@ -202,6 +204,59 @@ class GetConfig(ConfigParser):
             with open(optional_path, "w") as f:
                 this.write(f)
 
+    def GetSection(this, key, raiseexc: bool = False):
+        if (not key in this.sections()) and key != 'DEFAULT':
+            try:
+                this.add_section(key)
+                for option in this.cfg[key]:
+                    this.set(key, option, str(this.cfg[key][option]))
+            except:
+                pass
+        return ConfigParser.__getitem__(this, key)
+    
+    def __getitem__(this, key): return this.GetSection(key, True)
+    
+    def GetFrom(this, from_where: SectionProxy | ConfigParser | str | None = None,
+                      name: str | tuple[str] | dict[str, str] = '', needed: bool = False,
+                      make: bool = False, noexc: bool = False, raw: bool = False):
+        """
+        @since 0.1.4, deprecates getkey().
+
+        Tries to get a value from an iterable (which the current GetConfig instance has), and:
+        @param from_where : Where to get the option from. Using None assumes you want from_where=GetConfig itself (get top-level things)
+        @param name : Can be either a list (a tuple instance in fact) of options, or just one (string), \
+            or a list of options and sections to use. Leaving this a blank string returns dict() object of \
+            section got from from_where.
+        @param needed : Is this operation required?
+        @param make : If the option/section does not exist, write the option/section found in GetConfig.defaults to the loaded file \
+            and return that option/section. Only usable with from_where is None/the current GetConfig
+        @param noexc : Set whether to raise exceptions on no section/option found in the current database
+        @param raw : Return the exact value got, don't use aliases or eval().
+
+        name parameter examples:
+
+        ```python
+        # just an option
+        name='opt'
+        # a list of options
+        name=('opt', 'opt2', 'opt3')
+        # a mix of options and sections
+        name={'opts': ('opt1', 'opt2'), 'scts': ('sct1', 'sct2')}
+        ```
+        """
+
+        def getfromtoplvsection(section, option):
+            if not section in this.sections():
+                if needed:
+                    if make:
+                        this.add_section(section)
+                        this[section] = dict(this.cfg[section])
+                        this.update()
+                    elif noexc is not True:
+                        raise ConfigurationError(this._file, 'Section not found', section)
+
+
+    
     def getkey(this, section: str, option: str, needed: bool = False,
                make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
         """

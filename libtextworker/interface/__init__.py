@@ -71,3 +71,6 @@ colors = {
     "light_green": "#95ffaa",
     "black": "#000000"
 }
+
+from libtextworker.general import test_import
+test_import("darkdetect")

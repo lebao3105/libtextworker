@@ -12,18 +12,16 @@ import os
 import typing
 import threading
 
-from .. import THEMES_DIR
+from .. import THEMES_DIR, Importable
 from ..general import logger, CraftItems
 from ..get_config import ConfigurationError, GetConfig
 from ..interface import stock_ui_configs, colors
 
-try:
+if Importable['darkdetect']:
     import darkdetect
-except ImportError as e:
-    logger.exception(e.msg)
-    AUTOCOLOR = False
+    AUTOCOLOR = darkdetect.theme() is not None
 else:
-    AUTOCOLOR = bool(darkdetect.theme())
+    AUTOCOLOR = False
 
 def hextorgb(value: str):
     value = value.lstrip("#")

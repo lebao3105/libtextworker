@@ -22,7 +22,8 @@ from typing import Literal
 # Available GUI toolkits that this library supports
 available_toolkits = Literal["tk", "wx"]
 
-Importable = {}
+# Python package import tests
+Importable: dict[str, bool] = {}
 
 # TODO: System path (e.g /usr/share/libtextworker) like many projects else
 # Top-level directory for themes etc
@@ -174,14 +175,20 @@ def ResetEveryConfig():
 def test_import(pkgname: str) -> bool:
     """
     Tests if the specified module name is importable.
+
     Results is stored in Importable (dict[str, bool]).
+    
+    You can use this function's return value directly instead of
+    calling Importable.
+
     @see Importable
     """
     try:
         import_module(pkgname)
-    except ImportError:
+    except ImportError as e:
         Importable[pkgname] = False
         warnings.warn("%s not found" % pkgname)
+        logger.exception(e.msg)
         return False
     else:
         Importable[pkgname] = True

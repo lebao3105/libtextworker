@@ -143,7 +143,7 @@ def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = 
     @returns result (ModuleType): Imported @path
     """
 
-    assert os.path.isfile(path)
+    assert os.path.exists(path) and os.path.isfile(path)
     content = open(path, "r").read()
 
     if not ignoreDoneWork:
