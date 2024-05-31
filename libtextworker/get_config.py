@@ -10,11 +10,13 @@ See the documentation in /usage/getconfig.
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
-import ast
+from io import StringIO, TextIOBase
 import json
 import os
 import typing
+import operator
 
+from functools import reduce
 from .general import Importable, WalkCreation, libTewException
 from warnings import warn
 
@@ -22,9 +24,9 @@ __all__ = ["ConfigurationError", "GetConfig"]
 
 if Importable["commentedconfigparser"]:
     from commentedconfigparser import CommentedConfigParser as ConfigParser
-    from configparser import SectionProxy
+    from configparser import NoSectionError
 elif Importable["configparser"]:
-    from configparser import ConfigParser, SectionProxy
+    from configparser import ConfigParser, NoSectionError
 else:
     warn("GetConfig is only able to use JSON files - required dependency for INI is not installed")
 
@@ -45,286 +47,124 @@ class ConfigurationError(libTewException):
         libTewException.__init__(this, full)
 
 class GetConfig(ConfigParser):
-    # Values
-    yes_values: list = ["yes", "True", True, "1", 1, "on"]
-    no_values: list = ["no", "False", False, "0", 0, "off"]
 
+    # Positive values - they're aliases of True
+    yes_values = [ 'yes', 'true', '1', 'on', 1, True ]
+
+    # Negative values - they're aliases of False
+    no_values = [ 'no', 'false', '0', 'off', 0, False, '', None ]
+
+    # OEM settings
+    OEM: dict[str] = {}
+
+    # Aliases
     aliases: dict = {}
-    backups: dict = {}
-    cfg: dict = {}
-    detailedlogs: bool = True
 
+    # Read file
+    _file: str
+
+    for yes in yes_values: aliases[yes] = True
+    for no in no_values: aliases[no] = False
+
+    # Backups
+    _backups: dict[str] = {}
+
+    # Use watchdog for file events watching
     addWatchDog: bool
 
-    if Importable["watchdog"]:
-        _evtHdlr = FileSystemEventHandler()
-        _observer: Observer
-
-    for item in yes_values:
-        aliases[item] = True
-
-    for item in no_values:
-        aliases[item] = False
-
-    def __init__(this, defaults: dict[str] | str | None, load: str | dict[str], addWatchdog: bool = True, **kwds):
+    
+    def __init__(this, defaults: dict[str] | str | None, load: str | dict[str],
+                 watchChanges: bool, **kwds):
         """
-        A customized INI file parser.
-        @param defaults (dict[str] or str) : Default settings
-        @param load (str | dict[str]) : (Loaded or not) file to use
-        @param **kwds : To pass to configparser.ConfigParser (base class)
-
-        @since 0.1.3: Allow config parameter as a str object
-        @since 0.1.4: JSON support, allow config (now is defaults) parameter to be None, file system watch
+        Constructor.
         """
+
         ConfigParser.__init__(this, **kwds)
 
-        this.addWatchDog = addWatchdog
+        if isinstance(defaults, dict): this.OEM = defaults
+        elif isinstance(defaults, str): this.OEM = json.loads(defaults)
+        elif defaults: this.OEM = dict(defaults)
 
-        if isinstance(load, str):
-            if load.startswith('['): # The provided data clearly is not a path to any file
-                this.read_string(load)
-            elif load.startswith('{'):
-                this.read_dict(json.loads(load))
-            else:
-                this.readf(load)
-                
-        elif isinstance(load, dict):
-            this.read_dict(load)
+        this.addWatchDog = watchChanges and Importable['watchdog']
 
-        if defaults != None:
-            for key in defaults:
-                this.cfg[key] = defaults[key] # this.cfg: name to be changed (TODO)
-
-        if Importable["watchdog"] and addWatchdog:
+        if this.addWatchDog:
+            this._evtHdlr = FileSystemEventHandler()
             this._evtHdlr.on_any_event = this.on_any_event
 
+            this._observer: Observer
+
+        if isinstance(load, str):
+            try:
+                this.read_string(load)
+            except:
+                this.read_file(load)
+        
+    
     def __del__(this):
-        if Importable["watchdog"] and this.addWatchDog:
+        """
+        Destructor.
+        """
+
+        if this.addWatchDog:
             if this._observer.is_alive():
                 this._observer.stop()
                 this._observer.join()
+    
+    def read_string(this, string: str):
+        """
+        Reads a string.
+        """
 
-    # File tasks
-    def readf(this, file: str, encoding: str | None = None):
+        try:
+            this.read_dict(json.loads(string))
+        except:
+            ConfigParser.read_string(this, string)
+
+    def read_file(this, file: str, source = None):
         """
-        Reads all settings from a file.
-        Mostly for application/GetConfig internal use.
+        Reads a file.
         """
+
+        if isinstance(file, StringIO):
+            ConfigParser.read_file(this, file, source)
+            return
+
         WalkCreation(os.path.dirname(file))
-        if not os.path.exists(file):
-            this.write(open(file, "w"))
-        else:
-            try:
-                this.read_dict(json.loads(open(file, "r").read()))
-            except:
-                this.read(file, encoding)
+        this.read_string(open(file, "r").read())
+        this._file = file
 
-        if Importable["watchdog"] and this.addWatchDog:
-            this._file = file
+        if this.addWatchDog:
             this._observer = Observer()
             this._observer.schedule(this._evtHdlr, file)
             this._observer.start()
-    
-    def reset(this, restore: bool = False):
+
+
+    def Reset(this, restore: bool, backupdelimiter: str = "->"):
         """
-        Loads default settings to GetConfig and loaded file.
-        Also restore backups if restore is True and GetConfig.backups is not empty.
+        Resets GetConfig and loaded file to default settings.
+        Also restores the last backup if able and restore parameter is True.
+
+        @param restore (bool): Restores the last backup
+        @param backupdelimiter (str): Path delimiter (defaults to ->) used in the last backup
         """
         os.remove(this._file)
-        for key in this.cfg:
-            this[key] = this.cfg[key]
+        if this.OEM: this.read_dict(this.OEM)
+        if restore:
+            for key in this._backups:
+                target = this
+                splits = key.split(backupdelimiter)
 
-        if restore and this.backups:
-            for key in this.backups:
-                this[key] = this.backups[key]
-
-        this.update()
-
-    def update(this):
-        """
-        Writes current settings to loaded file.
-        """
-        with open(this._file, "w") as f:
-            this.write(f)
-
-    # Options
-    def backup(this, keys: dict, direct_to_keys: bool = False) -> dict:
-        """
-        Backs up user data, specified by the keys parameter (dictionary).
-        Returns the successfully *updated* dictionary (if direct_to_keys is True),
-        or the self-made dict.
-        """
-        target = keys if direct_to_keys else this.backups
-        for key in keys:
-            target[key] = this[key]
-
-        return target
-
-    def full_backup(this, noFile: bool, path: str, use_json: bool = False):
-        """
-        @since 0.1.4
-        Backup all settings by writing to GetConfig.backups and/or another file.
-        @param noFile (bool): Don't write to any file else.
-        @param path (str): Target backup file (defaults to the loaded one)
-        @param use_json (bool = False): Use the backup file in JSON format
-        """
-        if not path:
-            path = this._file
-        
-        for section in this.sections():
-            this.backups[section] = this[section]
-
-        if not noFile:
-            with open(path, "w") as f:
-                if use_json:
-                    json.dump(this, f)
-                else:
-                    this.write(f)
-
-    def restore(this, keys: dict[str, str] | None, optional_path: str):
-        """
-        @since 0.1.4
-        Restore options.
-        @param keys (dict[str, str] or None): Keys + options to restore.
-            Optional but self.backups must not be empty.
-        @param optional_path (str): The name says it all. If specified,
-            both this path and self._file will be written.
-        You can also use move() function for a more complex method.
-        """
-
-        if not keys and this.backups:
-            raise AttributeError(
-                "GetConfig.restore: this.backups and keys parameter are empty/died"
-            )
-        for key in keys:
-            for option in keys[key]:
-                this.set_and_update(key, option, keys[key][option])
-
-        if optional_path:
-            with open(optional_path, "w") as f:
-                this.write(f)
-
-    def GetSection(this, key, raiseexc: bool = False):
-        if (not key in this.sections()) and key != 'DEFAULT':
-            try:
-                this.add_section(key)
-                for option in this.cfg[key]:
-                    this.set(key, option, str(this.cfg[key][option]))
-            except:
-                pass
-        return ConfigParser.__getitem__(this, key)
+                for i in range(len(splits)):
+                    if not splits[i] in target:
+                        if not splits[i].isdigit(): target[splits[i]] = {}; target = target[splits[i]]
+                        else: target[int(splits[i])] = []; target = target[int(splits[i])]
+                    
+                for element in this._backups[key]:
+                    target[element] = this._backups[element]
     
-    def __getitem__(this, key): return this.GetSection(key, True)
-    
-    def GetFrom(this, from_where: SectionProxy | ConfigParser | str | None = None,
-                      name: str | tuple[str] | dict[str, str] = '', needed: bool = False,
-                      make: bool = False, noexc: bool = False, raw: bool = False):
-        """
-        @since 0.1.4, deprecates getkey().
-
-        Tries to get a value from an iterable (which the current GetConfig instance has), and:
-        @param from_where : Where to get the option from. Using None assumes you want from_where=GetConfig itself (get top-level things)
-        @param name : Can be either a list (a tuple instance in fact) of options, or just one (string), \
-            or a list of options and sections to use. Leaving this a blank string returns dict() object of \
-            section got from from_where.
-        @param needed : Is this operation required?
-        @param make : If the option/section does not exist, write the option/section found in GetConfig.defaults to the loaded file \
-            and return that option/section. Only usable with from_where is None/the current GetConfig
-        @param noexc : Set whether to raise exceptions on no section/option found in the current database
-        @param raw : Return the exact value got, don't use aliases or eval().
-
-        name parameter examples:
-
-        ```python
-        # just an option
-        name='opt'
-        # a list of options
-        name=('opt', 'opt2', 'opt3')
-        # a mix of options and sections
-        name={'opts': ('opt1', 'opt2'), 'scts': ('sct1', 'sct2')}
-        ```
-        """
-
-        def getfromtoplvsection(section, option):
-            if not section in this.sections():
-                if needed:
-                    if make:
-                        this.add_section(section)
-                        this[section] = dict(this.cfg[section])
-                        this.update()
-                    elif noexc is not True:
-                        raise ConfigurationError(this._file, 'Section not found', section)
-
-
-    
-    def getkey(this, section: str, option: str, needed: bool = False,
-               make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
-        """
-        Try to get the value of an option under the spectified section.
-
-        @param section, option: Target section->option
-        @param needed (boolean=False): The target option is needed - should use with make & noraiseexp.
-        @param make (boolean=False): Create the option if it is not found from the search
-        @param noraiseexp (boolean=False): Make getkey() raise exceptions or not (when neccessary)
-        @param raw (boolean=False): Don't use aliases for the value we get.
-
-        @return False if the option does not exist and needed parameter set to False.
-        """
-
-        def bringitback():
-            target = this.backups
-            value_: typing.Any
-
-            if make:
-                if not target:
-                    target = this.cfg
-                if not target[section]:
-                    raise ConfigurationError(this._file, "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
-                                             section, option)
-                if not target[section][option]:
-                    raise ConfigurationError(this._file, "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
-                                             section, option)
-                if not section in this.sections():
-                    this.add_section(section)
-                value_ = target[section][option]
-                if needed:
-                    this.set_and_update(section, option, value_)
-                else:
-                    this.set(section, option, value_)
-                return value_
-
-        try:
-            value = this.get(section, option)
-        except:
-            if noraiseexp:
-                value = bringitback()
-                if not value:
-                    return None
-            else:
-                raise ConfigurationError(this._file, "Section or option not found", section, option)
-
-        # Remove ' / "
-        trans = ["'", '"']
-        for key in trans:
-            value = value.removeprefix(key).removesuffix(key)
-
-        if not value in this.aliases or raw is True:
-            return value
-        else:
-            return this.aliases[value]
-
-    def aliasyesno(this, yesvalue=None, novalue=None):
-        if yesvalue:
-            this.yes_values.append(yesvalue)
-            this.aliases[yesvalue] = True
-
-        if novalue:
-            this.no_values.append(novalue)
-            this.aliases[novalue] = False
-
-    def alias(this, value, value2):
-        this.aliases[value] = value2
-
+    def Update(this):
+        this.write(open(this._file, "w"))
+                    
     def move(this, list_: dict[str, dict[str, str]]):
         """
         @since 0.1.3
@@ -359,9 +199,9 @@ class GetConfig(ConfigParser):
             section_ = section.split("->")[0]
             option_ = section.split("->")[1]
 
-            if not section_ in this.sections():
+            if not section_ in this:
                 raise ConfigurationError(this._file, "Section not found", section_)
-            if not option_ in this[section]:
+            if not option_ in this[section_]:
                 raise ConfigurationError(this._file, "Option not found", section_, option_)
 
             value = this[section_][option_]
@@ -374,14 +214,27 @@ class GetConfig(ConfigParser):
                     this.add_section(newsection)
                 this.set_and_update(newsection, newoption, value)
             else:
-                newobj = GetConfig(None, list_[section]["file"])
-                newobj.add_section(newsection)
+                newobj = GetConfig(None, list_[section]["file"], False)
+                if not newsection in newobj:
+                    newobj.add_section(newsection)
                 newobj.set_and_update(newsection, newoption, value)
 
             if "delete_entire_section" in list_[section] \
                 and list_[section_]["delete_entire_section"] in this.yes_values:
                 this.remove_section(section_)
+    
+    def aliasyesno(this, yesvalue=None, novalue=None):
+        if yesvalue:
+            this.yes_values.append(yesvalue)
+            this.aliases[yesvalue] = True
 
+        if novalue:
+            this.no_values.append(novalue)
+            this.aliases[novalue] = False
+
+    def alias(this, value, value2):
+        this.aliases[value] = value2
+    
     def set_and_update(this, section: str, option: str, value: str | None = None):
         """
         @since 0.1.3
@@ -390,6 +243,39 @@ class GetConfig(ConfigParser):
         this.set(section, option, value)
         this.update()
 
+    def BackUp(this, which: list[str], delimeter: str = '->'):
+        """
+        Make a copy of values/sections
+
+        @param which (list of strs): List of paths to the section/option to backup:
+            * Separated by a "->" (without quotes);
+            * If the path has list(s), use the number index (0-based) for the item \
+                you want to take (e.g root->stores->0) will take the first item of the root->stores list.
+
+        @see GetTheLastBackUp
+        """
+
+        this._backups = {}
+
+        for name in which:
+            splits = name.split(delimeter)
+
+            # Get the parent path and the option/section name
+            name = splits[-1]
+            parent = delimeter.join(splits[:-1])
+
+            if not parent in this._backups.keys():
+                try: int(name)
+                except: this._backups[parent] = {}
+                else: this._backups[parent] = []
+
+            # https://stackoverflow.com/a/31033676
+            for i in range(len(splits)):
+                try: splits[i] = int(splits[i])
+                except: continue
+
+                this._backups[parent][splits[i]] = reduce(operator.getitem, splits, this)
+    
     """
     FileSystemEventHandler
     """
@@ -400,7 +286,7 @@ class GetConfig(ConfigParser):
                 return
 
             if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
-                this.readf(event.src_path)
+                this.read_file(event.src_path)
             elif isinstance(event, (FileOpenedEvent, FileClosedEvent)):
                 return
             else:
@@ -408,6 +294,3 @@ class GetConfig(ConfigParser):
     else:
         def on_any_event(this, event):
             raise NotImplementedError("Watchdog module is not usable")
-        
-    
-    
