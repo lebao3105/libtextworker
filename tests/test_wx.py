@@ -9,7 +9,7 @@ import wx.stc
 
 from libtextworker.interface.base.dirctrl import DC_ONEROOT, DC_HIDEROOT
 
-from . import THEMEPATH, GITHUB_URL, API_URL
+from . import HAS_ACOLOR, HASNT_ACOLOR, THEMEPATH, REPO_URL, API_URL, hasAutoColor
 from libtextworker import __version__ as ver, general
 
 general.test_import("wx")
@@ -32,28 +32,21 @@ def test_wx():
         aboutdlg.SetName("libtextworker")
         aboutdlg.SetVersion(ver)
         aboutdlg.SetDevelopers(["Le Bao Nguyen (@lebao3105 on Github and Gitlab)"])
-        aboutdlg.SetWebSite(GITHUB_URL)
+        aboutdlg.SetWebSite(REPO_URL)
         aboutdlg.SetLicense("GPL3_short")
         return aboutdlg.ShowBox()
 
     # Check for autocolor support
     def checkautocolor(evt):
-        from libtextworker.interface.manager import AUTOCOLOR
 
-        if not AUTOCOLOR:
-            wx.MessageBox(
-                "Auto color support requires darkdetect package to be installed on supported machines."
-                "Head over to https://pypi.org/project/darkdetect to see more info.",
-                style=wx.ICON_ERROR | wx.OK | wx.CENTRE,
-                parent=fm,
-            )
+        if not hasAutoColor():
+            wx.MessageBox(HASNT_ACOLOR,
+                          style=wx.ICON_ERROR | wx.OK | wx.CENTRE,
+                          parent=fm)
         else:
-            wx.MessageBox(
-                "You have it! Try toggling the OS color scheme to see the magic!"
-                "Note that not all of wx widgets are able to use this right now",
-                style=wx.ICON_INFORMATION | wx.OK | wx.CENTRE,
-                parent=fm,
-            )
+            wx.MessageBox(HAS_ACOLOR,
+                          style=wx.ICON_INFORMATION | wx.OK | wx.CENTRE,
+                          parent=fm)
 
     """
     Full wxApp setup
@@ -73,7 +66,7 @@ def test_wx():
                 "API Documents",
                 None,
                 lambda evt: webbrowser.open(API_URL),
-                None,
+                None
             ),
             (wx.ID_ANY, "Check for auto-color support", None, checkautocolor, None)
         ],
@@ -96,15 +89,17 @@ def test_wx():
     pn.SetSizer(sz)
     nb.AddPage(pn, "ActionRows", select=True)
 
-    def newAR(num: int):
+    for i in range(0, 5):
         _lol = ActionRow()
         _lol.SetParent(pn)
         _lol.PlaceObj(wx.StaticText, label=f"testtesttest{str(i)}")
-        _lol.PlaceObj(wx.CheckBox, style=wx.CHB_DEFAULT | wx.ALIGN_RIGHT)
-        return _lol
 
-    for i in range(0, 5):
-        sz.Add(newAR(i), 0, wx.ALL | wx.EXPAND, 5)
+        if 0 <= i <= 2:
+            _lol.PlaceObj(wx.CheckBox, style=wx.CHB_DEFAULT | wx.ALIGN_RIGHT)
+        else:
+            _lol.PlaceObj(wx.Button, style=wx.ALIGN_RIGHT)
+
+        sz.Add(_lol, 0, wx.ALL | wx.EXPAND, 5)
 
     # Dir*
     from libtextworker.interface.wx.dirctrl import EVT_FILE_CREATED, EVT_FILE_CLOSED, EVT_FILE_DELETED, DirCtrl
@@ -115,11 +110,14 @@ def test_wx():
     dirctrl.SetFolder("./tests")
 
     dirctrl2.SetFolder(os.path.expanduser("./libtextworker"))
+    def ref(evt, path, ctrl):
+        wx.LogMessage(f"{evt} file {path}")  
+        ctrl.Refresh()
 
     for ctrl in [dirctrl, dirctrl2]:
-        ctrl.Bind(EVT_FILE_CREATED, lambda evt: wx.LogMessage(f"Created file {evt.path} {evt}"))
-        ctrl.Bind(EVT_FILE_CLOSED, lambda evt: wx.LogMessage(f"Closed file {evt.path}"))
-        ctrl.Bind(EVT_FILE_DELETED, lambda evt: wx.LogMessage(f"Deleted file {evt.path}"))
+        ctrl.Bind(EVT_FILE_CREATED, lambda evt: ref("Created", evt.path, ctrl))
+        ctrl.Bind(EVT_FILE_CLOSED, lambda evt: ref("Closed", evt.path, ctrl))
+        ctrl.Bind(EVT_FILE_DELETED, lambda evt: ref("Deleted", evt.path, ctrl))
         # I'm too lazy to add more
 
     nb.AddPage(dirctrl, "DirCtrl (multiple root nodes)")

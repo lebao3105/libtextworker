@@ -8,8 +8,11 @@ import platform
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.messagebox as mgb
+import webbrowser
 
-from . import THEMEPATH, GITHUB_URL
+from libtextworker.interface.tk.miscs import CreateMenu
+
+from . import API_URL, HAS_ACOLOR, HASNT_ACOLOR, THEMEPATH, REPO_URL, hasAutoColor
 from libtextworker import __version__ as libver, general
 
 general.test_import("tkinter")
@@ -33,13 +36,36 @@ def test_tk():
     aboutdlg.SetProjectName("libtextworker")
     aboutdlg.SetProjectVersion(libver)
     aboutdlg.SetProjectDescription("A Python library made for GUI apps.")
-    aboutdlg.SetProjectSite(GITHUB_URL)
+    aboutdlg.SetProjectSite(REPO_URL)
     aboutdlg.SetAppTesters(["Le Bao Nguyen"])
     aboutdlg.SetDevelopers(["Le bao Nguyen"])
     aboutdlg.SetProjectLicense("GNU General Public License Version 3")
 
     if platform.system() == "Darwin":
         app.createcommand("tkAboutDialog", lambda: aboutdlg.ShowDialog(fm))
+
+    # Build menu bar
+    def checkautocolor(evt):
+        if hasAutoColor():
+            mgb.showinfo(message=HAS_ACOLOR)
+        else:
+            mgb.showerror(message=HASNT_ACOLOR)
+    
+    menubar = tk.Menu(app)
+    menubar.add_cascade(label="The only one",
+                        menu=CreateMenu(
+                            [
+                                {
+                                    'label': 'API Documents',
+                                    'handler': lambda evt: webbrowser.open(API_URL)
+                                },
+                                {
+                                    'label': 'Check for auto coloring support',
+                                    'handler': checkautocolor
+                                }
+                            ],
+                            fm
+                        ))
 
     # Build the UI
     ttk.Label(fm, text="Hello world!").pack()
@@ -63,7 +89,6 @@ def test_tk():
 
     te = StyledTextControl(nb)
     te.EditorInit()
-    FindReplace(fm, te).mainloop()
     te.pack(expand=True, fill="both")
 
     nb.add(ttk.Combobox(nb, values=["one", "two", "three"]), text="Tab 1")

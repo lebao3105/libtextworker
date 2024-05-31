@@ -3,7 +3,9 @@
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 import os.path
-from libtextworker.general import *
+
+# Testers: Don't import test_import, it will break pytest
+from libtextworker.general import CreateDirectory, WalkCreation, CraftItems
 from libtextworker.get_config import GetConfig
 
 
@@ -24,14 +26,14 @@ def test_makedirs():
 def test_mkconfig():
     cfg = {
         "section1": {"option1": "value", "option2": "2"},
-        "section2": {"option1": "yes"},
+        "section2": {"option1": "yes"}
     }
 
-    cfgs = GetConfig(cfg, "helloworld/one/configs/configs.ini")
+    cfgs = GetConfig(cfg, "helloworld/one/configs/configs.ini", False)
     cfgs.set("section1", "option1", "value_changed")
-    assert cfgs.getkey("section1", "option1") == "value_changed"
+    assert cfgs["section1"]["option1"] == "value_changed"
     
-    cfgs.update()
+    cfgs.Update()
     cfgs.move(
         {
             "section1->option1": {
@@ -42,10 +44,13 @@ def test_mkconfig():
                 "newpath": "test_move->section2_opt1",
                 "file": "helloworld/one/configs/new.ini",
             },
-        },
-        True,
+        }
     )
 
-    assert cfgs.getkey("section_one", "option1") == "value_changed"
-    cfgs.readf("helloworld/one/configs/new.ini")
-    assert cfgs.getkey("test_move", "section2_opt1") in cfgs.yes_values
+    assert cfgs["section_one"]["option1"] == "value_changed"
+    cfgs.read_file("helloworld/one/configs/new.ini")
+    assert cfgs["test_move"]["section2_opt1"] in cfgs.yes_values
+
+    cfgs.BackUp(['section_one->option1'])
+    cfgs.Reset(True)
+    assert cfgs['section_one']['option1'] == 'value_changed'
