@@ -18,7 +18,7 @@ from types import ModuleType
 from typing import Callable
 
 
-def CreateMenu(parent, items: list[tuple[5]]) -> wx.Menu:
+def CreateMenu(parent, items: list[tuple]) -> wx.Menu:
     """
     Create a new wx.Menu with a list of commands.
     Menu items use the following format:
@@ -40,14 +40,10 @@ def CreateMenu(parent, items: list[tuple[5]]) -> wx.Menu:
         if id == label == helptext == handler == kind == None:
             target_menu.AppendSeparator()
         else:
-            if id == None:
-                id = wx.ID_ANY
-            if kind == None:
-                kind = wx.ITEM_NORMAL
-            if label == None:
-                label = ""
-            if helptext == None:
-                helptext = ""
+            if not id: id = wx.ID_ANY
+            if not kind: kind = wx.ITEM_NORMAL
+            if not label: label = ""
+            if not helptext: helptext = ""
             item = target_menu.Append(id, label, helptext, kind)
             parent.Bind(wx.EVT_MENU, handler, item)
     return target_menu
@@ -109,8 +105,8 @@ class XMLBuilder:
             xrc_data = f.read()
 
         ## Replace texts with translated ones
-        xrc_data = re.sub("_(['\"](.*?)['\"])", self.txtLocalize, xrc_data)
-        xrc_data = xrc_data.encode("utf8")
+        xrc_data = re.sub("_(['\"](.*?)['\"])", self.txtLocalize, xrc_data) \
+                     .encode("utf8")
 
         # Call out the resource file, with translated strings
         self.Res = wx.xrc.XmlResource()
@@ -143,13 +139,13 @@ def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = 
     @returns result (ModuleType): Imported @path
     """
 
-    assert os.path.exists(path) and os.path.isfile(path)
+    assert os.path.exists(path) and os.path.isfile(path), f"{path} is neither a file nor an existing item on the file system"
     content = open(path, "r").read()
 
     if not ignoreDoneWork:
         assert content.startswith(path) == False, \
             "Already translated. To avoid the file being broken, this cannot continue.\n" \
-            "Replace the file with newly generated code from wxFormBuilder and try again."
+            "Replace the file with newly generated code from your preferred GUI builder and try again."
     
     if not importText.endswith("\n"): importText += "\n"
     func = importText.split(" ")[-1] # Get the translate function (e.g gettext in from gettext import gettext)
