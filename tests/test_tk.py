@@ -76,15 +76,15 @@ def test_tk():
 
     nb = ttk.Notebook(fm)
 
-    dc = DirCtrl(nb, show="tree")
+    dc = DirCtrl(nb, show="tree", refresh_on_changes=True)
     dc.SetFolder(os.path.expanduser("~/Desktop"))
     ## Some of file system events are bond here.
     ## Why not more? I'm lazy.
     ## Better with a status bar
-    dc.bind(FileCreatedEvent, lambda evt: mgb.showinfo("New created file", f"Created {evt.path}"))
-    dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.path}"))
-    dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.path}"))
-    dc.bind(FileOpenedEvent, lambda evt: mgb.showinfo("File opened", f"Opened {evt.path}"))
+    dc.bind(FileCreatedEvent, lambda evt: mgb.showinfo("New created file", f"Created {evt.data}"))
+    dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.data}"))
+    dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.data}"))
+    dc.bind(FileOpenedEvent, lambda evt: mgb.showinfo("File opened", f"Opened {evt.data}"))
     dc.Frame.pack(expand=True, fill="both")
 
     te = StyledTextControl(nb)

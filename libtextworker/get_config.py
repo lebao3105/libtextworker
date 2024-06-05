@@ -74,7 +74,7 @@ class GetConfig(ConfigParser):
 
     
     def __init__(this, defaults: dict[str] | str | None, load: str | dict[str],
-                 watchChanges: bool, **kwds):
+                 watchChanges: bool = False, **kwds):
         """
         Constructor.
         """
@@ -129,8 +129,12 @@ class GetConfig(ConfigParser):
             ConfigParser.read_file(this, file, source)
             return
 
-        WalkCreation(os.path.dirname(file))
-        this.read_string(open(file, "r").read())
+        if not os.path.isfile(file):
+            this.read_dict(this.OEM)
+            this.write(open(file, "w"))
+        else:
+            WalkCreation(os.path.dirname(file))
+            this.read_string(open(file, "r").read())
         this._file = file
 
         if this.addWatchDog:
@@ -276,6 +280,62 @@ class GetConfig(ConfigParser):
 
                 this._backups[parent][splits[i]] = reduce(operator.getitem, splits, this)
     
+    def getkey(this, section: str, option: str, needed: bool = False,
+               make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
+        """
+        Try to get the value of an option under the spectified section.
+
+        @param section, option: Target section->option
+        @param needed (boolean=False): The target option is needed - should use with make & noraiseexp.
+        @param make (boolean=False): Create the option if it is not found from the search
+        @param noraiseexp (boolean=False): Make getkey() raise exceptions or not (when neccessary)
+        @param raw (boolean=False): Don't use aliases for the value we get.
+
+        @return False if the option does not exist and needed parameter set to False.
+        """
+
+        def bringitback():
+            target = this._backups
+            value_: typing.Any
+
+            if make:
+                if not target:
+                    target = this.cfg
+                if not target[section]:
+                    raise ConfigurationError(this._file, "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
+                                             section, option)
+                if not target[section][option]:
+                    raise ConfigurationError(this._file, "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
+                                             section, option)
+                if not section in this.sections():
+                    this.add_section(section)
+                value_ = target[section][option]
+                if needed:
+                    this.set_and_update(section, option, value_)
+                else:
+                    this.set(section, option, value_)
+                return value_
+
+        try:
+            value = this.get(section, option)
+        except:
+            if noraiseexp:
+                value = bringitback()
+                if not value:
+                    return None
+            else:
+                raise ConfigurationError(this._file, "Section or option not found", section, option)
+
+        # Remove ' / "
+        trans = ["'", '"']
+        for key in trans:
+            value = value.removeprefix(key).removesuffix(key)
+
+        if not value in this.aliases or raw is True:
+            return value
+        else:
+            return this.aliases[value]
+        
     """
     FileSystemEventHandler
     """

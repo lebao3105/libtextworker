@@ -57,7 +57,7 @@ class UISync:
         # Target function must accept arguments
         from inspect import signature
         sig = signature(Func)
-        assert len(sig.parameters) > 0
+        assert len(sig.parameters) > 0, "Used function has no parameter, must be at least 2"
 
         this.Target = Target
         this.Func = Func
@@ -84,18 +84,17 @@ class ColorManager(GetConfig):
     _threads: dict[object, threading.Thread] = {}
 
     def __init__(this, default_configs: dict[str, typing.Any] = stock_ui_configs,
-                 customfilepath: str = CraftItems(THEMES_DIR, "default.ini")):
+                 customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
+                 watchChanges: bool = True):
         """
         Constructor of the class.
         @param default_configs (dict[str]): Defaults to dev-premade configs
         @param customfilepath (str): Custom file path. Disabled by default.
         """
-        if customfilepath != "":
+        if customfilepath:
             this._file = os.path.normpath(customfilepath)
-        else:
-            this._file = CraftItems(THEMES_DIR, "default.ini")
 
-        GetConfig.__init__(this, default_configs, this._file)
+        GetConfig.__init__(this, default_configs, this._file, watchChanges)
 
         if os.path.exists("mergelist.json"):
             this.move(json.loads(open("mergelist.json", "r").read()))

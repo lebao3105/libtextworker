@@ -11,7 +11,8 @@
 import os
 import time
 
-from tkinter import TclError, ttk, Misc
+from tkinter import ttk, Misc
+from warnings import warn
 
 from libtextworker.interface.tk import TK_PLACEOPTS, TK_USEGRID, TK_USEPACK
 
@@ -54,35 +55,32 @@ if Importable["watchdog"]:
 
         def evtIsDir(this, event: FileSystemEvent): return "Dir" if event.is_directory else "File"
         def getTarget(this): return this.Target if not this.TargetIsSelf else this
-
-        # It sucks when I can't use __dict__ (module variable) to access
-        # class easier (= less code used)
-
+        
         def on_moved(this, event: FileSystemEvent):
             if this.evtIsDir(event) == "Dir": what_to_use = DirMovedEvent
             else: what_to_use = FileMovedEvent
-            this.getTarget().event_generate(what_to_use, path=event.src_path)
+            this.getTarget().event_generate(what_to_use, data=event.src_path)
 
         def on_created(this, event: FileSystemEvent): 
             if this.evtIsDir(event) == "Dir": what_to_use = DirCreatedEvent
             else: what_to_use = FileCreatedEvent
-            this.getTarget().event_generate(what_to_use, path=event.src_path)
+            this.getTarget().event_generate(what_to_use, data=event.src_path)
 
         def on_deleted(this, event: FileSystemEvent):
             if this.evtIsDir(event) == "Dir": what_to_use = DirDeletedEvent
             else: what_to_use = FileDeletedEvent
-            this.getTarget().event_generate(what_to_use, path=event.src_path)
+            this.getTarget().event_generate(what_to_use, data=event.src_path)
 
         def on_modified(this, event: FileSystemEvent): 
             if this.evtIsDir(event) == "Dir": what_to_use = DirEditedEvent
             else: what_to_use = FileEditedEvent
-            this.getTarget().event_generate(what_to_use, path=event.src_path)
+            this.getTarget().event_generate(what_to_use, data=event.src_path)
 
         def on_closed(this, event: FileSystemEvent): 
-            this.getTarget().event_generate(FileClosedEvent, path=event.src_path)
+            this.getTarget().event_generate(FileClosedEvent, data=event.src_path)
 
         def on_opened(this, event: FileSystemEvent): 
-            this.getTarget().event_generate(FileOpenedEvent, path=event.src_path)
+            this.getTarget().event_generate(FileOpenedEvent, data=event.src_path)
 else:
     class FSEventHandler:
         pass
@@ -103,13 +101,14 @@ DirMovedEvent = "<<DirMoved>>"
 DirDeletedEvent = "<<DirDeleted>>"
 
 class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
-    Parent_ArgName = "master"
+    watchChanges: bool
+
     TargetIsSelf = True
-    if Importable["watchdog"]:
-        Observers: dict[str, Observer] = {}
+    Parent_ArgName = "master"
     _Frame = ttk.Frame
 
-    def __init__(this, master: Misc, place_options: TK_PLACEOPTS = TK_USEPACK, *args, **kwds):
+    def __init__(this, master: Misc, refresh_on_changes: bool,
+                 place_options: TK_PLACEOPTS = TK_USEPACK, *args, **kwds):
         """
         A ttkTreeview customized to show folder list using os.listdir.
         Multiple roots is supported, but only adding new for now.
@@ -117,6 +116,7 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
 
         DirCtrl's custom styles can be defined via the "w_styles" keyword.
         """
+
         args, kwds = DirCtrlBase.__init__(this, master, *args, **kwds)
         ttk.Treeview.__init__(this, this.Frame, *args, **kwds)
 
@@ -125,16 +125,26 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
         this.configure(yscroll=ysb.set, xscroll=xsb.set)
 
         if TK_USEPACK in place_options:
-            ysb.pack(fill="y", expand=True, side="right")
-            xsb.pack(fill="x", expand=True, side="bottom")
+            ysb.pack(fill="y", expand=False, side="right")
+            xsb.pack(fill="x", expand=False, side="bottom")
             this.pack(expand=True, fill="both")
         elif TK_USEGRID in place_options:
-            this.grid(column=0, row=0)
             ysb.grid(column=1, row=0, sticky="ns")
             xsb.grid(column=0, row=1, sticky="ew")
+            this.grid(column=0, row=0)
         else:
             raise NotImplementedError("If you want to use TK_USEPLACE, then sorry it is not used here (not implemented)."
                                       "A widget place method is required (TK_USEPACK or TK_USEGRID).")
+
+        if refresh_on_changes:
+            if Importable["watchdog"]:
+                this.Observers: dict[str, Observer] = {}
+                this.watchChanges = refresh_on_changes
+            else:
+                warn('Setting up DirCtrl has a warning, about missing dependency for watching file system changes (watchdog)')
+                this.watchChanges = False
+
+        this.bind("<<TreeviewOpen>>", this.Expand)
 
     def destroy(this):
         if this.Observers:
@@ -142,48 +152,77 @@ class DirCtrl(ttk.Treeview, FSEventHandler, DirCtrlBase):
                 this.Observers[key].stop()
                 this.Observers[key].join()
             this.Observers.clear()
+
         ttk.Treeview.destroy(this)
 
-    def SetFolder(this, path: str, newroot: bool = False):
-        def insert_node(node: str, folderpath: str):
+    def Expand(this, evt = None, path: str | None = None):
+        """
+        Expands a node.
+
+        This can be called manually by setting the path parameter, or \
+            bind with a node expand event (<<TreeViewOpen>>), which is \
+            bond by default by DirCtrl.
+        
+        Quits silently when the specified path is invalid, or no item on focus.
+        """
+
+        if path is None: path = this.focus()
+        if not path: return
+
+        this.item(path, open=True)
+        
+        this._insert_node(path, os.path.normpath(this.GetFullPath(path)))
+
+    def _insert_node(this, node: str, folderpath: str):
+        """
+        Internal function to insert childrens into a node.
+        """
+        
+        items = os.listdir(folderpath)
+
+        if len(items) > 0:
+            try:
+                if childs := this.get_children(node):
+                    if len(childs) > 0:
+                        if this.watchChanges:
+                            this.delete(*childs)
+                        else:
+                            first_child = childs[0]
+                            if not this.item(first_child, 'text'): this.delete(first_child)
+                            else: return
+            except:
+                pass
+
             for item in os.listdir(folderpath):
-                # craftedpath = CraftItems(fullpath, item)
                 new = this.insert(node, "end", text=item, open=False)
+
+                # Nothing else that marks a node as expandable
+                # than making an empty item
                 if os.path.isdir(os.path.join(folderpath, item)):
                     this.insert(new, "end")
 
-        # "Lazy" expand
-        # Only load the folder content when the user open
-
-        def Expand(evt):
-            path = this.focus()
-            if not path: return
-            this.item(path, open=True)
-            fullpath = os.path.normpath(this.GetFullPath())
-            iter = os.listdir(fullpath)
-
-            if len(iter) == 0:
-                return
-            try:
-                this.delete(this.get_children(path))
-            except TclError:
-                pass
-
-            insert_node(path, fullpath)
+    def SetFolder(this, path: str, newroot: bool = False):
+        """
+        Sets/add a new folder to the tree.
+        """
 
         DirCtrlBase.SetFolder(this, path, newroot)
 
         first = this.insert("", "end", text=path)
-        insert_node(first, path)
+        this._insert_node(first, path)
 
         if Importable["watchdog"]:
             this.Observers[path] = Observer()
             this.Observers[path].schedule(this, path, recursive=True)
             this.Observers[path].start()
 
-        this.bind("<<TreeviewOpen>>", Expand)
+    def GetFullPath(this, item: str | None = None) -> str | None:
+        """
+        Gets the full path of an item. If not specified: the on-focus item.
+        
+        Returns None if not able to.
+        """
 
-    def GetFullPath(this, item: str | None = None) -> str:
         # Like wx, ttkTreeView handles items by IDs
         if not item:
             item = this.focus()
@@ -226,7 +265,7 @@ class DirList(ttk.Treeview, DirCtrlBase):
 
         args, kwds = DirCtrlBase.__init__(this, master, *args, **kwds)
         ttk.Treeview.__init__(this, this.Frame, show="headings",
-                              columns=[_("Name"), _("Item type"), _("Last modified"), _("Size")],
+                              columns = [ _("Name"), _("Item type"), _("Last modified"), _("Size") ],
                               *args, **kwds)
 
         ysb = ttk.Scrollbar(this.Frame, orient="vertical", command=this.yview)
@@ -249,6 +288,7 @@ class DirList(ttk.Treeview, DirCtrlBase):
         """
         Navigate to the specified folder.
         """
+
         DirCtrlBase.SetFolder(this, path, False)
         this.delete(*this.get_children())
 
