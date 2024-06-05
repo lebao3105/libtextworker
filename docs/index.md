@@ -1,6 +1,6 @@
 # Libtextworker
 
-Welcome you to libtextworker - a cross-platform Python library made for GUI apps!
+Welcome you to libtextworker - a cross-platform library made for Python and C++ apps!
 
 Before going further, you can look about the usage of this library in projects.
 
