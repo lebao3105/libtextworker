@@ -10,6 +10,7 @@
 
 import os
 import re
+from warnings import warn
 import wx
 import wx.aui
 import wx.xrc
@@ -135,17 +136,32 @@ def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = 
     Localizes wxFormBuilder-generated Python code.
     @param path : The path to the Python code
     @param importText : The from .. import statement that will be added to the file (like importing gettext)
-    @param ignoreDoneWork: Ignore translated file
+    @param ignoreDoneWork: Ignore localized file
     @returns result (ModuleType): Imported @path
     """
+
+    def importmodule():
+        name = os.path.basename(path)
+
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(name, path)
+        assert spec != None
+        result = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(result)
+        return result
 
     assert os.path.exists(path) and os.path.isfile(path), f"{path} is neither a file nor an existing item on the file system"
     content = open(path, "r").read()
 
     if not ignoreDoneWork:
         assert content.startswith(path) == False, \
-            "Already translated. To avoid the file being broken, this cannot continue.\n" \
+            "Already localized. To avoid the file being broken, this cannot continue.\n" \
             "Replace the file with newly generated code from your preferred GUI builder and try again."
+    else:
+        if content.startswith(importText): # Already localized?
+            warn(f"{path} seems to be localized. This function checks if the first line was {importText},"
+                 f" so the final result maybe incorrect. If so, remove that {importText} and try again.")
+            return importmodule()
     
     if not importText.endswith("\n"): importText += "\n"
     func = importText.split(" ")[-1] # Get the translate function (e.g gettext in from gettext import gettext)
@@ -175,13 +191,6 @@ def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = 
         content = content.replace(f'u"{match[1]}"', localized)
     
     open(path, "w").write(content)
-    name = os.path.basename(path)
-    dirpath = path.removesuffix(name)
 
-    import importlib.util
-    spec = importlib.util.spec_from_file_location(name, path)
-    assert spec != None
-    result = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(result)
-    return result
+    return importmodule()
 
