@@ -81,10 +81,16 @@ class GetConfig(ConfigParser):
 
         ConfigParser.__init__(this, **kwds)
 
-        if isinstance(defaults, dict): this.OEM = defaults
-        elif isinstance(defaults, str): this.OEM = json.loads(defaults)
-        elif defaults: this.OEM = dict(defaults)
-
+        if isinstance(defaults, str):
+            try:
+                this.OEM = json.loads(defaults)
+            except:
+                new = GetConfig(defaults=None, load=defaults)
+                for key in new.sections():
+                    this.OEM[key] = dict(new[key])
+        elif defaults:
+            this.OEM = defaults.copy()
+            
         this.addWatchDog = watchChanges and Importable['watchdog']
 
         if this.addWatchDog:
@@ -97,8 +103,7 @@ class GetConfig(ConfigParser):
             try:
                 this.read_string(load)
             except:
-                this.read_file(load)
-        
+                this.readf(load)     
     
     def __del__(this):
         """
@@ -112,7 +117,9 @@ class GetConfig(ConfigParser):
     
     def read_string(this, string: str):
         """
-        Reads a string.
+        Reads a string. String in dictionary/JSON style is supported.
+
+        For reading a file, using either read() or read_file().
         """
 
         try:
@@ -120,21 +127,13 @@ class GetConfig(ConfigParser):
         except:
             ConfigParser.read_string(this, string)
 
-    def read_file(this, file: str, source = None):
+    def readf(this, file: str, encoding: str = "utf8"):
         """
         Reads a file.
         """
 
-        if isinstance(file, StringIO):
-            ConfigParser.read_file(this, file, source)
-            return
-
-        if not os.path.isfile(file):
-            this.read_dict(this.OEM)
-            this.write(open(file, "w"))
-        else:
-            WalkCreation(os.path.dirname(file))
-            this.read_string(open(file, "r").read())
+        WalkCreation(os.path.dirname(file))
+        this.read(file, encoding)
         this._file = file
 
         if this.addWatchDog:
@@ -152,6 +151,7 @@ class GetConfig(ConfigParser):
         @param backupdelimiter (str): Path delimiter (defaults to ->) used in the last backup
         """
         os.remove(this._file)
+        this.clear()
         if this.OEM: this.read_dict(this.OEM)
         if restore:
             for key in this._backups:
@@ -166,7 +166,8 @@ class GetConfig(ConfigParser):
                 for element in this._backups[key]:
                     target[element] = this._backups[element]
     
-    def Update(this):
+    def update(this):
+        ConfigParser.update(this)
         this.write(open(this._file, "w"))
                     
     def move(this, list_: dict[str, dict[str, str]]):
