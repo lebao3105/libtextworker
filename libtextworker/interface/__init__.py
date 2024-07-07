@@ -24,7 +24,7 @@ stock_ui_configs = {
     "font": {  # default value 'normal' now switched to 'system'
         "style": "system",
         "weight": "system",
-        "family": "system",
+        "family": "", # there's actually a font named "system"
         "size": "system",
     },
     "highlight": {
