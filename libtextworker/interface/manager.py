@@ -83,7 +83,7 @@ class ColorManager(GetConfig):
 
     _threads: dict[object, threading.Thread] = {}
 
-    def __init__(this, default_configs: dict[str, typing.Any] = stock_ui_configs,
+    def __init__(this, default_configs: dict[str, typing.Any] | str = stock_ui_configs,
                  customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
                  watchChanges: bool = True):
         """
@@ -148,7 +148,7 @@ class ColorManager(GetConfig):
         @param color (str | None = None): Defaults to darkdetect's output/current setting.
         @return tuple[str, str]: Background - Foreground colors
         """
-        # print(darkdetect.theme().lower())
+
         if not color:
             if AUTOCOLOR: currmode = darkdetect.theme().lower()
             else: currmode = str(this.getkey("color", "background", True, True)).lower()
