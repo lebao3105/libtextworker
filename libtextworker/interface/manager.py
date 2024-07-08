@@ -260,11 +260,11 @@ class ColorManager(GetConfig):
                 return func(**args)
             
             elif isinstance(args, tuple):
-                # BUG: Not working? (tested on wx)
                 temp = list(args)
-                for arg in temp:
+                for i in range(len(temp)):
+                    arg = temp[i]
                     if isinstance(arg, str):
-                        arg = replacetext(arg)
+                        temp[i] = replacetext(arg)
                 args = tuple(temp)
                 return func(*args)
         
@@ -278,7 +278,7 @@ class ColorManager(GetConfig):
                 dictionary = getattr(this, f"set{attr}fn")[item]
 
                 for i in range(len(dictionary)):
-                    fn = getattr(this, f"set{attr}fn")[item][i]["fn"]
+                    fn = dictionary[i]["fn"]
                     if isinstance(fn, str): fn = getattr(widget, fn)
 
                     runfn(fn, dictionary[i]["params"])
