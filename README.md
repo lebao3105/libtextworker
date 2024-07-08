@@ -1,7 +1,6 @@
 ## libtextworker
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-This is the official library for [texteditor/textworker](https://github.com/lebao3105/texteditor). Unlike its name, you can also use this for your projects too!
+This is the official library for [texteditor/textworker](https://gitlab.com/textworker). Unlike its name, you can also use this for your projects too!
 
 This library aims to be suitable for both GUI and CLI/TUI programs.
 
