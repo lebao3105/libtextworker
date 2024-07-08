@@ -155,25 +155,23 @@ class ColorManager(GetConfig):
         else:
             currmode = color
 
-        # print(currmode)
         if not currmode in ["dark", "light"]:
            raise ConfigurationError(this._file, "Invalid value", "color", "background", currmode)
 
         # Prefer color for specific modes first
-        test_back = this.getkey("color", "background-%s" % currmode, noraiseexp=True)
-        test_fore = this.getkey("color", "foreground-%s" % currmode, noraiseexp=True)
-        # print(test_back, test_fore)
-
-        back_ = test_back if test_back else colors[currmode]
+        if f"background-{currmode}" in this["color"]:
+            test_back = this.getkey("color", f"background-{currmode}")
+            back_ = test_back if test_back else colors[currmode]
 
         fore_ = this.getkey("color", "foreground", make=True)
         if fore_ == "default":
             fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode, "dark")]
 
-        if test_fore:
-            fore_ = test_fore
+        if f"foreground-{currmode}" in this["color"]:
+            if test_fore := this.getkey("color", f"foreground-{currmode}"):
+                fore_ = test_fore
 
-        elif fore_.startswith("#"):  # hex colors. TODO: rgb support?
+        if fore_.startswith("#"):
             pass
 
         elif fore_ in colors:
@@ -183,7 +181,8 @@ class ColorManager(GetConfig):
             fore_ = colors[test_fore]
 
         else:
-            raise ConfigurationError(this._file, "Invalid value", "color", "foreground")
+            fore_ = "#{:02x}{:02x}{:02x}".format(eval(fore_)) # RGB to hex
+            raise ConfigurationError(this._file, "Invalid value", "color", "foreground", fore_)
 
         return back_, fore_
 
@@ -288,6 +287,11 @@ class ColorManager(GetConfig):
         runloop("fc")
 
     def autocolor_run(this, widget: typing.Any):
+        """
+        Creates and runs a thread that automatically color a widget if able.
+
+        @param widget: Target object
+        """
         autocolor = this.getkey("color", "auto")
         if (not AUTOCOLOR) or (autocolor in this.no_values):
             logger.warning("ColorManager.autocolor_run() called when auto-color system is not usable."
