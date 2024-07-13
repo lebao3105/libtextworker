@@ -85,7 +85,7 @@ class AWonderfulIdea(<a fancy widget>, WidgetBase):
 
 ## How it works
 
-In the code above, ```AW_FLAGS``` is an enum.Flag-derived class with ```AW_FLAG*``` variable as the flags for "AWonderfulIdea" widget.
+In the code above, ```AW_FLAGS``` is an `enum.Flag`-derived class with ```AW_FLAG*``` variable as the flags for "AWonderfulIdea" widget.
 
 AWonderfulThing: The base skeleton for a widget. Default styles and actions. Don't need to derive WidgetBase.\__init__.
 

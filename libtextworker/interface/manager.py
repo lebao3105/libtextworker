@@ -28,6 +28,9 @@ def hextorgb(value: str):
     lv = len(value)
     return tuple(int(value[i : i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
+def rgbtohex(value: str):
+    return "#{:02x}{:02x}{:02x}".format(eval(value))
+
 class UISync:
     """
     A class that automatically syncs your UI to match system settings.
@@ -181,7 +184,7 @@ class ColorManager(GetConfig):
             fore_ = colors[test_fore]
 
         else:
-            fore_ = "#{:02x}{:02x}{:02x}".format(eval(fore_)) # RGB to hex
+            fore_ = rgbtohex(fore_) # RGB to hex
             raise ConfigurationError(this._file, "Invalid value", "color", "foreground", fore_)
 
         return back_, fore_

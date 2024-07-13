@@ -13,11 +13,11 @@ Both 2 platforms are powerful, one factor for this is how you use it.
 
 Notes:
 
-* About Tk(inter)'s ugly UI: many people hate it - you can search the internet about it, and I don't know how to explain how and why. Fortunately, you can get many modern themes around GitHub! Even a workaround for the native Gtk look for Tkinter/Tk has been started years ago. Only one word before we continue: use Tkinter.ttk as much as possible, because ttk widgets are "colored" - better than the default Tkinter one.
+* About Tk(inter)'s ugly UI: many of us hate it. Fortunately, you can get many modern themes around internet! Even a workaround for the native Gtk look for Tkinter/Tk has been started years ago. `tkinter.ttk` could fix this.
 
-* About wxPython installation: if Pypi can't find a wheel (it's something like .msi or .deb) for your machine, it will start building one. This is a normal behaviour, but you have to look for the dependencies wxPython needs.
+* About wxPython installation: if Pypi can't find a wheel (it's something like .msi or .deb) for your machine, it will start building one. This is a normal behaviour, but you have to look for all dependencies wxPython needs.
 
-* About Tkinter installation: on Windows there's an option in the installer (not MS Store one?). On *NIX, Tkinter is separated from the main Python package.
+* About Tkinter installation: on Windows there's an option in the installer (not MS Store one?). On *NIX, Tkinter is separated from the main Python package. It is NOT available on Pypi
 
 ## What about libtextworker?
 

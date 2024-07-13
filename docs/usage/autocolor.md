@@ -17,31 +17,33 @@ foreground = default
 auto = yes
 ```
 
-### Color->Background
+Starting from version 0.1.4, you can use hex colors and RGB colors (only from the non-development release).
+
+There are some named colors, look at ```libtextworker.interface.colors``` or ```libtextworker.interface._colors``` in 0.1.3.
+
+### color->background
 
 Type: string
 
 Defaults to ```light```.
 
-Since 0.1.4, you can also use hex colors, or use custom colors defined in ```libtextworker.interface.colors``` (dictionary).
-
 On previous versions, you only can choose between "dark" and "light".
 
-### Color->Foreground
+### color->foreground
 
 Type: string
 
 Defaults to "default". That means the foreground color relies on the system scheme.
 
-Options are many: "default", colors in ```libtextworker.interface.colors``` or ```libtextworker.interface._colors``` in 0.1.3. A hex color can be used.
+Options are many: "default", colors in ```libtextworker.interface.colors``` or ```libtextworker.interface._colors``` in 0.1.3.
 
-### Color->auto
+### color->auto
 
-Type: boolean as a string/integer ("yes", "no", 0, 1, etc...)
+Type: boolean as a string/integer ("yes", "no", 0, 1, etc... look at `GetConfig.yes_values` and `GetConfig.no_values`)
 
 Defaults to "yes" (enabled).
 
-### Color->foreground/background-{variant}
+### color->foreground/background-{variant}
 
 > `{variant}` is either "dark" or "light"
 
@@ -52,6 +54,12 @@ Type: string.
 First debut: 0.1.4
 
 No default value. Check for options above.
+
+### highlight->background{,-{mouse,finder}}
+
+Highlight colors. For text highlighted by mouse or a Find/Replace dialog.
+
+Optional.
 
 ## Implementation for GUIs
 
@@ -75,7 +83,7 @@ Run `ColorManager.autocolor_run(object)` to get started.
 
 ## Custom functions for coloring
 
-See ColorManager's set*func:
+See ColorManager's set*func (`*` = wildcard):
 
 * `setcolorfunc`: Background
 * `setfontcfunc`: Foreground (or font color/fontc in function name, no typo here!)

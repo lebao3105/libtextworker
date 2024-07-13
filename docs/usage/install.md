@@ -1,10 +1,10 @@
 # Installing libtextworker
 
-The latest version of this library is 0.1.3.
+The latest version of this library is 0.1.4.
 
 You will need:
 
-* Python 3 or higher with pip installed - get it from [python.org](https://python.org). Only tested on Python 3.11 which is my daily-driver for now
+* Python 3 or higher with pip installed - get it from [python.org](https://python.org)
 * Basic Python programming knowledge - this is not really a project for beginners
 
 ## Available packages
@@ -20,7 +20,7 @@ With the 0.1.3 release, we have these following packages:
 Note: For the application autocolor support, the support is OS-dependent:
 
 * Windows 10 1607+
-* macOS 10.14
+* macOS 10.14+
 * Linux/BSD with at least GTK3?
 
 'Auto color' means getting the current OS color scheme (dark/light) and eventually apply that to the interface.

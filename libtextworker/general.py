@@ -95,9 +95,13 @@ class libTewException(Exception):
 def CraftItems(*args: str | pathlib.Path) -> str:
     """
     Craft any >=2 paths, together.
+    If any argument (starting from the second one) starts with leading / or \\,
+        all previous segments are ignored (this is from pathlib.Path).
+    Example: pathlib.Path('helloworld/one', '\\two').__str__() returns '/two'.
+
     @param *args (str|pathlib.Path)
     @return str: Result
-    @raise Exception: not enough arguments (must be >=2)
+    @raise Exception: not enough arguments (must be >=2) or directory creation failed
     """
     if len(args) < 2:
         raise Exception("Not enough arguments")
@@ -124,9 +128,7 @@ def CreateDirectory(directory: str, childs: list[str] = []):
         os.mkdir(directory)
     if childs:
         for folder in childs:
-            folder = CraftItems(directory, folder)
-            if not os.path.isdir(folder):
-                os.mkdir(folder)
+            WalkCreation(CraftItems(directory, folder))
 
 
 def WalkCreation(directory: str):
@@ -134,17 +136,16 @@ def WalkCreation(directory: str):
     Create directory layer-to-layer.
     How to understand this? Try this path: path1/path2/path3.
     WalkCreation will create path1 first, then path1/path2 and path1/path2/path3. Skip existing dirs, of course.
+    This function does not support single Windows path delimiter (\), but \\.
+
+    @since 0.1.4: Just call os.makedirs with os.path.normpath-ed path.
 
     @param directory (str): Directory to create
     @throws Exception: Directory creation failed
     """
-    directory = directory.replace("\\", "/")
-    splits = directory.split("/")
-    firstdir = splits[0]
-    for item in range(1, len(splits)):
-        firstdir += "/" + splits[item]
-        if not os.path.isdir(firstdir):
-            os.mkdir(firstdir)
+
+    if not os.path.isdir(directory):
+        os.makedirs(os.path.normpath(directory))
 
 
 def GetCurrentDir(file: str, aspathobj: bool = False):

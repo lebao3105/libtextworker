@@ -10,13 +10,10 @@ See the documentation in /usage/getconfig.
 #	This is a part of the libtextworker project.
 #	Licensed under the GNU General Public License version 3.0 or later.
 
-from io import StringIO, TextIOBase
 import json
 import os
 import typing
-import operator
 
-from functools import reduce
 from .general import Importable, WalkCreation, libTewException
 from warnings import warn
 
@@ -24,9 +21,8 @@ __all__ = ["ConfigurationError", "GetConfig"]
 
 if Importable["commentedconfigparser"]:
     from commentedconfigparser import CommentedConfigParser as ConfigParser
-    from configparser import NoSectionError
 elif Importable["configparser"]:
-    from configparser import ConfigParser, NoSectionError
+    from configparser import ConfigParser
 else:
     warn("GetConfig is only able to use JSON files - required dependency for INI is not installed")
 
@@ -63,9 +59,6 @@ class GetConfig(ConfigParser):
     # Read file
     _file: str
 
-    for yes in yes_values: aliases[yes] = True
-    for no in no_values: aliases[no] = False
-
     # Backups
     _backups: dict[str] = {}
 
@@ -93,17 +86,31 @@ class GetConfig(ConfigParser):
             
         this.addWatchDog = watchChanges and Importable['watchdog']
 
+        # For getboolean
+        for yes in this.yes_values:
+            if isinstance(yes, str):
+                this.BOOLEAN_STATES[yes] = True
+                this.aliases[yes] = True
+                
+        for no in this.no_values:
+            if isinstance(yes, str):
+                this.BOOLEAN_STATES[no] = False
+                this.aliases[no] = False
+
         if this.addWatchDog:
             this._evtHdlr = FileSystemEventHandler()
             this._evtHdlr.on_any_event = this.on_any_event
 
-            this._observer: Observer
+            this._observer: Observer # type: ignore
 
         if isinstance(load, str):
             try:
                 this.read_string(load)
             except:
-                this.readf(load)     
+                this.readf(load)
+
+        elif isinstance(load, dict):
+            this.read_dict(load)
     
     def __del__(this):
         """
@@ -133,6 +140,9 @@ class GetConfig(ConfigParser):
         """
 
         WalkCreation(os.path.dirname(file))
+        if not os.path.isfile(file):
+            open(file, "w")
+
         this.read(file, encoding)
         this._file = file
 
@@ -152,21 +162,24 @@ class GetConfig(ConfigParser):
         """
         os.remove(this._file)
         this.clear()
+
         if this.OEM: this.read_dict(this.OEM)
         if restore:
-            for key in this._backups:
-                target = this
-                splits = key.split(backupdelimiter)
+            if this._backups:
+                for key, value in this._backups:
+                    splits = key.split(backupdelimiter)
+                    assert len(splits) == 2, "Incomplete setting path or has more than one delimiter"
 
-                for i in range(len(splits)):
-                    if not splits[i] in target:
-                        if not splits[i].isdigit(): target[splits[i]] = {}; target = target[splits[i]]
-                        else: target[int(splits[i])] = []; target = target[int(splits[i])]
-                    
-                for element in this._backups[key]:
-                    target[element] = this._backups[element]
+                    if not this.has_section(splits[0]): this.add_section(splits[0])
+                    this[splits[0]][splits[1]] = value
+            else:
+                raise ValueError("No backups were made!")
     
-    def update(this):
+    def update_and_write(this):
+        """
+        Updates and write new changes into the current file.
+        @see update
+        """
         ConfigParser.update(this)
         this.write(open(this._file, "w"))
                     
@@ -229,6 +242,9 @@ class GetConfig(ConfigParser):
                 this.remove_section(section_)
     
     def aliasyesno(this, yesvalue=None, novalue=None):
+        """
+        Makes alias(es) of True/False/both.
+        """
         if yesvalue:
             this.yes_values.append(yesvalue)
             this.aliases[yesvalue] = True
@@ -238,6 +254,9 @@ class GetConfig(ConfigParser):
             this.aliases[novalue] = False
 
     def alias(this, value, value2):
+        """
+        Makes an alias.
+        """
         this.aliases[value] = value2
     
     def set_and_update(this, section: str, option: str, value: str | None = None):
@@ -246,9 +265,9 @@ class GetConfig(ConfigParser):
         Set an option, and eventually apply it to the file.
         """
         this.set(section, option, value)
-        this.update()
+        this.update_and_write()
 
-    def BackUp(this, which: list[str], delimeter: str = '->'):
+    def BackUp(this, which: list[str], keys: dict[str, str], direct_to_keys: bool = False, delimeter: str = '->') -> dict:
         """
         Make a copy of values/sections
 
@@ -260,26 +279,28 @@ class GetConfig(ConfigParser):
         @see GetTheLastBackUp
         """
 
-        this._backups = {}
+        target = this._backups if keys and direct_to_keys else keys
 
-        for name in which:
-            splits = name.split(delimeter)
+        for path in which:
+            splits = path.split(delimeter)
+            assert len(splits) == 2, \
+                    f"{path} has either no delimiter or not enough/too much items to split.\n" \
+                    "Also dictionary objects are not supported. If you have no dicitonary, " \
+                    " change the delimiter so that BackUp won't confuse again."
 
             # Get the parent path and the option/section name
             name = splits[-1]
-            parent = delimeter.join(splits[:-1])
+            parent = splits[0]
+            
+            if name.isdigit():
+                if not parent in target.keys(): target[parent] = []
+                name = int(name)
+            else:
+                if not parent in target.keys(): target[parent] = {}
+            
+            target[parent][name] = this[parent][name]
 
-            if not parent in this._backups.keys():
-                try: int(name)
-                except: this._backups[parent] = {}
-                else: this._backups[parent] = []
-
-            # https://stackoverflow.com/a/31033676
-            for i in range(len(splits)):
-                try: splits[i] = int(splits[i])
-                except: continue
-
-                this._backups[parent][splits[i]] = reduce(operator.getitem, splits, this)
+            return target
     
     def getkey(this, section: str, option: str, needed: bool = False,
                make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
@@ -300,16 +321,23 @@ class GetConfig(ConfigParser):
             value_: typing.Any
 
             if make:
-                if not target:
-                    target = this.cfg
+                if not target: target = this.OEM
+                
                 if not target[section]:
-                    raise ConfigurationError(this._file, "Unable to find the section in both GetConfig.backups and GetConfig.cfg!",
-                                             section, option)
+                    raise ConfigurationError(
+                        this._file, f"Unable to find {section} section in both saved backups and default settings!",
+                        section, option
+                    )
+                
                 if not target[section][option]:
-                    raise ConfigurationError(this._file, "Unable to find the option in both GetConfig.backups and GetConfig.cfg!",
-                                             section, option)
+                    raise ConfigurationError(
+                        this._file, f"Unable to find the option under {section} in both saved backups and default settings!",
+                        section, option
+                    )
+
                 if not section in this.sections():
                     this.add_section(section)
+
                 value_ = target[section][option]
                 if needed:
                     this.set_and_update(section, option, value_)
@@ -319,20 +347,16 @@ class GetConfig(ConfigParser):
 
         try:
             value = this.get(section, option)
-        except:
-            if noraiseexp:
-                value = bringitback()
-                if not value:
-                    return None
-            else:
-                raise ConfigurationError(this._file, "Section or option not found", section, option)
+        except Exception as e:
+            if noraiseexp: value = bringitback()
+            else: raise e
 
         # Remove ' / "
         trans = ["'", '"']
         for key in trans:
             value = value.removeprefix(key).removesuffix(key)
 
-        if not value in this.aliases or raw is True:
+        if (not value in this.aliases) or (raw is True):
             return value
         else:
             return this.aliases[value]
@@ -343,7 +367,7 @@ class GetConfig(ConfigParser):
 
     if Importable["watchdog"]:
         def on_any_event(this, event: FileSystemEvent):
-            if event.src_path != this._file: # Watchdog also catch events from other files
+            if event.src_path != this._file: # Watchdog also catches events from other files
                 return
 
             if isinstance(event, (FileModifiedEvent, FileCreatedEvent)):
