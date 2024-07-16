@@ -176,3 +176,6 @@ tests/__main__.py
 tests/*.ini
 !tests/custom_theme.ini
 tests/*/*.ini
+
+# Tests
+helloworld/
