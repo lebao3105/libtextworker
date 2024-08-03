@@ -24,20 +24,21 @@ In the snippet above, ```cfgs``` is a dictionary contains all your defaults for 
 
 The last argument will tell GetConfig to watch and reread the file if an even happends to the file.
 
-But since GetConfig derived from ConfigParser class (even you use Commented-configparser), you can add more to your liking (below are some of them, the most usefuls):
+But since GetConfig is derived from ConfigParser class, you can add more to your liking (below are some of them):
 
-* inline_comment_prefixes: Just like what it says - defaults disabled
-* comment_prefixes: Normal comment prefixes (outline) - defaults to "#" and ";" as INI standards
-* allow_no_value: Defaults disabled, allow options with no value inside
-* delimeters: Option - value delimeters (defaults to "=" and ":") <1>
+* `inline_comment_prefixes`: Just like what it says - defaults disabled
+* `comment_prefixes`: Normal comment prefixes (outline) - defaults to "#" and ";" as INI standards
+* `allow_no_value`: Disabled by default, allow options with no value inside
+* `delimeter`s: Option - value delimeters (defaults to "=" and ":") <1>
 
 **<1>** this means you can do this in INI:
+
 ```ini
 [section]
-option = value
-       ^ this is a delimeter
+option1 = value
+#      ^ this is a delimeter
 option2 : value
-        ^ this is a delimeter too
+#       ^ this is a delimeter too
 ```
 
 You can use JSON as the content to load/default settings.
@@ -51,8 +52,8 @@ GetConfig extends ConfigParser with these features:
 * Backup/reset settings;
 * JSON read (write just use `json.dumps()`);
 * Run-time update - to a dictionary (`GetConfig.BackUp`);
-* Advanced value getter (`GetConfig.getkey`);
-* Aliases support (`GetConfig.alias*`);
+* Advanced value getter (`GetConfig.getkey` or `GetConfig.Get` since 0.1.4);
+* Aliases support (`GetConfig.alias*` - `*` is wildcard);
 * Move any thing to a new section, new option, or even to another file! (`GetConfig.move`);
 * Watch file system change!
 

@@ -8,16 +8,16 @@ Both 2 platforms are powerful, one factor for this is how you use it.
 
 | Toolkit  | Installation                                                             | The core                  | Best for...                                    | Limitations                                             |
 |----------|--------------------------------------------------------------------------|---------------------------|------------------------------------------------|---------------------------------------------------------|
-| Tkinter  | Not from Pypi      | Tk toolkit                | Python GUI newbies/who want a simple/good interface with themes | Ugly on Linux, some goods are not here yet              |
-| wxPython | Get from Pypi | Win32 API, Cocoa, Gtk, Qt | People who want a more powerful application    | Takes time to install + learn |
+| Tkinter  | Not from Pypi, from Python source code      | Tk toolkit                | Python GUI newbies/who want a simple/good interface with themes | Ugly on Linux, some goods are not here yet              |
+| wxPython | Get from Pypi/GitHub | Win32, Cocoa, Gtk, Qt | People who want a more powerful application    | Takes time to install + learn |
 
 Notes:
 
-* About Tk(inter)'s ugly UI: many of us hate it. Fortunately, you can get many modern themes around internet! Even a workaround for the native Gtk look for Tkinter/Tk has been started years ago. `tkinter.ttk` could fix this.
+* About Tk(inter)'s ugly UI: many of us hate it. Fortunately, you can get many modern themes around internet! Even a workaround for the native GTK look for Tkinter/Tk has been started years ago. `tkinter.ttk` could fix this, but partly.
 
 * About wxPython installation: if Pypi can't find a wheel (it's something like .msi or .deb) for your machine, it will start building one. This is a normal behaviour, but you have to look for all dependencies wxPython needs.
 
-* About Tkinter installation: on Windows there's an option in the installer (not MS Store one?). On *NIX, Tkinter is separated from the main Python package. It is NOT available on Pypi
+* About Tkinter installation: on Windows there's an option in the installer (one from python.org). On *NIX, Tkinter is separated from the main Python package. It is NOT available on Pypi
 
 ## What about libtextworker?
 

@@ -83,7 +83,7 @@ Run `ColorManager.autocolor_run(object)` to get started.
 
 ## Custom functions for coloring
 
-See ColorManager's set*func (`*` = wildcard):
+See ColorManager's `set*func` (`*` = wildcard):
 
 * `setcolorfunc`: Background
 * `setfontcfunc`: Foreground (or font color/fontc in function name, no typo here!)

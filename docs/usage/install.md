@@ -28,7 +28,8 @@ Note: For the application autocolor support, the support is OS-dependent:
 ## Install
 
 libtextworker is available on:
-* [GitHub](https://github.com/lebao3105/libtextworker)
+* [GitHub](https://github.com/lebao3105/libtextworker) (mirror)
+* [Official Gitlab page](https://gitlab.com/textworker/legacy-python/libtextworker)
 * [Pypi](https://pypi.org/project/libtextworker)
 
 Install from source:

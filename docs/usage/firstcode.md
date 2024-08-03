@@ -16,14 +16,14 @@ Here's the ```require``` function:
 
 ```python
 def require(project: str, target_version: str):
-        """
-        Ensures that a project is available for the requested version OR HIGHER.
-        @param project (str): Project name
-        @param target_version (str): Project version you want to have
-        """
+	"""
+	Ensures that a project is available for the requested version OR HIGHER.
+	@param project (str): Project name
+	@param target_version (str): Project version you want to have
+	"""
 ```
 
-You can use this function for other packages, just make sure that the package has ```__version__``` attribute.
+You can use this function for other packages, just make sure that the package has `__version__` attribute.
 
 There are many functions for your use: `require_exact`, `require_lower`, and even `is_development_version`, `is_development_version_from_project` for verions type-checking.
 
@@ -35,11 +35,12 @@ There is also a function called `test_import`, which returns a boolean. The test
 
 The top-level module has some useful attributes:
 
-* THEMES_DIR (str): Defaults to ```~/.configs/textworker/themes```; where all themes for GUIs are placed
-* EDITOR_DIR (str): Defauls to ```~/.configs/textworker/editorconfigs/```; default configs directory for GUI editors
-* Importable (dict[str, bool]): An alias to ```general.Importable```, contains check results for Python modules.
+* `TOPLV_DIR`: top-level settings path
+* `THEMES_DIR` (`str`): ~~Defaults to ```~/.configs/textworker/themes```~~; where all themes for GUIs are placed
+* `EDITOR_DIR` (`str`): ~~Defauls to ```~/.configs/textworker/editorconfigs/```~~; default configs directory for GUI editors
+* `Importable` (`dict[str, bool]`): An alias to ```general.Importable```, contains check results for Python modules.
 
-In libtextworker.general module we have a variable called `available_toolkits` (since 0.1.3), indicates supported GUI toolkits. Only wxPython and Tkinter are supported. Also we have LOG_PATH shows us where the log file is located, `TOPLV_DIR` for the top-level settings path.
+In libtextworker.general module we have a variable called `available_toolkits` (since 0.1.3), indicates supported GUI toolkits.
 
 ## Choose what you want
 
@@ -49,7 +50,7 @@ Take a look at all library modules:
 * ```get_config``` ported from texteditor, contains GetConfig class which is an advanced INI parser (json import/export ongoing), with backup, value aliases, and runtime update.
 * ```versioning```: See above.
 * ```interface.manager```: Contains ColorManager which handles GUI widgets color/font
-* ```interface._colors``` (since 0.1.3) or `interface.colors` (since 0.1.4) names *some* colors.
+* `interface.colors` (since 0.1.4) or `interface._colors` (since 0.1.3) names *some* colors.
 * subfolders in ```interface```: GUIs support ('wx' for wxPython, 'tk' for Tkinter)
 
 ## Packaging

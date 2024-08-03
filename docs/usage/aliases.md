@@ -16,3 +16,9 @@ No space between `mouse` and `finder` is indentional. If there's one then we wil
 
 * `{mouse, finder}` => `mouse` and ` finder`;
 * `{mouse ,finder}` => `mouse ` and `finder`
+
+Also in some cases you will see something like:
+
+`GetConfig.alias*`
+
+`*` here is a wildcard. For the example above, we will have all functions of `GetConfig` that has `alias` as name prefix.
