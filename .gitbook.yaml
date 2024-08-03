@@ -1,0 +1,12 @@
+root: ./docs/
+
+structure:
+  readme: ./index.md
+  aliases: ./usage/aliases.md
+  autocolor: ./usage/autocolor.md
+  firstcode: ./usage/firstcode.md
+  getconfig: ./usage/getconfig.md
+  gettheright: ./usage/gettheright.md
+  install: ./usage/install.md
+  newgui: ./usage/newgui.md
+  packaging: ./usage/packaging.md
