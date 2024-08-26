@@ -9,79 +9,124 @@
 #	Licensed under the GNU General Public License version 3.0 or later.
 
 import tkinter
-from tkinter.ttk import Button, Frame, Label, Entry
+from tkinter.ttk import Button, Checkbutton, Frame, Label, Entry
 
 from . import TK_USEGRID, actionrow, TK_USEPACK
 from ... import _
-from ...general import libTewException
 
 class FindReplace(Frame):
     """
-    A find-replace dialog for Tkinter text edits.
+    A find-replace frame for Tkinter text editors.
     """
 
     Target: tkinter.Text
     LastIndex: str = "1.0"
 
-    def __init__(this, master, editor: tkinter.Text, placestyle = TK_USEGRID,
+    def __init__(this, master: tkinter.Misc, editor: tkinter.Text, placestyle = TK_USEGRID,
                  addReplace: bool = False, foundBackground: str = "yellow", *args, **kwds):
+        """
+        Constructor.
+
+        @param master: The frame's parent
+        @param editor: Target editor
+        @param placestyle: How we need to place things (grid, pack)
+        @param addReplace: Enable text replace function
+        @param foundBackground: Match text's background color
+        """
         Frame.__init__(this, master, *args, **kwds)
         this.Target = editor
 
         # UI Building
-        # TODO: More find options, e.g case sensitive and regex
         if TK_USEGRID in placestyle:
             target = actionrow.ActionRow.PlaceObj
             leftside = {"column": -1}
+            rightside = {"row": -1}
+            currcolumn = 0 # Currently used column
+
+            def placewidget(which):
+                nonlocal currcolumn
+                currcolumn += 1
+                which.grid(row=0, column = currcolumn)
         else:
+            if not TK_USEPACK in placestyle:
+                from warnings import warn
+                warn("TK_USEPLACE is not supported in FindReplace frame. Will use Pack method instead.")
+
             target = actionrow.ActionRow.PlaceObjPack
             leftside = {"side": "left"}
+            rightside = {"side": "right"}
 
+            def placewidget(which):
+                which.pack(fill="x")
+
+        ## Find entry
         row1 = actionrow.ActionRow(this)
         target(row1, Label, text=_("Find for:"), **leftside)
-        this.findentry = target(row1, Entry, justify="left")
-        row1.pack(expand=True, fill="x")
+        this.find_var = tkinter.StringVar()
+        # this.find_var.trace_add('write', lambda _, __, ___: this.Search())
+        target(row1, Entry, justify="left", textvariable=this.find_var).bind("<KeyRelease>", lambda evt: this.Search())
+        placewidget(row1)
 
-        do_row = actionrow.ActionRow(this)
-        findbtn = target(do_row, Button, text=_("Find"))
-        findbtn.configure(command=this.Search)
-        do_row.pack(expand=True, fill="x")
-
+        ## Replace buttons
         if addReplace:
             row2 = actionrow.ActionRow(this)
-            this.replaceentry = row2.PlaceObjPack(Entry, justify="left")
-            target(row2, Label, text=_("Replace with:"), **leftside)
-            row2.pack(expand=True, fill="x")
-
+            this.replaceentry = target(row2, Entry, justify="left")
+            target(row2, Label, text=_("Replace with:"))
+            placewidget(row2)
 
             do2_row = actionrow.ActionRow(this)
-            replacebtn = target(do2_row, Button, text=_("Replace"))
-            replacebtn.configure(command=lambda: this.Replace(1))
-            replaceall_btn = target(do2_row, Button, text=_("Replace all"))
-            replaceall_btn.configure(command=lambda: this.Replace(2))
-            do2_row.pack(expand=True, fill="x")
+            target(do2_row, Button, text=_("Replace"), **rightside).configure(command=lambda: this.Replace(1))
+            target(do2_row, Button, text=_("Replace all"), **rightside).configure(command=lambda: this.Replace(2))
+            placewidget(do2_row)
 
-        result_row = actionrow.ActionRow(this)
-        target(result_row, Label, **leftside)
-        closebtn = target(result_row, Button, text=_("Close"))
-        closebtn.configure(command=this.destroy)
-        result_row.pack(expand=True, fill="x")
+        ## Use regex
+        regex_row = actionrow.ActionRow(this)
+        target(regex_row, Label, side="right", text=_("Use regular expression"))
+        this.regex_chk = tkinter.BooleanVar()
+        target(regex_row, Checkbutton, variable=this.regex_chk)
+        placewidget(regex_row)
+        
+        ## Case sensitive
+        case_row = actionrow.ActionRow(this)
+        target(case_row, Label, side="right", text=_("Case sensitive"))
+        this.case_chk = tkinter.BooleanVar()
+        target(case_row, Checkbutton, variable=this.case_chk)
+        placewidget(case_row)
 
-        # Configure found color tag
+        # Set find matches color tag
         this.Target.tag_config("found", background=foundBackground)
     
+    """
+    Search for strings specified in the dialog.
+    """
     def Search(this):
-        text = this.findentry.get()
-        this.Target.tag_remove("found", 1.0, "end")
+        text = this.find_var.get()
         pos = "1.0"
+        this.Target.tag_remove("found", pos, "end")
 
         if text:
+
             while True:
-                pos = this.Target.search(text, this.LastIndex, 'end', nocase=True, regexp=True)
-                lastidx = f"{pos}+{len(text)}c"
-                this.Target.tag_add("found", pos, lastidx)
-                pos = lastidx
+                pos = this.Target.search(
+                    text, # pattern
+                    this.LastIndex, # index
+                    'end', # stop index
+                    nocase=not this.case_chk.get(),
+                    regexp=this.regex_chk.get()
+                )
+                if not pos: break
+                this.LastIndex = f"{pos}+{len(text)}c"
+                this.Target.tag_add("found", this.LastIndex)
+                pos = this.LastIndex
     
+    """
+    Replace using strings specified in the dialog.
+    """
     def Replace(this, evt):
-        this.Target.replace(1.0, this.LastIndex if evt == 1 else "END",
-                            this.Target.get(1.0, "END").replace(this.findentry.get()))
+        index2 = this.LastIndex if evt == 1 else 'end'
+        this.Target.replace(
+            1.0, # from index
+            index2, # to index
+            this.Target.get(1.0, index2)
+                       .replace(this.find_var.get(), this.replaceentry.get())
+        )
