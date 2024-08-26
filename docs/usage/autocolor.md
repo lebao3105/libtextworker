@@ -4,7 +4,11 @@ Cuz why not!
 
 libtextworker's auto color system is somewhat beautiful, although it's a little mess there.
 
-Currently both Tk and wxPython are supported.
+Currently both Tkinter and wxPython are supported.
+
+But take a note about this: not all GUI widgets can be themed well, as they may use API that does not allow customizations well, or because of the toolkit support from libtextworker. Widgets may be half-themed, or not themed at all.
+
+As always I (the only developer here) welcome patches.
 
 ## Settings
 
