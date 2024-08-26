@@ -16,7 +16,7 @@ import tkinter.ttk
 class ActionRow(tkinter.Frame):
     """
     Inspired from libadwaita's ActionRow class,
-    tkActionRow is a vertical (layout) tkinter.Frame with
+    tkActionRow is a horizontal (layout) tkinter.Frame with
         text on one side, and everything else like buttons on the other side.
     All in one row.
     """
@@ -31,6 +31,8 @@ class ActionRow(tkinter.Frame):
         @param column (int): Where to place (row is always 0). -1 will place the widget next to the last one.
         @param sticky (str): Sticky option
         @param args, kwds: Options for the widget to place
+
+        Returns created widget.
         """
 
         if len(args) >= 1:
@@ -50,10 +52,12 @@ class ActionRow(tkinter.Frame):
                      expand: bool = True, fill: str = "x",
                      *args, **kwds) -> tkinter.Misc:
         """
-        Place a widget using pack method.
+        Places a widget using pack method.
         @param obj (tkinter.Misc): What widget to place (class/function reference, NOT an instance)
         @param side, expand, fill: Pack options
         @param args, kwds: Options for the widget to place
+
+        Returns the created widget
         """
         
         if len(args) >= 1:
@@ -67,18 +71,3 @@ class ActionRow(tkinter.Frame):
         target = obj(*args, **kwds)
         target.pack(expand=expand, fill=fill, side=side)
         return target
-    
-if __name__ == "__main__":
-    app = tkinter.Tk()
-    
-    row = ActionRow(app)
-    row.PlaceObjPack(tkinter.Label, text="Hello world!", side="left")
-    row.PlaceObjPack(tkinter.ttk.Button, text="This was placed using pack() method")
-    row.pack(expand=False, fill="x")
-    
-    row2 = ActionRow(app)
-    row2.PlaceObjPack(tkinter.Label, text="Welcome to tkActionRow", side="left")
-    row2.PlaceObjPack(tkinter.ttk.Button, text="This was placed using pack() method")
-    row2.pack(expand=False, fill="x")
-
-    app.mainloop()
