@@ -9,7 +9,7 @@
 # 	Licensed under the GNU General Public License version 3.0 or later.
 
 from hashlib import md5
-from tkinter import BooleanVar, Menu, Text, Misc, TclError
+from tkinter import BooleanVar, Text, Misc, TclError
 from tkinter.font import Font
 from tkinter.ttk import Scrollbar, Frame
 from typing import overload
@@ -53,21 +53,10 @@ class StyledTextControl(Text):
         this.unRedo = this["undo"]
         this.wrapbtn = BooleanVar(this)
 
-        if this.cfger.getkey("menu", "enabled", False, True, True):
-            useMenu = bool(this.cfger.getkey("menu", "enabled"))
-
-        if int(this.cfger.getkey("indentation", "size", True, True, True)):
-            tabwidth = int(this.cfger.getkey("indentation", "size"))
+        useMenu = bool(this.cfger.Get("menu", "enabled", False, True, True))
+        tabwidth = int(this.cfger.Get("indentation", "size", False, True, True))
 
         if useMenu:
-            this.RMenu = Menu(this, tearoff=0)
-
-            this.addMenucascade = this.RMenu.add_cascade
-            this.addMenucheckbtn = this.RMenu.add_checkbutton
-            this.addMenucmd = this.RMenu.add_command
-            this.addMenuradiobtn = this.RMenu.add_radiobutton
-            this.addMenusepr = this.RMenu.add_separator
-
             this._menu_init()
             this.bind("<Button-3>", this._open_menu)
 
@@ -75,7 +64,7 @@ class StyledTextControl(Text):
             this._place_scrollbar()
 
         # Place the line-numbers margin
-        if test_import("tklinenums") and this.cfger.getkey("editor", "line_count", noraiseexp=True) in this.cfger.yes_values:
+        if test_import("tklinenums") and this.cfger.Get("editor", "line_count", noraiseexp=True) in this.cfger.yes_values:
             from tklinenums import TkLineNumbers
             ln = TkLineNumbers(this._frame, this, "center")
             ln.pack(fill="y", side="left")
@@ -127,6 +116,12 @@ class StyledTextControl(Text):
             
             this.addMenucmd(label=_("Redo"), accelerator="Ctrl+Y",
                             command=lambda: this.edit_redo())
+            
+        this.addMenucascade = this.RMenu.add_cascade
+        this.addMenucheckbtn = this.RMenu.add_checkbutton
+        this.addMenucmd = this.RMenu.add_command
+        this.addMenuradiobtn = this.RMenu.add_radiobutton
+        this.addMenusepr = this.RMenu.add_separator
 
     def _open_menu(this, event):
         try:
@@ -202,6 +197,3 @@ class StyledTextControl(Text):
             super().edit_redo()
         except TclError:
             pass
-
-
-TextWidget = StyledTextControl
