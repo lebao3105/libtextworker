@@ -60,12 +60,12 @@ class AboutDialog:
     def SetProjectLicense(this, license: str):
         this.ProjectLicense = license
 
-    def ShowDialog(this, master: Misc | None = None):
+    def ShowDialog(this, master: Misc | None = None) -> Toplevel:
         """
         Here goes the real About dialog.
         If you don't like my style, just derive this function and
             start making your own.
-        TODO: Modifyable UI without remaking from scratch.
+        Returns created dialog.
         """
         dlg = Toplevel(master)
         dlg.wm_title(_("About this project"))
@@ -112,4 +112,6 @@ class AboutDialog:
         quitbtn.pack(side="right")
         bottomfm.pack(fill="x", side="bottom")
 
-        dlg.mainloop()
+        # dlg.mainloop()
+
+        return dlg
