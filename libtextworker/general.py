@@ -27,7 +27,7 @@ Importable: dict[str, bool] = {}
 
 # TODO: System path (e.g /usr/share/libtextworker) like many projects else
 # Top-level directory for themes etc
-TOPLV_DIR = ""
+TOPLV_DIR: str = ""
 EDITOR_DIR: str = ""
 THEMES_DIR: str = ""
 
@@ -184,16 +184,15 @@ def test_import(pkgname: str) -> bool:
 
     @see Importable
     """
+
     try:
         import_module(pkgname)
     except ImportError as e:
         Importable[pkgname] = False
-        warnings.warn("%s not found" % pkgname)
-        logger.exception(e.msg)
-        return False
     else:
         Importable[pkgname] = True
-        return True
+
+    return Importable[pkgname]
 
 ## Logging setup
 ## Only for libtextworker!

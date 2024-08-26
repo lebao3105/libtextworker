@@ -70,14 +70,12 @@ class UISync:
         this.thread.start()
 
     def configure(this, color: str):
-        color = color.lower()
-        return this.Func(this.Target, color)
+        return this.Func(this.Target, color.lower())
 
 
 class ColorManager(GetConfig):
     """
     A color manager for GUI widgets.
-    ColorManager can be used for multiple GUI widgets with only one call
     """
 
     setcolorfn: dict[object | type, list] = {}
@@ -85,30 +83,6 @@ class ColorManager(GetConfig):
     setfcfn: dict[object | type, list] = {}
 
     _threads: dict[object, threading.Thread] = {}
-
-    def __init__(this, default_configs: dict[str, typing.Any] | str = stock_ui_configs,
-                 customfilepath: str = CraftItems(THEMES_DIR, "default.ini"),
-                 watchChanges: bool = True):
-        """
-        Constructor of the class.
-        @param default_configs (dict[str]): Defaults to dev-premade configs
-        @param customfilepath (str): Custom file path. Disabled by default.
-        """
-        if customfilepath:
-            this._file = os.path.normpath(customfilepath)
-
-        GetConfig.__init__(this, default_configs, this._file, watchChanges)
-
-        if os.path.exists("mergelist.json"):
-            this.move(json.loads(open("mergelist.json", "r").read()))
-
-    def reset(this, restore: bool = False):
-        """
-        Reset the configuration file.
-        This is blocked as it can make conflicts with other instances of the class - unless you shutdown the app immediately..
-        """
-        raise NotImplementedError("reset() is blocked on ColorManager."
-                                  "Please use get_config.GetConfig class instead.")
 
     # Configure widgets
     def GetFont(this) -> typing.Any | tuple[int, str, str, str]:
@@ -124,10 +98,10 @@ class ColorManager(GetConfig):
         if not this.has_section("font"):
             return 10, "system", "system", ""
 
-        family = this.getkey("font", "family", False, True)
-        size = this.getkey("font", "size", False, True)
-        weight = this.getkey("font", "weight", False, True)
-        style = this.getkey("font", "style", False, True)
+        family = this.Get("font", "family", find_everywhere=True, noraise=True)
+        size = this.Get("font", "size", find_everywhere=True, noraise=True)
+        weight = this.Get("font", "weight", find_everywhere=True, noraise=True)
+        style = this.Get("font", "style", find_everywhere=True, noraise=True)
 
         if family == "default":
             family = ""
@@ -154,7 +128,7 @@ class ColorManager(GetConfig):
 
         if not color:
             if AUTOCOLOR: currmode = darkdetect.theme().lower()
-            else: currmode = str(this.getkey("color", "background", True, True)).lower()
+            else: currmode = str(this.Get("color", "background", True, True)).lower()
         else:
             currmode = color
 
@@ -163,15 +137,15 @@ class ColorManager(GetConfig):
 
         # Prefer color for specific modes first
         if f"background-{currmode}" in this["color"]:
-            test_back = this.getkey("color", f"background-{currmode}")
+            test_back = this.Get("color", f"background-{currmode}")
             back_ = test_back if test_back else colors[currmode]
 
-        fore_ = this.getkey("color", "foreground", make=True)
+        fore_ = this.Get("color", "foreground", find_everywhere=True, noraise=True)
         if fore_ == "default":
             fore_ = colors[{"light": "dark", "dark": "light"}.get(currmode, "dark")]
 
         if f"foreground-{currmode}" in this["color"]:
-            if test_fore := this.getkey("color", f"foreground-{currmode}"):
+            if test_fore := this.Get("color", f"foreground-{currmode}"):
                 fore_ = test_fore
 
         if fore_.startswith("#"):
@@ -295,7 +269,7 @@ class ColorManager(GetConfig):
 
         @param widget: Target object
         """
-        autocolor = this.getkey("color", "auto")
+        autocolor = this.Get("color", "auto")
         if (not AUTOCOLOR) or (autocolor in this.no_values):
             logger.warning("ColorManager.autocolor_run() called when auto-color system is not usable."
                            "Detailed: auto coloring has been turned of or doesn't have required dependency (darkdetect).")

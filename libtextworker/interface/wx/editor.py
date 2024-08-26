@@ -56,11 +56,11 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         this.IndentationSet()
 
         # Right click menu
-        if this.cfg.getkey("menu", "enabled") in this.cfg.yes_values:
+        if this.cfg.Get("menu", "enabled") in this.cfg.yes_values:
             this.Bind(wx.EVT_RIGHT_DOWN, this.MenuPopup)
 
         # Word wrap
-        this.SetWrapMode(this.cfg.getkey("editor", "wordwrap") in this.cfg.yes_values)
+        this.SetWrapMode(this.cfg.Get("editor", "wordwrap") in this.cfg.yes_values)
 
         # Editor modifications
         def OnEditorModify(evt):
@@ -75,7 +75,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
 
     def DNDSupport(this) -> bool:
         """Meh DND does not mean do not disturb."""
-        if this.cfg.getkey("editor", "dnd_enabled", True, True) not in this.cfg.yes_values:
+        if this.cfg.Get("editor", "dnd_enabled", True, True, True) not in this.cfg.yes_values:
             return False
 
         this.SetDropTarget(DragNDropTarget(this))
@@ -83,11 +83,11 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         return True
 
     def IndentationSet(this):
-        size = int(this.cfg.getkey("indentation", "size", True, True))
-        tp = this.cfg.getkey("indentation", "type", True, True)
-        show_guide = this.cfg.getkey("indentation", "show_guide", True, True)
-        bk_unindent = this.cfg.getkey("indentation", "backspace_unindents", True, True)
-        view_ws = this.cfg.getkey("editor", "view_whitespaces", True, True)
+        size = int(this.cfg.Get("indentation", "size", True, True))
+        tp = this.cfg.Get("indentation", "type", True, True)
+        show_guide = this.cfg.Get("indentation", "show_guide", True, True)
+        bk_unindent = this.cfg.Get("indentation", "backspace_unindents", True, True)
+        view_ws = this.cfg.Get("editor", "view_whitespaces", True, True)
 
         if not 8 >= size > 0:
             raise ConfigurationError("indentation", "size", "Must be in range from 1 to 8")
@@ -106,7 +106,7 @@ class StyledTextControl(wx.stc.StyledTextCtrl):
         Setup line numbers margin for the editor.
         The margin's default width is 20px.
         """
-        state = this.cfg.getkey("editor", "line_count", True, True, True)
+        state = this.cfg.Get("editor", "line_count", True, True, True)
 
         if state in this.cfg.no_values:
             this.SetMarginWidth(0, 0)

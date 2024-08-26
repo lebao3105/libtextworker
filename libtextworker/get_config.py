@@ -37,29 +37,30 @@ class ConfigurationError(libTewException):
     """
     def __init__(this, path: str, msg: str, section: str,
                  option: str = "\\not specified\\", value: str = ""):
-        
-        full = "Configuration file {},\n-> [{}->{}{}]: {}"
-        full = full.format(path, section, option, f'={value}' if value else '', msg)
-        libTewException.__init__(this, full)
+
+        libTewException.__init__(
+            this,
+            f"File {path},\n-> [{section}->{option}{f'={value}' if value else ''}]: {msg}"
+        )
 
 class GetConfig(ConfigParser):
 
     # Positive values - they're aliases of True
-    yes_values = [ 'yes', 'true', '1', 'on', 1, True ]
+    yes_values = [ 'yes', 'true', '1', 'on' ]
 
     # Negative values - they're aliases of False
-    no_values = [ 'no', 'false', '0', 'off', 0, False, '', None ]
+    no_values = [ 'no', 'false', '0', 'off', '' ]
 
     # OEM settings
     OEM: dict[str] = {}
 
     # Aliases
-    aliases: dict = {}
+    aliases: dict[str] = {}
 
-    # Read file
+    # Read file (internal variable)
     _file: str
 
-    # Backups
+    # Backups (internal variable)
     _backups: dict[str] = {}
 
     # Use watchdog for file events watching
@@ -70,6 +71,10 @@ class GetConfig(ConfigParser):
                  watchChanges: bool = False, **kwds):
         """
         Constructor.
+
+        @param defaults: Default settings
+        @param load: File/string/dictionary to load
+        @param watchChanges: Reread file if there are any changes to the file
         """
 
         ConfigParser.__init__(this, **kwds)
@@ -88,12 +93,11 @@ class GetConfig(ConfigParser):
 
         # For getboolean
         for yes in this.yes_values:
-            if isinstance(yes, str):
-                this.BOOLEAN_STATES[yes] = True
-                this.aliases[yes] = True
+            this.BOOLEAN_STATES[yes] = True
+            this.aliases[yes] = True
                 
         for no in this.no_values:
-            if isinstance(yes, str):
+            if isinstance(no, str):
                 this.BOOLEAN_STATES[no] = False
                 this.aliases[no] = False
 
@@ -107,7 +111,7 @@ class GetConfig(ConfigParser):
             try:
                 this.read_string(load)
             except:
-                this.readf(load)
+                this.ReadF(load)
 
         elif isinstance(load, dict):
             this.read_dict(load)
@@ -134,9 +138,13 @@ class GetConfig(ConfigParser):
         except:
             ConfigParser.read_string(this, string)
 
-    def readf(this, file: str, encoding: str = "utf8"):
+    def ReadF(this, file: str, encoding: str = "utf8"):
         """
-        Reads a file.
+        Reads a file and starts observing file changes if able to.
+        Usually you don't need to use this. Consider it an "internal" function.
+
+        @param file : File to read
+        @param encoding : File encoding (normally just leave it as is - utf8)
         """
 
         WalkCreation(os.path.dirname(file))
@@ -175,7 +183,7 @@ class GetConfig(ConfigParser):
             else:
                 raise ValueError("No backups were made!")
     
-    def update_and_write(this):
+    def Update_And_Write(this):
         """
         Updates and write new changes into the current file.
         @see update
@@ -183,7 +191,7 @@ class GetConfig(ConfigParser):
         ConfigParser.update(this)
         this.write(open(this._file, "w"))
                     
-    def move(this, list_: dict[str, dict[str, str]]):
+    def Move(this, list_: dict[str, dict[str, str]]):
         """
         @since 0.1.3
 
@@ -241,7 +249,7 @@ class GetConfig(ConfigParser):
                 and list_[section_]["delete_entire_section"] in this.yes_values:
                 this.remove_section(section_)
     
-    def aliasyesno(this, yesvalue=None, novalue=None):
+    def AliasBoolean(this, yesvalue: str | None = None, novalue: str | None = None):
         """
         Makes alias(es) of True/False/both.
         """
@@ -253,13 +261,21 @@ class GetConfig(ConfigParser):
             this.no_values.append(novalue)
             this.aliases[novalue] = False
 
-    def alias(this, value, value2):
+    def Alias(this, value: str, value2):
         """
         Makes an alias.
+
+        @param value: The value that becomes an alias of something else. \
+            Needs to be a string as GetConfig by default gets values in string type.
+            ( except you use functions like getint or getboolean )
+        @param value2: Value that `value` gets alias'd of.
+
+        @see aliases
+        @see AliasBoolean
         """
         this.aliases[value] = value2
     
-    def set_and_update(this, section: str, option: str, value: str | None = None):
+    def Set_And_Update(this, section: str, option: str, value: str | None = None):
         """
         @since 0.1.3
         Set an option, and eventually apply it to the file.
@@ -302,54 +318,63 @@ class GetConfig(ConfigParser):
 
             return target
     
-    def getkey(this, section: str, option: str, needed: bool = False,
-               make: bool = False, noraiseexp: bool = False, raw: bool = False) -> typing.Any | None:
+    def Get(this, section: str, option: str, raw: bool = False,
+            find_everywhere: bool = False, write_to_self: bool = False,
+            noraise: bool = False) -> typing.Any | None:
         """
-        Try to get the value of an option under the spectified section.
+        Tries to get the value of an option under the spectified section.
+        This does not cast the value it sees (str) to any other object.
+        If the required thing is not gettable, Get() can find it in OEM, backups,
+            or raise an exception, or just return None.
 
-        @param section, option: Target section->option
-        @param needed (boolean=False): The target option is needed - should use with make & noraiseexp.
-        @param make (boolean=False): Create the option if it is not found from the search
-        @param noraiseexp (boolean=False): Make getkey() raise exceptions or not (when neccessary)
-        @param raw (boolean=False): Don't use aliases for the value we get.
+        @param section: Target section
+        @param option: Target option under `section`
+        @param raw: Don't use aliases, only get a string
+        @param find_everywhere: Find [section->option] in OEM+backups
+        @param write_to_self: Write the target [section->option] into `self` if it's not found in read file
+        @param noraise: Do not show any exceptions, either from GetConfig or Get.
 
-        @return False if the option does not exist and needed parameter set to False.
+        @since 0.1.4 Rename+remove parameters and simplify code. Renamed function from getkey to Get.
         """
 
         def bringitback():
-            target = this._backups
+            target = this._backups if this._backups else this.OEM
             value_: typing.Any
-
-            if make:
-                if not target: target = this.OEM
                 
-                if not target[section]:
-                    raise ConfigurationError(
-                        this._file, f"Unable to find {section} section in both saved backups and default settings!",
-                        section, option
-                    )
-                
-                if not target[section][option]:
-                    raise ConfigurationError(
-                        this._file, f"Unable to find the option under {section} in both saved backups and default settings!",
-                        section, option
-                    )
+            if not target[section]:
+                raise ConfigurationError(
+                    this._file,
+                    f"Unable to find {section} section in both saved backups and default settings!",
+                    section, option
+                )
+            
+            if not target[section][option]:
+                raise ConfigurationError(
+                    this._file,
+                    f"Unable to find the option under {section} in both saved backups and default settings!",
+                    section, option
+                )
 
+            value_ = target[section][option]
+
+            if write_to_self:
                 if not section in this.sections():
                     this.add_section(section)
+                this.set(section, option, value_)
 
-                value_ = target[section][option]
-                if needed:
-                    this.set_and_update(section, option, value_)
-                else:
-                    this.set(section, option, value_)
-                return value_
+            return value_
 
         try:
-            value = this.get(section, option)
+            value: str = this.get(section, option)
         except Exception as e:
-            if noraiseexp: value = bringitback()
-            else: raise e
+            if not noraise: raise e
+            if not find_everywhere: return None
+
+            try:
+                value = bringitback()
+            except Exception as exp:
+                if not noraise: raise exp
+                return None
 
         # Remove ' / "
         trans = ["'", '"']
@@ -367,6 +392,8 @@ class GetConfig(ConfigParser):
 
     if Importable["watchdog"]:
         def on_any_event(this, event: FileSystemEvent):
+            assert this._file, "GetConfig._file is empty"
+
             if event.src_path != this._file: # Watchdog also catches events from other files
                 return
 

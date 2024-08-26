@@ -21,8 +21,10 @@ Requested = {}
 
 def parse_version(project: str) -> packaging.version.Version:
     """
-    Try to import a project then parse its version with the ```packaging.version``` module.
+    Tries to import a project then parse its version with the ```packaging.version``` module.
     Parsed projects are stored in Requested (list).
+    Returns None on error.
+
     @see is_development_version
     @see is_development_from_project
     @see require
@@ -30,11 +32,16 @@ def parse_version(project: str) -> packaging.version.Version:
     @see require_lower
     @see Requested
     """
+
     global Requested
-    module = importlib.import_module(project)
+    try:
+        module = importlib.import_module(project)
+    except:
+        Requested[project] = None
 
     if project not in Requested:
         if not module.__version__:
+            Requested[project] = None
             raise general.libTewException(f"{project} does not have __version__ attribute!")
         Requested[project] = packaging.version.parse(module.__version__)
 

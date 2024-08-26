@@ -11,7 +11,8 @@
 """
 Default UI settings
 """
-stock_ui_configs = {
+stock_ui_configs = \
+{
     "color": {
         "background": "light",
         "foreground": "default",
@@ -39,14 +40,15 @@ stock_ui_configs = {
 """
 Default editor configs
 """
-stock_editor_configs = {
+stock_editor_configs = \
+{
     "indentation": {
-        "size": 4,
+        "size": "4",
         "type": "tabs",
         "show_guide": "yes",
         "backspace_unindents": "yes",
     },
-    "menu": {"enabled": "yes"},
+    "menu": { "enabled": "yes" },
     "editor": {
         "line_count": "yes",
         "dnd_enabled": "yes",
@@ -61,15 +63,16 @@ Custom colors.
 @since 0.1.3 first debut on libtextworker.interface._colors
 @since 0.1.4 moved to libtextworker.interface
 """
-colors = {
-    "light": "#ffffff",
-    "dark": "#0f0e0d",
-    "green": "#00ff00",
-    "red": "#ff0000",
-    "rose": "#ffaa95",
-    "light_pink": "#ffd1d6",
-    "light_green": "#95ffaa",
-    "black": "#000000"
+colors = \
+{
+    "light"         : "#ffffff",
+    "dark"          : "#0f0e0d",
+    "green"         : "#00ff00",
+    "red"           : "#ff0000",
+    "rose"          : "#ffaa95",
+    "light_pink"    : "#ffd1d6",
+    "light_green"   : "#95ffaa",
+    "black"         : "#000000"
 }
 
 from libtextworker.general import test_import
