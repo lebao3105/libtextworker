@@ -10,13 +10,13 @@
 
 import os
 import re
-from warnings import warn
 import wx
 import wx.aui
 import wx.xrc
 
 from types import ModuleType
 from typing import Callable
+from warnings import warn
 
 
 def CreateMenu(parent, items: list[tuple]) -> wx.Menu:
@@ -133,7 +133,10 @@ class XMLBuilder:
     
 def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = True) -> ModuleType:
     """
-    Localizes wxFormBuilder-generated Python code.
+    Localizes generated Python code, if no wxGetTranslation or gettext used there.
+    
+    wxFormBuilder uses gettext for generated files since version 4.2.1.
+
     @param path : The path to the Python code
     @param importText : The from .. import statement that will be added to the file (like importing gettext)
     @param ignoreDoneWork: Ignore localized file
@@ -171,24 +174,20 @@ def localizePy(path: str, importText: str | None = None, ignoreDoneWork: bool = 
     # I have modified it myself for the most perfect pattern.
     # All strings in wxFormBuilder generated Python code are unicode type:
     # u"<content>"
-    # Pattern with start with u. Then 4 regex groups:
-    # One for the first double quote (")
-    # One for the string content (. for every character except \n, + for >=1 match, ? to catch as much as posible)
-    # The matching quote (")
-    # The final look for space (just one space) OR a comma (,) but NOT include it to the catch result.
-    # One draw back is that numberic only strings are included, but can be skipped below.
+    # The final regex group looks for space (just one space) OR a comma (,) but NOT include it to the catch result.
+    # One drawback is that numberic only strings are included, but can be skipped below.
     pattern = r'u(")(.+?)(")(?=[\s,])'
-    matches = re.findall(pattern, content)
+    matches: list[tuple[str, str, str]] = re.findall(pattern, content)
     
     for match in matches:
         # The match result will be a list of 
         # (quote, string, matching quote) tuples.
         # Skip numberic/float strings.
-        try: int(match[1]); float(match[1])
-        except: pass
-        else: continue
-        localized = f'{func}(u"{match[1]}")'
-        content = content.replace(f'u"{match[1]}"', localized)
+        if match[1].isdigit() or match[1].isdecimal():
+            continue
+        else:
+            localized = f'{func}(u"{match[1]}")'
+            content = content.replace(f'u"{match[1]}"', localized)
     
     open(path, "w").write(content)
 
