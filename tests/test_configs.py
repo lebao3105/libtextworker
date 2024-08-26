@@ -30,9 +30,9 @@ def test_mkconfig():
     }
 
     cfgs = GetConfig(cfg, "helloworld/one/configs/configs.ini")
-    assert cfgs.getkey("section1", "option1", True, True, True) == "value"
+    assert cfgs.Get("section1", "option1", True, True, True) == "value"
     cfgs.set("section1", "option1", "value_changed")
-    assert cfgs.getkey("section1", "option1") == "value_changed"
+    assert cfgs.Get("section1", "option1") == "value_changed"
     
     cfgs.update_and_write()
     cfgs.move(
@@ -48,8 +48,8 @@ def test_mkconfig():
         }
     )
 
-    assert cfgs.getkey("section_one", "option1") == "value_changed"
+    assert cfgs.Get("section_one", "option1") == "value_changed"
     assert cfgs.BackUp(["section_one->option1"], {}, True) == {"section_one": {"option1": "value_changed"}}
 
     cfgs.readf("helloworld/one/configs/new.ini")
-    assert cfgs.getkey("test_move", "section2_opt1") in cfgs.yes_values
+    assert cfgs.Get("test_move", "section2_opt1") in cfgs.yes_values

@@ -10,19 +10,20 @@ import tkinter.ttk as ttk
 import tkinter.messagebox as mgb
 import webbrowser
 
-from libtextworker.interface.tk.miscs import CreateMenu
 
 from . import API_URL, HAS_ACOLOR, HASNT_ACOLOR, THEMEPATH, REPO_URL, hasAutoColor
 from libtextworker import __version__ as libver, general
 
 general.test_import("tkinter")
+from libtextworker.interface import stock_ui_configs
 from libtextworker.interface.tk import ColorManager
 from libtextworker.interface.tk.about import AboutDialog
 from libtextworker.interface.tk.dirctrl import *
 from libtextworker.interface.tk.editor import StyledTextControl
 from libtextworker.interface.tk.findreplace import FindReplace
+from libtextworker.interface.tk.miscs import CreateMenu
 
-clrmgr = ColorManager(customfilepath=THEMEPATH)
+clrmgr = ColorManager(stock_ui_configs, THEMEPATH)
 
 
 def test_tk():
@@ -39,64 +40,74 @@ def test_tk():
     aboutdlg.SetProjectSite(REPO_URL)
     aboutdlg.SetAppTesters(["Le Bao Nguyen"])
     aboutdlg.SetDevelopers(["Le bao Nguyen"])
-    aboutdlg.SetProjectLicense("GNU General Public License Version 3")
-
-    if platform.system() == "Darwin":
-        app.createcommand("tkAboutDialog", lambda: aboutdlg.ShowDialog(fm))
+    aboutdlg.SetProjectLicense(
+        open(os.path.join(general.GetCurrentDir(__file__), "../LICENSE")).read()
+    )
+    
+    def showaboutdialog():
+        clrmgr.configure(aboutdlg.ShowDialog(fm), childs_too=True)
 
     # Build menu bar
-    def checkautocolor(evt):
-        if hasAutoColor():
-            mgb.showinfo(message=HAS_ACOLOR)
-        else:
-            mgb.showerror(message=HASNT_ACOLOR)
-    
     menubar = tk.Menu(app)
-    menubar.add_cascade(label="The only one",
-                        menu=CreateMenu(
-                            [
-                                {
-                                    'label': 'API Documents',
-                                    'handler': lambda evt: webbrowser.open(API_URL)
-                                },
-                                {
-                                    'label': 'Check for auto coloring support',
-                                    'handler': checkautocolor
-                                }
-                            ],
-                            fm
-                        ))
+    menubar.add_cascade(
+        label="The only one",
+        menu=CreateMenu(
+            [
+                {
+                    'label': 'API Documents',
+                    'handler': lambda evt: webbrowser.open(API_URL)
+                },
+                {
+                    'label': 'Check for auto coloring support',
+                    'handler': lambda evt: mgb.showinfo(message=HAS_ACOLOR if hasAutoColor() else HASNT_ACOLOR)
+                }
+            ],
+            fm
+        )
+    )
+    app.config(menu=menubar)
 
     # Build the UI
     ttk.Label(fm, text="Hello world!").pack()
-    ttk.Button(
-        fm, text="Click it!", command=lambda: (aboutdlg.ShowDialog(fm))
-    ).pack()
+    ttk.Button(fm, text="About this project", command=showaboutdialog).pack()
     ttk.Checkbutton(fm, text="A checkbutton").pack()
 
     nb = ttk.Notebook(fm)
 
+    ## Directory control
     dc = DirCtrl(nb, show="tree", refresh_on_changes=True)
     dc.SetFolder(os.path.expanduser("~/Desktop"))
-    ## Some of file system events are bond here.
-    ## Why not more? I'm lazy.
-    ## Better with a status bar
-    dc.bind(FileCreatedEvent, lambda evt: mgb.showinfo("New created file", f"Created {evt.data}"))
-    dc.bind(FileDeletedEvent, lambda evt: mgb.showinfo("New deleted file", f"Deleted {evt.data}"))
-    dc.bind(FileEditedEvent, lambda evt: mgb.showinfo("New edited file", f"Edited {evt.data}"))
-    dc.bind(FileOpenedEvent, lambda evt: mgb.showinfo("File opened", f"Opened {evt.data}"))
+
+    for event in ["Edited", "Created", "Deleted", "Opened", "Closed", "Moved"]:
+        dc.bind(f"<<File{event}>>",
+                lambda evt: mgb.showinfo("Information", f"event {evt.data}"))
+
+        if event not in ["Opened", "Closed"]:
+            dc.bind(f"<<Dir{event}>>",
+                    lambda evt: mgb.showinfo("Information", f"event {evt.data}"))
+
     dc.Frame.pack(expand=True, fill="both")
 
+    ## Text editor
     te = StyledTextControl(nb)
     te.EditorInit()
     te.pack(expand=True, fill="both")
 
+    def openfrDialog():
+        dlg = tk.Toplevel(fm)
+        FindReplace(dlg, te, TK_USEPACK, True).pack(expand=True, fill="both")
+        clrmgr.configure(dlg, childs_too=True)
+
+    te.addMenucmd(command=openfrDialog, label="Find & Replace")
+
+    # Now add tabs into the notebook and color the entire applicaiton
     nb.add(ttk.Combobox(nb, values=["one", "two", "three"]), text="Tab 1")
     nb.add(dc.Frame, text="Tab 2")
     nb.add(te._frame, text="Tab 3")
 
     clrmgr.configure(fm, childs_too=True)
     clrmgr.configure(nb, childs_too=True)
+
     nb.pack(expand=True, fill="both")
     fm.pack(expand=True, fill="both")
 
