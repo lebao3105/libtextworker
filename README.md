@@ -1,3 +1,6 @@
+> For all textworker related projects, head over to https://gitlab.com/textworker/.
+> For this repository, go to https://gitlab.com/textworker/libtextworker or https://gitlab.com/textworker/legacy-python/libtextworker for the pure Python implementation.
+
 ## libtextworker
 
 This is the official library for [texteditor/textworker](https://gitlab.com/textworker). Unlike its name, you can also use this for your projects too!
